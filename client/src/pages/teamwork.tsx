@@ -106,7 +106,15 @@ import {
   TestTube,
   Mouse,
   Highlighter,
-  PauseCircle
+  Paintbrush,
+  ArrowUpRight,
+  Minus,
+  StickyNote,
+  ZoomIn,
+  ZoomOut,
+  Maximize,
+  EyeOff,
+  Unlock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -3319,128 +3327,486 @@ export default function Teamwork() {
           </DialogContent>
         </Dialog>
 
-        {/* 4. Whiteboard Modal */}
+        {/* 4. Enhanced Quantum Whiteboard Modal */}
         <Dialog open={showWhiteboard} onOpenChange={setShowWhiteboard}>
-          <DialogContent className="max-w-6xl max-h-[90vh]">
+          <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5 text-indigo-500" />
-                Quantum Collaboration Whiteboard
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Palette className="h-6 w-6 text-indigo-500" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-semibold">Quantum Collaborative Whiteboard Studio</div>
+                    <div className="text-sm text-gray-500 font-normal">Interactive quantum circuit design and brainstorming</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full mr-1 animate-pulse"></div>
+                    4 active
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="ghost" data-testid="button-whiteboard-settings">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Layers className="h-4 w-4 mr-2" />
+                        Manage Layers
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Download className="h-4 w-4 mr-2" />
+                        Export as Image
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Import Template
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Settings2 className="h-4 w-4 mr-2" />
+                        Canvas Settings
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </DialogTitle>
               <DialogDescription>
-                Draw quantum circuits, share ideas, and collaborate visually with your team
+                Professional-grade collaborative whiteboard with quantum circuit templates, real-time sync, and advanced drawing tools
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              {/* Whiteboard Tools */}
-              <div className="flex items-center justify-between border-b pb-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant={whiteboardTool === 'pen' ? 'default' : 'outline'}
-                    onClick={() => setWhiteboardTool('pen')}
-                    data-testid="button-pen-tool"
-                  >
-                    <PenTool className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={whiteboardTool === 'eraser' ? 'default' : 'outline'}
-                    onClick={() => setWhiteboardTool('eraser')}
-                    data-testid="button-eraser-tool"
-                  >
-                    <Eraser className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={whiteboardTool === 'circle' ? 'default' : 'outline'}
-                    onClick={() => setWhiteboardTool('circle')}
-                    data-testid="button-circle-tool"
-                  >
-                    <Circle className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={whiteboardTool === 'square' ? 'default' : 'outline'}
-                    onClick={() => setWhiteboardTool('square')}
-                    data-testid="button-square-tool"
-                  >
-                    <Square className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={whiteboardTool === 'text' ? 'default' : 'outline'}
-                    onClick={() => setWhiteboardTool('text')}
-                    data-testid="button-text-tool"
-                  >
-                    <Type className="h-4 w-4" />
-                  </Button>
+            
+            <div className="flex h-[750px] gap-6">
+              {/* Main Whiteboard Area */}
+              <div className="flex-1 flex flex-col">
+                {/* Enhanced Tool Bar */}
+                <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 border border-indigo-200 dark:border-indigo-800 rounded-lg mb-4">
+                  <div className="flex items-center justify-between">
+                    {/* Drawing Tools */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 border-r pr-3">
+                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">Drawing:</span>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'pen' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('pen')}
+                          data-testid="button-pen-tool"
+                        >
+                          <PenTool className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'brush' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('brush')}
+                          data-testid="button-brush-tool"
+                        >
+                          <Paintbrush className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'eraser' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('eraser')}
+                          data-testid="button-eraser-tool"
+                        >
+                          <Eraser className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 border-r pr-3">
+                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">Shapes:</span>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'circle' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('circle')}
+                          data-testid="button-circle-tool"
+                        >
+                          <Circle className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'square' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('square')}
+                          data-testid="button-square-tool"
+                        >
+                          <Square className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'arrow' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('arrow')}
+                          data-testid="button-arrow-tool"
+                        >
+                          <ArrowUpRight className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'line' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('line')}
+                          data-testid="button-line-tool"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">Text:</span>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'text' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('text')}
+                          data-testid="button-text-tool"
+                        >
+                          <Type className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={whiteboardTool === 'sticky' ? 'default' : 'outline'}
+                          onClick={() => setWhiteboardTool('sticky')}
+                          data-testid="button-sticky-tool"
+                        >
+                          <StickyNote className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Action Tools */}
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline" data-testid="button-undo">
+                        <Undo className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-redo">
+                        <Redo className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-zoom-in">
+                        <ZoomIn className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-zoom-out">
+                        <ZoomOut className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-fit-screen">
+                        <Maximize className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" data-testid="button-save-whiteboard">
+                        <Save className="h-4 w-4 mr-1" />
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Color and Style Controls */}
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-indigo-200 dark:border-indigo-700">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-indigo-800 dark:text-indigo-200">Color:</span>
+                        <div className="flex gap-1">
+                          {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'].map((color, idx) => (
+                            <div
+                              key={idx}
+                              className="w-6 h-6 rounded border-2 border-white shadow cursor-pointer hover:scale-110 transition-transform"
+                              style={{ backgroundColor: color }}
+                              data-testid={`color-${idx}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-indigo-800 dark:text-indigo-200">Stroke:</span>
+                        <div className="flex gap-1">
+                          {[1, 2, 4, 8].map((width, idx) => (
+                            <div
+                              key={idx}
+                              className="w-8 h-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                              data-testid={`stroke-${width}`}
+                            >
+                              <div className="bg-black dark:bg-white rounded" style={{ width: '80%', height: `${width}px` }} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-indigo-700 dark:text-indigo-300">
+                      <span>Grid: ON</span>
+                      <span>•</span>
+                      <span>Snap: ON</span>
+                      <span>•</span>
+                      <span>Zoom: 100%</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline" data-testid="button-undo">
-                    <Undo className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" data-testid="button-redo">
-                    <Redo className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" data-testid="button-clear-board">
-                    <RotateCcw className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" data-testid="button-save-whiteboard">
-                    <Save className="h-4 w-4 mr-1" />
-                    Save
-                  </Button>
+
+                {/* Enhanced Whiteboard Canvas */}
+                <div className="flex-1 relative bg-gradient-to-br from-white via-gray-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 border-2 border-indigo-200 dark:border-indigo-800 rounded-xl overflow-hidden">
+                  {/* Grid Background */}
+                  <div className="absolute inset-0 opacity-20"
+                    style={{
+                      backgroundImage: `
+                        linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                        linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+                      `,
+                      backgroundSize: '20px 20px'
+                    }}
+                  ></div>
+                  
+                  {/* Canvas Content */}
+                  <div className="absolute inset-0 p-8">
+                    {/* Quantum Circuit Example */}
+                    <div className="absolute top-12 left-12">
+                      <div className="text-indigo-900 dark:text-indigo-100 font-semibold text-lg mb-4">
+                        Quantum Bell State Circuit
+                      </div>
+                      <div className="space-y-6">
+                        {/* Qubit 0 */}
+                        <div className="flex items-center gap-6">
+                          <div className="w-8 h-8 bg-indigo-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                            0
+                          </div>
+                          <div className="h-0.5 bg-indigo-400 w-24"></div>
+                          <div className="w-12 h-12 border-3 border-yellow-500 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center text-lg font-bold text-yellow-800 dark:text-yellow-200">
+                            H
+                          </div>
+                          <div className="h-0.5 bg-indigo-400 w-24"></div>
+                          <div className="w-4 h-4 bg-indigo-600 rounded-full"></div>
+                          <div className="h-0.5 bg-indigo-400 w-24"></div>
+                        </div>
+                        
+                        {/* Connection Line */}
+                        <div className="ml-52 w-0.5 h-6 bg-indigo-400"></div>
+                        
+                        {/* Qubit 1 */}
+                        <div className="flex items-center gap-6">
+                          <div className="w-8 h-8 bg-indigo-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                            1
+                          </div>
+                          <div className="h-0.5 bg-indigo-400 w-24"></div>
+                          <div className="w-12 h-12 bg-transparent"></div>
+                          <div className="h-0.5 bg-indigo-400 w-24"></div>
+                          <div className="w-12 h-12 border-3 border-green-500 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                            <div className="w-6 h-6 border-2 border-green-600 dark:border-green-400 rounded-full bg-white dark:bg-gray-800"></div>
+                          </div>
+                          <div className="h-0.5 bg-indigo-400 w-24"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Formula */}
+                      <div className="mt-6 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-indigo-200 dark:border-indigo-700">
+                        <div className="text-indigo-900 dark:text-indigo-100 font-mono text-lg">
+                          |ψ⟩ = (|00⟩ + |11⟩) / √2
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Brainstorming Section */}
+                    <div className="absolute top-12 right-12">
+                      <div className="space-y-4">
+                        <div className="bg-yellow-200 dark:bg-yellow-800 p-3 rounded-lg shadow-lg w-48">
+                          <div className="font-semibold text-yellow-900 dark:text-yellow-100">Optimization Ideas</div>
+                          <div className="text-sm text-yellow-800 dark:text-yellow-200 mt-1">
+                            • Reduce gate depth
+                            • Use hardware-native gates
+                            • Apply error mitigation
+                          </div>
+                        </div>
+                        <div className="bg-blue-200 dark:bg-blue-800 p-3 rounded-lg shadow-lg w-48">
+                          <div className="font-semibold text-blue-900 dark:text-blue-100">Next Steps</div>
+                          <div className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                            1. Test on simulator
+                            2. Hardware reservation
+                            3. Compare results
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Live Collaboration Cursors */}
+                    <div className="absolute top-80 left-60 pointer-events-none">
+                      <div className="relative">
+                        <MousePointer className="h-5 w-5 text-red-500 transform rotate-12" />
+                        <div className="absolute top-5 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-lg animate-pulse">
+                          Bob Wilson • Drawing
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute top-96 right-80 pointer-events-none">
+                      <div className="relative">
+                        <MousePointer className="h-5 w-5 text-green-500 transform -rotate-12" />
+                        <div className="absolute top-5 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded shadow-lg animate-pulse">
+                          Dr. Sarah Kim • Adding text
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Drawing in Progress Indicator */}
+                    <div className="absolute bottom-8 left-8">
+                      <div className="flex items-center gap-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-lg border border-indigo-200 dark:border-indigo-700 shadow-lg">
+                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                          Alice Chen is drawing a circuit diagram...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Enhanced Status Bar */}
+                <div className="p-4 bg-white dark:bg-gray-800 border-t border-indigo-200 dark:border-indigo-700 rounded-lg mt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-green-500" />
+                        <span className="font-medium">4 collaborators active</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-blue-500" />
+                        <span>Auto-save every 30s</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-purple-500" />
+                        <span>Last saved: 2 minutes ago</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {[
+                        { name: "Alice", color: "from-blue-500 to-indigo-600", active: true },
+                        { name: "Bob", color: "from-red-500 to-pink-600", active: true },
+                        { name: "Sarah", color: "from-green-500 to-emerald-600", active: true },
+                        { name: "John", color: "from-purple-500 to-violet-600", active: false }
+                      ].map((user, idx) => (
+                        <div key={idx} className="relative group">
+                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${user.color} flex items-center justify-center text-white text-xs font-bold ${user.active ? 'ring-2 ring-white shadow-lg' : 'opacity-50'}`}>
+                            {user.name[0]}
+                          </div>
+                          {user.active && (
+                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                          )}
+                          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                            {user.name}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Whiteboard Canvas */}
-              <div className="relative bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg h-96 overflow-hidden">
-                {/* Simulated drawing content */}
-                <div className="absolute inset-0 p-4">
-                  <div className="text-gray-400 text-center mt-20">
-                    <PenTool className="h-12 w-12 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">Quantum Whiteboard</h3>
-                    <p className="text-sm mt-2">Start drawing quantum circuits, diagrams, or brainstorming ideas</p>
-                  </div>
-                  
-                  {/* Sample quantum circuit drawn on whiteboard */}
-                  <div className="absolute top-8 left-8 text-blue-600 dark:text-blue-400">
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="w-4 h-4 border-2 border-current rounded-full"></div>
-                      <div className="h-0.5 bg-current w-20"></div>
-                      <div className="w-8 h-8 border-2 border-current flex items-center justify-center text-xs">H</div>
-                      <div className="h-0.5 bg-current w-20"></div>
-                    </div>
-                    <div className="text-xs">|ψ⟩ = (|0⟩ + |1⟩)/√2</div>
-                  </div>
-                  
-                  {/* Live cursors */}
-                  <div className="absolute top-32 right-20 flex items-center gap-1">
-                    <MousePointer className="h-4 w-4 text-red-500" />
-                    <span className="text-xs text-red-500 bg-white dark:bg-gray-800 px-1 py-0.5 rounded shadow">Alice Chen</span>
-                  </div>
-                </div>
-              </div>
+              {/* Enhanced Sidebar */}
+              <div className="w-80 space-y-4">
+                {/* Quantum Templates */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Atom className="h-4 w-4 text-blue-500" />
+                      Quantum Circuit Templates
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {[
+                      { name: "Bell State", gates: "H, CNOT", qubits: 2 },
+                      { name: "GHZ State", gates: "H, CNOT×2", qubits: 3 },
+                      { name: "Quantum Fourier", gates: "H, R, SWAP", qubits: 4 },
+                      { name: "VQE Ansatz", gates: "RY, RZ, CNOT", qubits: 8 }
+                    ].map((template, idx) => (
+                      <div key={idx} className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="font-medium text-sm">{template.name}</div>
+                            <div className="text-xs text-gray-500">{template.gates} • {template.qubits} qubits</div>
+                          </div>
+                          <Button size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100" data-testid={`template-${idx}`}>
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
 
-              {/* Collaboration Info */}
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    4 collaborators active
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Activity className="h-4 w-4" />
-                    Auto-save enabled
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {["Alice", "Bob", "Sarah", "John"].map((user, idx) => (
-                    <div key={idx} className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
-                      {user[0]}
+                {/* Layer Management */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Layers className="h-4 w-4 text-green-500" />
+                      Layer Management
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {[
+                      { name: "Circuit Diagram", visible: true, locked: false },
+                      { name: "Annotations", visible: true, locked: false },
+                      { name: "Background", visible: true, locked: true }
+                    ].map((layer, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <div className="flex items-center gap-2">
+                          <Button size="icon" variant="ghost" className="h-4 w-4" data-testid={`layer-visibility-${idx}`}>
+                            {layer.visible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                          </Button>
+                          <span className="text-sm">{layer.name}</span>
+                        </div>
+                        <Button size="icon" variant="ghost" className="h-4 w-4" data-testid={`layer-lock-${idx}`}>
+                          {layer.locked ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                        </Button>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Live Activity Feed */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-orange-500" />
+                      Live Activity
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="h-32 space-y-2 overflow-y-auto text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">A</div>
+                        <span className="text-gray-600 dark:text-gray-400">Alice added H gate • 30s ago</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">B</div>
+                        <span className="text-gray-600 dark:text-gray-400">Bob drew connection line • 1m ago</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">S</div>
+                        <span className="text-gray-600 dark:text-gray-400">Sarah added formula • 2m ago</span>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  </CardContent>
+                </Card>
+
+                {/* Export Options */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Download className="h-4 w-4 text-purple-500" />
+                      Export & Share
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-export-png">
+                      <Camera className="h-4 w-4 mr-2" />
+                      Export as PNG
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-export-svg">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Export as SVG
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-export-qasm">
+                      <Code2 className="h-4 w-4 mr-2" />
+                      Export QASM
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-link">
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Share Link
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </DialogContent>
