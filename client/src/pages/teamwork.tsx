@@ -102,7 +102,8 @@ import {
   Shield,
   Puzzle,
   StopCircle,
-  Heart
+  Heart,
+  TestTube
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -2590,75 +2591,343 @@ export default function Teamwork() {
           </DialogContent>
         </Dialog>
 
-        {/* 2. Voice Chat Modal */}
+        {/* 2. Enhanced Voice Chat Modal */}
         <Dialog open={showVoiceChat} onOpenChange={setShowVoiceChat}>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Phone className="h-5 w-5 text-green-500" />
-                Voice Chat - Quantum Research Room
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Phone className="h-6 w-6 text-green-500" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-semibold">Quantum Research Voice Room</div>
+                    <div className="text-sm text-gray-500 font-normal">Room ID: QR-2024-789 • 4 participants</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
+                    LIVE • 12:34
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="ghost" data-testid="button-voice-settings">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Settings2 className="h-4 w-4 mr-2" />
+                        Audio Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Volume2 className="h-4 w-4 mr-2" />
+                        Speaker Test
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Download className="h-4 w-4 mr-2" />
+                        Record Meeting
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-red-600">
+                        <StopCircle className="h-4 w-4 mr-2" />
+                        Leave Meeting
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </DialogTitle>
               <DialogDescription>
-                Real-time voice collaboration with your quantum research team
+                Professional voice collaboration with HD audio, screen sharing, and quantum research tools
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-6">
-              {/* Voice Controls */}
-              <div className="flex justify-center gap-4">
-                <Button
-                  size="lg"
-                  variant={isMuted ? "destructive" : "outline"}
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="h-16 w-16 rounded-full"
-                  data-testid="button-toggle-mute"
-                >
-                  {isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
-                </Button>
-                <Button
-                  size="lg"
-                  variant={isCameraOn ? "default" : "outline"}
-                  onClick={() => setIsCameraOn(!isCameraOn)}
-                  className="h-16 w-16 rounded-full"
-                  data-testid="button-toggle-camera"
-                >
-                  {isCameraOn ? <Camera className="h-6 w-6" /> : <CameraOff className="h-6 w-6" />}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="destructive"
-                  onClick={() => setShowVoiceChat(false)}
-                  className="h-16 w-16 rounded-full"
-                  data-testid="button-leave-call"
-                >
-                  <StopCircle className="h-6 w-6" />
-                </Button>
-              </div>
+            
+            <div className="flex h-[700px] gap-6">
+              {/* Main Video/Audio Area */}
+              <div className="flex-1 flex flex-col">
+                {/* Participants Grid */}
+                <div className="flex-1 grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  {[
+                    { name: "Alice Chen (You)", status: "speaking", muted: false, camera: true, role: "Host" },
+                    { name: "Bob Wilson", status: "listening", muted: true, camera: false, role: "Researcher" },
+                    { name: "Dr. Sarah Kim", status: "speaking", muted: false, camera: true, role: "Mentor" },
+                    { name: "John Doe", status: "away", muted: false, camera: false, role: "Student" }
+                  ].map((user, idx) => (
+                    <div key={idx} className={`relative rounded-xl overflow-hidden ${
+                      user.status === 'speaking' ? 'ring-4 ring-green-400 ring-opacity-60' : 
+                      user.status === 'away' ? 'ring-2 ring-yellow-400 ring-opacity-40' : 
+                      'ring-2 ring-gray-300 ring-opacity-20'
+                    }`}>
+                      <div className="bg-gradient-to-br from-gray-800 to-gray-900 h-48 flex items-center justify-center relative">
+                        {user.camera ? (
+                          <div className="w-full h-full bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
+                            <div className="text-center text-white">
+                              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-sm">
+                                <span className="text-2xl font-bold">{user.name.split(' ').map(n => n[0]).join('')}</span>
+                              </div>
+                              <div className="text-lg font-semibold">{user.name}</div>
+                              <div className="text-sm opacity-80">{user.role}</div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center text-white">
+                            <div className="w-20 h-20 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <CameraOff className="h-8 w-8" />
+                            </div>
+                            <div className="text-lg font-semibold">{user.name}</div>
+                            <div className="text-sm opacity-80">{user.role}</div>
+                          </div>
+                        )}
+                        
+                        {/* Status Indicators */}
+                        <div className="absolute top-3 left-3 flex gap-2">
+                          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            user.status === 'speaking' ? 'bg-green-500 text-white' :
+                            user.status === 'away' ? 'bg-yellow-500 text-white' :
+                            'bg-gray-500 text-white'
+                          }`}>
+                            {user.status === 'speaking' ? '🎤 Speaking' : 
+                             user.status === 'away' ? '⏰ Away' : 
+                             '👂 Listening'}
+                          </div>
+                        </div>
+                        
+                        {/* Controls Overlay */}
+                        <div className="absolute bottom-3 right-3 flex gap-1">
+                          <div className={`p-2 rounded-full ${user.muted ? 'bg-red-500' : 'bg-green-500'}`}>
+                            {user.muted ? <MicOff className="h-3 w-3 text-white" /> : <Mic className="h-3 w-3 text-white" />}
+                          </div>
+                          <div className={`p-2 rounded-full ${user.camera ? 'bg-blue-500' : 'bg-gray-500'}`}>
+                            {user.camera ? <Camera className="h-3 w-3 text-white" /> : <CameraOff className="h-3 w-3 text-white" />}
+                          </div>
+                        </div>
 
-              {/* Participants Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                {["Alice Chen (You)", "Bob Wilson", "Dr. Sarah Kim", "John Doe"].map((user, idx) => (
-                  <div key={idx} className="relative bg-gray-900 rounded-lg h-40 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <span className="text-xl font-bold">{user.split(' ').map(n => n[0]).join('')}</span>
+                        {/* Audio Visualization */}
+                        {user.status === 'speaking' && (
+                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-blue-500">
+                            <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 animate-pulse"></div>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-sm">{user}</p>
                     </div>
-                    {/* Mic status indicator */}
-                    <div className={`absolute bottom-2 right-2 p-1 rounded ${idx === 1 ? 'bg-red-500' : 'bg-green-500'}`}>
-                      {idx === 1 ? <MicOff className="h-3 w-3 text-white" /> : <Mic className="h-3 w-3 text-white" />}
+                  ))}
+                </div>
+
+                {/* Professional Control Bar */}
+                <div className="p-6 bg-white dark:bg-gray-800 border-t">
+                  <div className="flex items-center justify-between">
+                    {/* Primary Controls */}
+                    <div className="flex items-center gap-4">
+                      <Button
+                        size="lg"
+                        variant={isMuted ? "destructive" : "default"}
+                        onClick={() => setIsMuted(!isMuted)}
+                        className="h-14 w-14 rounded-full"
+                        data-testid="button-toggle-mute"
+                      >
+                        {isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant={isCameraOn ? "default" : "outline"}
+                        onClick={() => setIsCameraOn(!isCameraOn)}
+                        className="h-14 w-14 rounded-full"
+                        data-testid="button-toggle-camera"
+                      >
+                        {isCameraOn ? <Camera className="h-6 w-6" /> : <CameraOff className="h-6 w-6" />}
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="h-14 w-14 rounded-full"
+                        data-testid="button-screen-share"
+                      >
+                        <ScreenShare className="h-6 w-6" />
+                      </Button>
                     </div>
+
+                    {/* Recording Status */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-red-700 dark:text-red-300">Recording</span>
+                        <span className="text-xs text-red-600 dark:text-red-400">12:34</span>
+                      </div>
+                      <Button size="sm" variant="outline" data-testid="button-stop-recording">
+                        <StopCircle className="h-4 w-4 mr-2" />
+                        Stop
+                      </Button>
+                    </div>
+
+                    {/* Leave Button */}
+                    <Button
+                      size="lg"
+                      variant="destructive"
+                      onClick={() => setShowVoiceChat(false)}
+                      className="h-14 px-6"
+                      data-testid="button-leave-call"
+                    >
+                      <StopCircle className="h-5 w-5 mr-2" />
+                      Leave
+                    </Button>
                   </div>
-                ))}
+
+                  {/* Audio Controls */}
+                  <div className="flex items-center gap-6 mt-4 pt-4 border-t">
+                    <div className="flex items-center gap-2">
+                      <Volume2 className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Speaker</span>
+                      <div className="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                        <div className="w-3/4 h-full bg-blue-500 rounded-full"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mic className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Microphone</span>
+                      <div className="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                        <div className="w-2/3 h-full bg-green-500 rounded-full"></div>
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline" data-testid="button-audio-test">
+                      <TestTube className="h-4 w-4 mr-2" />
+                      Test Audio
+                    </Button>
+                    <Button size="sm" variant="outline" data-testid="button-noise-cancellation">
+                      <Waves className="h-4 w-4 mr-2" />
+                      Noise Cancellation
+                    </Button>
+                  </div>
+                </div>
               </div>
 
-              {/* Chat alongside voice */}
-              <div className="border-t pt-4">
-                <h3 className="font-medium mb-2">Voice Chat Messages</h3>
-                <div className="h-20 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm space-y-1 overflow-y-auto">
-                  <div><span className="font-medium">Bob:</span> Can everyone hear me clearly?</div>
-                  <div><span className="font-medium">Alice:</span> Yes, perfect audio quality!</div>
-                </div>
+              {/* Enhanced Sidebar */}
+              <div className="w-80 space-y-4">
+                {/* Participants List */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Users className="h-4 w-4 text-blue-500" />
+                      Participants (4)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { name: "Alice Chen", role: "Host", status: "speaking", muted: false },
+                      { name: "Bob Wilson", role: "Researcher", status: "listening", muted: true },
+                      { name: "Dr. Sarah Kim", role: "Mentor", status: "speaking", muted: false },
+                      { name: "John Doe", role: "Student", status: "away", muted: false }
+                    ].map((user, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
+                                {user.name.split(' ').map(n => n[0]).join('')}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full ${
+                              user.status === 'speaking' ? 'bg-green-500' :
+                              user.status === 'away' ? 'bg-yellow-500' :
+                              'bg-gray-400'
+                            }`}></div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{user.name}</div>
+                            <div className="text-xs text-gray-500">{user.role}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {user.muted && <MicOff className="h-3 w-3 text-red-500" />}
+                          {user.role === 'Host' && <Crown className="h-3 w-3 text-yellow-500" />}
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Live Chat */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-green-500" />
+                      Live Chat
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="h-32 bg-gray-50 dark:bg-gray-900 rounded-lg p-3 text-sm space-y-2 overflow-y-auto">
+                      <div className="flex gap-2">
+                        <span className="font-medium text-blue-600 text-xs">Bob:</span>
+                        <span className="text-xs">Can everyone hear me clearly?</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="font-medium text-green-600 text-xs">Alice:</span>
+                        <span className="text-xs">Perfect audio quality! 👍</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="font-medium text-purple-600 text-xs">Sarah:</span>
+                        <span className="text-xs">Let's discuss the VQE optimization now</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Input placeholder="Type a message..." className="flex-1 text-sm" data-testid="input-voice-chat-message" />
+                      <Button size="icon" className="h-8 w-8" data-testid="button-send-voice-message">
+                        <Send className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Meeting Tools */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-orange-500" />
+                      Meeting Tools
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-quantum-circuit">
+                      <Atom className="h-4 w-4 mr-2" />
+                      Share Quantum Circuit
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-collaborative-whiteboard">
+                      <PenTool className="h-4 w-4 mr-2" />
+                      Open Whiteboard
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-hardware-scheduler">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Hardware Scheduler
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-meeting-notes">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Meeting Notes
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* AI Assistant */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Brain className="h-4 w-4 text-purple-500" />
+                      AI Meeting Assistant
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded text-xs">
+                      <div className="font-medium text-purple-900 dark:text-purple-100">Live Transcription</div>
+                      <div className="text-purple-700 dark:text-purple-300 mt-1">
+                        "The VQE optimization shows promising results with 8 qubits..."
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-ai-summary">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Generate Summary
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </DialogContent>
