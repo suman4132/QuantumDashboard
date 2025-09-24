@@ -10,6 +10,7 @@ import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
 import Teamwork from "@/pages/teamwork";
 import QuantumQuest from "@/pages/quantum-quest";
+import QuantumHardware from "@/pages/quantum-hardware";
 import NotFound from "@/pages/not-found";
 
 // Protected Route Component
@@ -55,6 +56,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <QuantumQuest />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/quantum-hardware" 
+                element={
+                  <ProtectedRoute>
+                    <QuantumHardware />
                   </ProtectedRoute>
                 } 
               />
