@@ -70,7 +70,38 @@ import {
   Crosshair,
   Waves,
   Infinity,
-  Fingerprint
+  Fingerprint,
+  Camera,
+  CameraOff,
+  Monitor,
+  PenTool,
+  Eraser,
+  Circle,
+  Square,
+  Type,
+  MousePointer,
+  Undo,
+  Redo,
+  Save,
+  X,
+  Volume2,
+  VolumeX,
+  Settings2,
+  Maximize2,
+  Minimize2,
+  RotateCcw,
+  Hash,
+  MapPin,
+  Bookmark,
+  BookmarkCheck,
+  GraduationCap,
+  Map,
+  Route,
+  Zap as Lightning,
+  Hexagon,
+  Shield,
+  Puzzle,
+  StopCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -335,6 +366,26 @@ export default function Teamwork() {
   const [challengesInProgress, setChallengesInProgress] = useState(2);
   const [aiRecommendations, setAiRecommendations] = useState(5);
   const [liveCollaborators, setLiveCollaborators] = useState(7);
+  
+  // New modal states for comprehensive features
+  const [showResearchChat, setShowResearchChat] = useState(false);
+  const [showVoiceChat, setShowVoiceChat] = useState(false);
+  const [showScreenShare, setShowScreenShare] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [showSmartSuggestions, setShowSmartSuggestions] = useState(false);
+  const [showTeamAnalytics, setShowTeamAnalytics] = useState(false);
+  const [showAICodeReview, setShowAICodeReview] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [showActiveChallenges, setShowActiveChallenges] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showLearningPath, setShowLearningPath] = useState(false);
+  
+  // Feature states
+  const [isMuted, setIsMuted] = useState(false);
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [whiteboardTool, setWhiteboardTool] = useState('pen');
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [currentChatMessage, setCurrentChatMessage] = useState('');
 
   // Filter workspaces based on search and filters
   const filteredWorkspaces = mockWorkspaces.filter(workspace => {
@@ -516,9 +567,9 @@ export default function Teamwork() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setShowQuantumChat(!showQuantumChat)}
+                onClick={() => setShowResearchChat(true)}
                 className="flex items-center gap-2"
-                data-testid="button-quantum-chat"
+                data-testid="button-research-chat"
               >
                 <MessageSquare className="h-4 w-4" />
                 Research Chat
@@ -527,7 +578,7 @@ export default function Teamwork() {
               <Button 
                 variant={isVoiceChatActive ? "default" : "outline"} 
                 size="sm" 
-                onClick={() => setIsVoiceChatActive(!isVoiceChatActive)}
+                onClick={() => setShowVoiceChat(true)}
                 className="flex items-center gap-2"
                 data-testid="button-voice-chat"
               >
@@ -537,7 +588,7 @@ export default function Teamwork() {
               <Button 
                 variant={isScreenSharing ? "default" : "outline"} 
                 size="sm" 
-                onClick={() => setIsScreenSharing(!isScreenSharing)}
+                onClick={() => setShowScreenShare(true)}
                 className="flex items-center gap-2"
                 data-testid="button-screen-share"
               >
@@ -547,6 +598,7 @@ export default function Teamwork() {
               <Button 
                 variant="outline" 
                 size="sm" 
+                onClick={() => setShowWhiteboard(true)}
                 className="flex items-center gap-2"
                 data-testid="button-whiteboard"
               >
@@ -565,9 +617,9 @@ export default function Teamwork() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setShowAIInsights(!showAIInsights)}
+                onClick={() => setShowSmartSuggestions(true)}
                 className="flex items-center gap-2"
-                data-testid="button-ai-insights"
+                data-testid="button-smart-suggestions"
               >
                 <Lightbulb className="h-4 w-4" />
                 Smart Suggestions
@@ -576,9 +628,9 @@ export default function Teamwork() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setShowAnalytics(!showAnalytics)}
+                onClick={() => setShowTeamAnalytics(true)}
                 className="flex items-center gap-2"
-                data-testid="button-analytics"
+                data-testid="button-team-analytics"
               >
                 <BarChart3 className="h-4 w-4" />
                 Team Analytics
@@ -586,8 +638,9 @@ export default function Teamwork() {
               <Button 
                 variant="outline" 
                 size="sm" 
+                onClick={() => setShowAICodeReview(true)}
                 className="flex items-center gap-2"
-                data-testid="button-ai-reviewer"
+                data-testid="button-ai-code-review"
               >
                 <Radar className="h-4 w-4" />
                 AI Code Review
@@ -621,7 +674,7 @@ export default function Teamwork() {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setShowGamification(!showGamification)}
+              onClick={() => setShowAchievements(true)}
               className="flex items-center gap-2"
               data-testid="button-achievements"
             >
@@ -632,8 +685,9 @@ export default function Teamwork() {
             <Button 
               variant="outline" 
               size="sm" 
+              onClick={() => setShowActiveChallenges(true)}
               className="flex items-center gap-2"
-              data-testid="button-challenges"
+              data-testid="button-active-challenges"
             >
               <Target className="h-4 w-4" />
               Active Challenges
@@ -642,8 +696,9 @@ export default function Teamwork() {
             <Button 
               variant="outline" 
               size="sm" 
+              onClick={() => setShowLeaderboard(true)}
               className="flex items-center gap-2"
-              data-testid="button-leaderboard"
+              data-testid="button-team-leaderboard"
             >
               <TrendingUp className="h-4 w-4" />
               Team Leaderboard
@@ -651,6 +706,7 @@ export default function Teamwork() {
             <Button 
               variant="outline" 
               size="sm" 
+              onClick={() => setShowLearningPath(true)}
               className="flex items-center gap-2"
               data-testid="button-learning-path"
             >
@@ -2211,6 +2267,1332 @@ export default function Teamwork() {
             </motion.div>
           </TabsContent>
         </Tabs>
+
+        {/* ================ COMPREHENSIVE MODAL INTERFACES ================ */}
+
+        {/* 1. Research Chat Modal */}
+        <Dialog open={showResearchChat} onOpenChange={setShowResearchChat}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-blue-500" />
+                Research Chat - Quantum Collaboration
+              </DialogTitle>
+              <DialogDescription>
+                Real-time chat with team members, AI suggestions, and quantum research tools
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex h-[600px]">
+              {/* Chat Messages */}
+              <div className="flex-1 flex flex-col">
+                <div className="flex-1 overflow-y-auto space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  {mockQuantumChat.map((msg) => (
+                    <div key={msg.id} className="flex gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-blue-500 text-white text-sm">
+                          {msg.user.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium text-blue-600 dark:text-blue-400">{msg.user}</span>
+                          <span className="text-xs text-gray-500">{formatDistanceToNow(msg.timestamp)} ago</span>
+                          <Badge variant={msg.type === 'algorithm' ? 'default' : msg.type === 'hardware' ? 'destructive' : 'secondary'} className="text-xs">
+                            {msg.type}
+                          </Badge>
+                        </div>
+                        <p className="text-gray-700 dark:text-gray-300">{msg.message}</p>
+                        {msg.attachments && (
+                          <div className="mt-2">
+                            {msg.attachments.map((att, idx) => (
+                              <div key={idx} className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900 p-2 rounded text-sm">
+                                <FileText className="h-4 w-4" />
+                                {att.name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Message Input */}
+                <div className="p-4 border-t">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Share your quantum research insights..."
+                      value={currentChatMessage}
+                      onChange={(e) => setCurrentChatMessage(e.target.value)}
+                      className="flex-1"
+                      data-testid="input-chat-message"
+                    />
+                    <Button size="icon" data-testid="button-send-chat">
+                      <Send className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon" variant="outline" data-testid="button-attach-file">
+                      <Paperclip className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              {/* Sidebar */}
+              <div className="w-80 border-l p-4 space-y-4">
+                <div>
+                  <h3 className="font-medium mb-2 flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Online Members (5)
+                  </h3>
+                  <div className="space-y-2">
+                    {["Alice Chen", "Bob Wilson", "Dr. Sarah Kim", "John Doe", "Emma Davis"].map((user, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm">{user}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-medium mb-2 flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    AI Suggestions
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="p-2 bg-green-50 dark:bg-green-900 rounded text-sm">
+                      💡 Consider testing VQE with 8 qubits for better convergence
+                    </div>
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900 rounded text-sm">
+                      🔬 Hardware reservation for ibm_cairo available at 3pm
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 2. Voice Chat Modal */}
+        <Dialog open={showVoiceChat} onOpenChange={setShowVoiceChat}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Phone className="h-5 w-5 text-green-500" />
+                Voice Chat - Quantum Research Room
+              </DialogTitle>
+              <DialogDescription>
+                Real-time voice collaboration with your quantum research team
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              {/* Voice Controls */}
+              <div className="flex justify-center gap-4">
+                <Button
+                  size="lg"
+                  variant={isMuted ? "destructive" : "outline"}
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="h-16 w-16 rounded-full"
+                  data-testid="button-toggle-mute"
+                >
+                  {isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                </Button>
+                <Button
+                  size="lg"
+                  variant={isCameraOn ? "default" : "outline"}
+                  onClick={() => setIsCameraOn(!isCameraOn)}
+                  className="h-16 w-16 rounded-full"
+                  data-testid="button-toggle-camera"
+                >
+                  {isCameraOn ? <Camera className="h-6 w-6" /> : <CameraOff className="h-6 w-6" />}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="destructive"
+                  onClick={() => setShowVoiceChat(false)}
+                  className="h-16 w-16 rounded-full"
+                  data-testid="button-leave-call"
+                >
+                  <StopCircle className="h-6 w-6" />
+                </Button>
+              </div>
+
+              {/* Participants Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {["Alice Chen (You)", "Bob Wilson", "Dr. Sarah Kim", "John Doe"].map((user, idx) => (
+                  <div key={idx} className="relative bg-gray-900 rounded-lg h-40 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <span className="text-xl font-bold">{user.split(' ').map(n => n[0]).join('')}</span>
+                      </div>
+                      <p className="text-sm">{user}</p>
+                    </div>
+                    {/* Mic status indicator */}
+                    <div className={`absolute bottom-2 right-2 p-1 rounded ${idx === 1 ? 'bg-red-500' : 'bg-green-500'}`}>
+                      {idx === 1 ? <MicOff className="h-3 w-3 text-white" /> : <Mic className="h-3 w-3 text-white" />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chat alongside voice */}
+              <div className="border-t pt-4">
+                <h3 className="font-medium mb-2">Voice Chat Messages</h3>
+                <div className="h-20 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm space-y-1 overflow-y-auto">
+                  <div><span className="font-medium">Bob:</span> Can everyone hear me clearly?</div>
+                  <div><span className="font-medium">Alice:</span> Yes, perfect audio quality!</div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 3. Screen Share Modal */}
+        <Dialog open={showScreenShare} onOpenChange={setShowScreenShare}>
+          <DialogContent className="max-w-6xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Monitor className="h-5 w-5 text-purple-500" />
+                Screen Share - Quantum Circuit Collaboration
+              </DialogTitle>
+              <DialogDescription>
+                Share and collaborate on quantum circuits in real-time
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              {/* Screen Share Controls */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge variant="destructive" className="animate-pulse">● LIVE</Badge>
+                  <span className="text-sm text-gray-600">Alice Chen is sharing: Quantum Circuit Editor</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" data-testid="button-request-control">
+                    <MousePointer className="h-4 w-4 mr-2" />
+                    Request Control
+                  </Button>
+                  <Button size="sm" variant="outline" data-testid="button-fullscreen">
+                    <Maximize2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Shared Screen Content (Simulated) */}
+              <div className="bg-gray-900 rounded-lg h-96 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20"></div>
+                <div className="text-center text-white z-10">
+                  <div className="mb-4">
+                    <div className="w-20 h-20 border-2 border-blue-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+                      <Atom className="h-10 w-10 text-blue-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Quantum Circuit Editor</h3>
+                    <p className="text-gray-300 mt-2">VQE Circuit with 8 Qubits - Live Collaboration</p>
+                  </div>
+                  <div className="flex justify-center gap-8 text-sm">
+                    <div>
+                      <div className="text-blue-400 font-semibold">Circuit Depth</div>
+                      <div>12 layers</div>
+                    </div>
+                    <div>
+                      <div className="text-green-400 font-semibold">Gates</div>
+                      <div>156 total</div>
+                    </div>
+                    <div>
+                      <div className="text-purple-400 font-semibold">Fidelity</div>
+                      <div>92.4%</div>
+                    </div>
+                  </div>
+                </div>
+                {/* Cursor indicators */}
+                <div className="absolute top-16 left-32 flex items-center gap-1">
+                  <MousePointer className="h-4 w-4 text-red-400" />
+                  <span className="text-xs text-red-400 bg-black/50 px-1 rounded">Bob Wilson</span>
+                </div>
+              </div>
+
+              {/* Participants and Chat */}
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <h3 className="font-medium mb-2">Viewing Participants (3)</h3>
+                  <div className="flex gap-2">
+                    {["Bob Wilson", "Dr. Sarah Kim", "John Doe"].map((user, idx) => (
+                      <div key={idx} className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-2 rounded text-sm">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        {user}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium mb-2">Live Comments</h3>
+                  <div className="h-20 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm space-y-1 overflow-y-auto">
+                    <div><span className="font-medium text-blue-600">Bob:</span> Can we adjust the rotation angle on qubit 3?</div>
+                    <div><span className="font-medium text-green-600">Sarah:</span> The current parameterization looks good!</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 4. Whiteboard Modal */}
+        <Dialog open={showWhiteboard} onOpenChange={setShowWhiteboard}>
+          <DialogContent className="max-w-6xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5 text-indigo-500" />
+                Quantum Collaboration Whiteboard
+              </DialogTitle>
+              <DialogDescription>
+                Draw quantum circuits, share ideas, and collaborate visually with your team
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              {/* Whiteboard Tools */}
+              <div className="flex items-center justify-between border-b pb-4">
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant={whiteboardTool === 'pen' ? 'default' : 'outline'}
+                    onClick={() => setWhiteboardTool('pen')}
+                    data-testid="button-pen-tool"
+                  >
+                    <PenTool className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={whiteboardTool === 'eraser' ? 'default' : 'outline'}
+                    onClick={() => setWhiteboardTool('eraser')}
+                    data-testid="button-eraser-tool"
+                  >
+                    <Eraser className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={whiteboardTool === 'circle' ? 'default' : 'outline'}
+                    onClick={() => setWhiteboardTool('circle')}
+                    data-testid="button-circle-tool"
+                  >
+                    <Circle className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={whiteboardTool === 'square' ? 'default' : 'outline'}
+                    onClick={() => setWhiteboardTool('square')}
+                    data-testid="button-square-tool"
+                  >
+                    <Square className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={whiteboardTool === 'text' ? 'default' : 'outline'}
+                    onClick={() => setWhiteboardTool('text')}
+                    data-testid="button-text-tool"
+                  >
+                    <Type className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="outline" data-testid="button-undo">
+                    <Undo className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline" data-testid="button-redo">
+                    <Redo className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline" data-testid="button-clear-board">
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" data-testid="button-save-whiteboard">
+                    <Save className="h-4 w-4 mr-1" />
+                    Save
+                  </Button>
+                </div>
+              </div>
+
+              {/* Whiteboard Canvas */}
+              <div className="relative bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg h-96 overflow-hidden">
+                {/* Simulated drawing content */}
+                <div className="absolute inset-0 p-4">
+                  <div className="text-gray-400 text-center mt-20">
+                    <PenTool className="h-12 w-12 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium">Quantum Whiteboard</h3>
+                    <p className="text-sm mt-2">Start drawing quantum circuits, diagrams, or brainstorming ideas</p>
+                  </div>
+                  
+                  {/* Sample quantum circuit drawn on whiteboard */}
+                  <div className="absolute top-8 left-8 text-blue-600 dark:text-blue-400">
+                    <div className="flex items-center gap-4 mb-2">
+                      <div className="w-4 h-4 border-2 border-current rounded-full"></div>
+                      <div className="h-0.5 bg-current w-20"></div>
+                      <div className="w-8 h-8 border-2 border-current flex items-center justify-center text-xs">H</div>
+                      <div className="h-0.5 bg-current w-20"></div>
+                    </div>
+                    <div className="text-xs">|ψ⟩ = (|0⟩ + |1⟩)/√2</div>
+                  </div>
+                  
+                  {/* Live cursors */}
+                  <div className="absolute top-32 right-20 flex items-center gap-1">
+                    <MousePointer className="h-4 w-4 text-red-500" />
+                    <span className="text-xs text-red-500 bg-white dark:bg-gray-800 px-1 py-0.5 rounded shadow">Alice Chen</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Collaboration Info */}
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-4">
+                  <span className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    4 collaborators active
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Activity className="h-4 w-4" />
+                    Auto-save enabled
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {["Alice", "Bob", "Sarah", "John"].map((user, idx) => (
+                    <div key={idx} className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
+                      {user[0]}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 5. Smart Suggestions Modal */}
+        <Dialog open={showSmartSuggestions} onOpenChange={setShowSmartSuggestions}>
+          <DialogContent className="max-w-4xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                AI Smart Suggestions
+              </DialogTitle>
+              <DialogDescription>
+                Intelligent recommendations to optimize your quantum research and collaboration
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-[600px] overflow-y-auto">
+              {/* Team Optimization Suggestions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Users className="h-4 w-4 text-blue-500" />
+                    Team Collaboration Optimization
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">1</div>
+                    <div className="flex-1">
+                      <h4 className="font-medium">Schedule team synchronization</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Alice and Bob have overlapping availability for 3 hours today. Consider scheduling a joint research session on VQE optimization.
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" data-testid="button-apply-suggestion-1">Apply</Button>
+                        <Button size="sm" variant="outline" data-testid="button-dismiss-suggestion-1">Dismiss</Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">2</div>
+                    <div className="flex-1">
+                      <h4 className="font-medium">Knowledge sharing opportunity</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Dr. Sarah Kim has expertise in quantum error correction that could benefit the current project. Suggest adding her to the research chat.
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" data-testid="button-invite-expert">Invite Sarah</Button>
+                        <Button size="sm" variant="outline" data-testid="button-learn-more">Learn More</Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Algorithm Optimization */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <BrainCircuit className="h-4 w-4 text-purple-500" />
+                    Algorithm Optimization
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm">!</div>
+                    <div className="flex-1">
+                      <h4 className="font-medium">Circuit depth reduction available</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Your current VQE circuit can be optimized to reduce depth by 23% while maintaining fidelity above 90%. This would improve noise resilience.
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" data-testid="button-optimize-circuit">Auto-Optimize</Button>
+                        <Button size="sm" variant="outline" data-testid="button-show-comparison">Show Comparison</Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm">⚡</div>
+                    <div className="flex-1">
+                      <h4 className="font-medium">Hardware-optimized parameters</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Based on ibm_cairo's calibration data, adjusting rotation angles by 12° would improve gate fidelity for your specific circuit.
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" data-testid="button-apply-calibration">Apply Parameters</Button>
+                        <Button size="sm" variant="outline" data-testid="button-schedule-test">Schedule Test</Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Resource Optimization */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Cpu className="h-4 w-4 text-red-500" />
+                    Resource & Hardware Optimization
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm">$</div>
+                    <div className="flex-1">
+                      <h4 className="font-medium">Cost-efficient hardware scheduling</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Running your experiment at 2 AM UTC (off-peak hours) would reduce costs by 40% and provide better queue priority.
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" data-testid="button-schedule-optimal">Schedule Optimal Time</Button>
+                        <Button size="sm" variant="outline" data-testid="button-view-pricing">View Pricing</Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AI Actions */}
+              <div className="flex justify-between items-center pt-4 border-t">
+                <div className="text-sm text-gray-600">
+                  <span className="flex items-center gap-1">
+                    <Activity className="h-4 w-4" />
+                    AI continuously analyzes your workflow for optimization opportunities
+                  </span>
+                </div>
+                <Button size="sm" variant="outline" data-testid="button-configure-ai">
+                  <Settings className="h-4 w-4 mr-1" />
+                  Configure AI
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 6. Team Analytics Modal */}
+        <Dialog open={showTeamAnalytics} onOpenChange={setShowTeamAnalytics}>
+          <DialogContent className="max-w-6xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-green-500" />
+                Team Analytics Dashboard
+              </DialogTitle>
+              <DialogDescription>
+                Comprehensive analytics and insights about your team's quantum research collaboration
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6 max-h-[700px] overflow-y-auto">
+              {/* Key Metrics */}
+              <div className="grid grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-500">47</div>
+                    <div className="text-sm text-gray-600">Active Projects</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-green-500">92%</div>
+                    <div className="text-sm text-gray-600">Success Rate</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-purple-500">156h</div>
+                    <div className="text-sm text-gray-600">Total Runtime</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-orange-500">23</div>
+                    <div className="text-sm text-gray-600">Team Members</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Team Performance Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    Team Performance Trends
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-48 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <BarChart3 className="h-12 w-12 text-blue-500 mx-auto mb-2" />
+                      <p className="text-sm text-gray-600">Interactive performance charts</p>
+                      <p className="text-xs text-gray-500">7-day trending data</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Team Member Contributions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Member Contributions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {["Alice Chen", "Bob Wilson", "Dr. Sarah Kim", "John Doe", "Emma Davis"].map((member, idx) => (
+                      <div key={idx} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white text-sm">
+                              {member.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">{member}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <div className="text-center">
+                            <div className="font-semibold text-blue-500">{12 + idx * 5}</div>
+                            <div className="text-gray-500">Commits</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-green-500">{3 + idx * 2}</div>
+                            <div className="text-gray-500">Projects</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-purple-500">{85 + idx * 3}%</div>
+                            <div className="text-gray-500">Quality</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 7. AI Code Review Modal */}
+        <Dialog open={showAICodeReview} onOpenChange={setShowAICodeReview}>
+          <DialogContent className="max-w-5xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Radar className="h-5 w-5 text-indigo-500" />
+                AI Code Review Assistant
+              </DialogTitle>
+              <DialogDescription>
+                Intelligent quantum code analysis and improvement suggestions
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-[700px] overflow-y-auto">
+              {/* Code Review Results */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <span className="flex items-center gap-2">
+                      <Code2 className="h-4 w-4" />
+                      Latest Code Review: VQE_optimization.py
+                    </span>
+                    <Badge variant="default" className="bg-green-500">Approved</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Code Quality Score */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Overall Code Quality</span>
+                    <div className="flex items-center gap-2">
+                      <Progress value={87} className="w-32" />
+                      <span className="text-sm font-semibold text-green-600">87/100</span>
+                    </div>
+                  </div>
+
+                  {/* Review Items */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-green-700 dark:text-green-300">Excellent quantum circuit structure</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          Your VQE ansatz implementation follows quantum computing best practices with proper gate sequencing and parameterization.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                      <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-yellow-700 dark:text-yellow-300">Minor optimization opportunity</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          Line 45: Consider using hardware-efficient gate decomposition for better NISQ performance.
+                        </p>
+                        <Button size="sm" className="mt-2" data-testid="button-apply-fix">
+                          Apply Suggested Fix
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <Lightbulb className="h-5 w-5 text-blue-500 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-blue-700 dark:text-blue-300">Performance enhancement suggestion</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          Your gradient computation could be 23% faster with parameter-shift rule optimization.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Code Metrics */}
+                  <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-blue-500">156</div>
+                      <div className="text-sm text-gray-600">Lines of Code</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-green-500">94%</div>
+                      <div className="text-sm text-gray-600">Test Coverage</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-purple-500">A+</div>
+                      <div className="text-sm text-gray-600">Maintainability</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Recent Reviews */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Recent AI Reviews</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {[
+                      { file: "QAOA_maxcut.py", score: 92, status: "approved", time: "2h ago" },
+                      { file: "quantum_teleportation.py", score: 78, status: "needs_review", time: "5h ago" },
+                      { file: "error_mitigation.py", score: 95, status: "approved", time: "1d ago" }
+                    ].map((review, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                        <span className="font-mono text-sm">{review.file}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-semibold">{review.score}/100</span>
+                          <Badge variant={review.status === 'approved' ? 'default' : 'secondary'}>
+                            {review.status.replace('_', ' ')}
+                          </Badge>
+                          <span className="text-xs text-gray-500">{review.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 8. Achievements Modal */}
+        <Dialog open={showAchievements} onOpenChange={setShowAchievements}>
+          <DialogContent className="max-w-4xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Medal className="h-5 w-5 text-yellow-500" />
+                Quantum Achievements Gallery
+              </DialogTitle>
+              <DialogDescription>
+                Your team's quantum computing milestones and accomplishments
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6 max-h-[600px] overflow-y-auto">
+              {/* Achievement Categories */}
+              <Tabs defaultValue="recent" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="recent">Recent</TabsTrigger>
+                  <TabsTrigger value="collaboration">Collaboration</TabsTrigger>
+                  <TabsTrigger value="research">Research</TabsTrigger>
+                  <TabsTrigger value="mastery">Mastery</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="recent" className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { 
+                        name: "Quantum Pioneer", 
+                        description: "Successfully executed your first VQE algorithm", 
+                        icon: Rocket, 
+                        rarity: "rare", 
+                        points: 500,
+                        unlocked: true,
+                        date: "2 days ago"
+                      },
+                      { 
+                        name: "Circuit Master", 
+                        description: "Optimized a quantum circuit to reduce depth by >20%", 
+                        icon: Lightning, 
+                        rarity: "epic", 
+                        points: 1000,
+                        unlocked: true,
+                        date: "1 week ago"
+                      },
+                      { 
+                        name: "Collaboration Expert", 
+                        description: "Completed 10 successful team projects", 
+                        icon: Users, 
+                        rarity: "legendary", 
+                        points: 2500,
+                        unlocked: false,
+                        progress: 7
+                      },
+                      { 
+                        name: "Quantum Debugger", 
+                        description: "Fixed critical errors in quantum algorithms", 
+                        icon: Shield, 
+                        rarity: "common", 
+                        points: 200,
+                        unlocked: true,
+                        date: "3 days ago"
+                      }
+                    ].map((achievement, idx) => (
+                      <Card key={idx} className={`relative overflow-hidden ${achievement.unlocked ? '' : 'opacity-60'}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                              achievement.rarity === 'legendary' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
+                              achievement.rarity === 'epic' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
+                              achievement.rarity === 'rare' ? 'bg-gradient-to-br from-blue-400 to-cyan-500' :
+                              'bg-gradient-to-br from-gray-400 to-gray-500'
+                            }`}>
+                              <achievement.icon className="h-6 w-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold flex items-center gap-2">
+                                {achievement.name}
+                                {achievement.unlocked && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                              </h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                {achievement.description}
+                              </p>
+                              <div className="flex items-center justify-between mt-3">
+                                <Badge variant={
+                                  achievement.rarity === 'legendary' ? 'default' :
+                                  achievement.rarity === 'epic' ? 'secondary' :
+                                  achievement.rarity === 'rare' ? 'outline' : 'secondary'
+                                } className="text-xs">
+                                  {achievement.rarity}
+                                </Badge>
+                                <div className="flex items-center gap-1 text-sm">
+                                  <Flame className="h-3 w-3 text-orange-500" />
+                                  <span className="font-semibold">{achievement.points} pts</span>
+                                </div>
+                              </div>
+                              {achievement.unlocked && achievement.date && (
+                                <div className="text-xs text-gray-500 mt-2">Unlocked {achievement.date}</div>
+                              )}
+                              {!achievement.unlocked && achievement.progress && (
+                                <div className="mt-2">
+                                  <div className="flex justify-between text-xs mb-1">
+                                    <span>Progress</span>
+                                    <span>{achievement.progress}/10</span>
+                                  </div>
+                                  <Progress value={achievement.progress * 10} className="h-1" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="collaboration">
+                  <div className="text-center py-8">
+                    <Users className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold">Team Collaboration Achievements</h3>
+                    <p className="text-gray-600 mt-2">Unlock achievements by working together on quantum projects</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="research">
+                  <div className="text-center py-8">
+                    <BookOpen className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold">Research Milestones</h3>
+                    <p className="text-gray-600 mt-2">Achievements for scientific contributions and discoveries</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="mastery">
+                  <div className="text-center py-8">
+                    <Crown className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold">Quantum Mastery</h3>
+                    <p className="text-gray-600 mt-2">Expert-level achievements for quantum computing mastery</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 9. Active Challenges Modal */}
+        <Dialog open={showActiveChallenges} onOpenChange={setShowActiveChallenges}>
+          <DialogContent className="max-w-5xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-red-500" />
+                Active Quantum Challenges
+              </DialogTitle>
+              <DialogDescription>
+                Compete in quantum computing challenges and advance your skills
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-[700px] overflow-y-auto">
+              {/* Challenge Categories */}
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="text-center">
+                  <CardContent className="p-4">
+                    <Puzzle className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                    <div className="font-semibold">Algorithm</div>
+                    <div className="text-sm text-gray-600">5 active</div>
+                  </CardContent>
+                </Card>
+                <Card className="text-center">
+                  <CardContent className="p-4">
+                    <Users className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                    <div className="font-semibold">Team</div>
+                    <div className="text-sm text-gray-600">2 active</div>
+                  </CardContent>
+                </Card>
+                <Card className="text-center">
+                  <CardContent className="p-4">
+                    <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                    <div className="font-semibold">Competition</div>
+                    <div className="text-sm text-gray-600">1 active</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Active Challenges List */}
+              <div className="space-y-4">
+                {[
+                  {
+                    name: "VQE Optimization Challenge",
+                    description: "Optimize a VQE algorithm to achieve >95% accuracy with minimum circuit depth",
+                    difficulty: "Expert",
+                    participants: 156,
+                    timeLeft: "5 days",
+                    reward: 5000,
+                    progress: 65,
+                    status: "in_progress"
+                  },
+                  {
+                    name: "Quantum Error Correction",
+                    description: "Implement and test a surface code error correction scheme",
+                    difficulty: "Advanced",
+                    participants: 89,
+                    timeLeft: "12 days",
+                    reward: 3500,
+                    progress: 0,
+                    status: "available"
+                  },
+                  {
+                    name: "Team Circuit Design",
+                    description: "Collaborate with 2+ members to design an efficient QAOA circuit",
+                    difficulty: "Intermediate",
+                    participants: 234,
+                    timeLeft: "8 days",
+                    reward: 2000,
+                    progress: 30,
+                    status: "in_progress"
+                  }
+                ].map((challenge, idx) => (
+                  <Card key={idx}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-semibold text-lg">{challenge.name}</h3>
+                            <Badge variant={
+                              challenge.difficulty === 'Expert' ? 'destructive' :
+                              challenge.difficulty === 'Advanced' ? 'default' :
+                              'secondary'
+                            }>
+                              {challenge.difficulty}
+                            </Badge>
+                            {challenge.status === 'in_progress' && (
+                              <Badge variant="outline" className="text-blue-600 border-blue-600">
+                                In Progress
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 mb-4">{challenge.description}</p>
+                          
+                          {challenge.status === 'in_progress' && (
+                            <div className="mb-4">
+                              <div className="flex justify-between text-sm mb-1">
+                                <span>Your Progress</span>
+                                <span>{challenge.progress}%</span>
+                              </div>
+                              <Progress value={challenge.progress} className="h-2" />
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-6 text-sm">
+                            <div className="flex items-center gap-1">
+                              <Users className="h-4 w-4" />
+                              <span>{challenge.participants} participants</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{challenge.timeLeft} left</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Flame className="h-4 w-4 text-orange-500" />
+                              <span className="font-semibold">{challenge.reward.toLocaleString()} pts</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="ml-4">
+                          <Button 
+                            data-testid={`button-${challenge.status === 'in_progress' ? 'continue' : 'join'}-challenge-${idx}`}
+                            className="mb-2"
+                          >
+                            {challenge.status === 'in_progress' ? 'Continue' : 'Join Challenge'}
+                          </Button>
+                          <Button variant="outline" size="sm" className="w-full" data-testid={`button-view-details-${idx}`}>
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 10. Team Leaderboard Modal */}
+        <Dialog open={showLeaderboard} onOpenChange={setShowLeaderboard}>
+          <DialogContent className="max-w-4xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-purple-500" />
+                Team Leaderboard
+              </DialogTitle>
+              <DialogDescription>
+                Rankings and achievements of your quantum research team
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6 max-h-[600px] overflow-y-auto">
+              {/* Leaderboard Categories */}
+              <Tabs defaultValue="points" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="points">Total Points</TabsTrigger>
+                  <TabsTrigger value="contributions">Contributions</TabsTrigger>
+                  <TabsTrigger value="achievements">Achievements</TabsTrigger>
+                  <TabsTrigger value="monthly">This Month</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="points" className="space-y-4">
+                  <div className="space-y-3">
+                    {[
+                      { name: "Dr. Sarah Kim", points: 8750, level: 12, streak: 28, rank: 1, change: "up" },
+                      { name: "Alice Chen", points: 7200, level: 10, streak: 15, rank: 2, change: "same" },
+                      { name: "Bob Wilson", points: 6800, level: 9, streak: 12, rank: 3, change: "down" },
+                      { name: "John Doe", points: 5500, level: 8, streak: 8, rank: 4, change: "up" },
+                      { name: "Emma Davis", points: 4900, level: 7, streak: 5, rank: 5, change: "up" },
+                    ].map((member, idx) => (
+                      <Card key={idx} className={`${idx < 3 ? 'ring-2 ring-yellow-200 dark:ring-yellow-800' : ''}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              {/* Rank Badge */}
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                                idx === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white' :
+                                idx === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white' :
+                                idx === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white' :
+                                'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                              }`}>
+                                {member.rank}
+                              </div>
+                              
+                              {/* Member Info */}
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
+                                    {member.name.split(' ').map(n => n[0]).join('')}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="font-semibold flex items-center gap-2">
+                                    {member.name}
+                                    {idx < 3 && <Crown className="h-4 w-4 text-yellow-500" />}
+                                  </div>
+                                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    Level {member.level} • {member.streak} day streak
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Points and Change */}
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-blue-600">{member.points.toLocaleString()}</div>
+                              <div className={`text-sm flex items-center gap-1 ${
+                                member.change === 'up' ? 'text-green-600' : 
+                                member.change === 'down' ? 'text-red-600' : 
+                                'text-gray-500'
+                              }`}>
+                                {member.change === 'up' && '↗'} 
+                                {member.change === 'down' && '↘'} 
+                                {member.change === 'same' && '—'}
+                                <span>points</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="contributions">
+                  <div className="text-center py-8">
+                    <GitBranch className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold">Contribution Rankings</h3>
+                    <p className="text-gray-600 mt-2">Based on commits, reviews, and collaboration</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="achievements">
+                  <div className="text-center py-8">
+                    <Medal className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold">Achievement Leaders</h3>
+                    <p className="text-gray-600 mt-2">Top performers in quantum achievements</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="monthly">
+                  <div className="text-center py-8">
+                    <Calendar className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold">This Month's Champions</h3>
+                    <p className="text-gray-600 mt-2">September 2025 leaderboard</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 11. Learning Path Modal */}
+        <Dialog open={showLearningPath} onOpenChange={setShowLearningPath}>
+          <DialogContent className="max-w-5xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-indigo-500" />
+                Quantum Learning Path
+              </DialogTitle>
+              <DialogDescription>
+                Structured learning journey to master quantum computing and collaboration
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6 max-h-[700px] overflow-y-auto">
+              {/* Progress Overview */}
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">Your Learning Progress</h3>
+                    <Badge variant="default" className="bg-indigo-500">Advanced Level</Badge>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span>Overall Completion</span>
+                      <span>73% (11/15 modules)</span>
+                    </div>
+                    <Progress value={73} className="h-3" />
+                    <div className="grid grid-cols-3 gap-4 mt-4 text-center">
+                      <div>
+                        <div className="text-2xl font-bold text-green-500">11</div>
+                        <div className="text-sm text-gray-600">Completed</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-blue-500">2</div>
+                        <div className="text-sm text-gray-600">In Progress</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-gray-500">2</div>
+                        <div className="text-sm text-gray-600">Locked</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Learning Modules */}
+              <div className="space-y-4">
+                {[
+                  {
+                    title: "Quantum Fundamentals",
+                    description: "Master the basics of qubits, superposition, and entanglement",
+                    modules: ["Qubit States", "Quantum Gates", "Measurement", "Entanglement"],
+                    completed: 4,
+                    total: 4,
+                    status: "completed",
+                    difficulty: "Beginner"
+                  },
+                  {
+                    title: "Quantum Algorithms",
+                    description: "Learn key quantum algorithms and their implementations",
+                    modules: ["Deutsch Algorithm", "Grover Search", "Shor's Algorithm", "VQE"],
+                    completed: 3,
+                    total: 4,
+                    status: "in_progress",
+                    difficulty: "Intermediate"
+                  },
+                  {
+                    title: "Quantum Machine Learning",
+                    description: "Explore the intersection of quantum computing and ML",
+                    modules: ["Quantum Features", "QSVM", "Quantum Neural Networks", "Hybrid Models"],
+                    completed: 2,
+                    total: 4,
+                    status: "in_progress",
+                    difficulty: "Advanced"
+                  },
+                  {
+                    title: "NISQ Programming",
+                    description: "Programming for Noisy Intermediate-Scale Quantum devices",
+                    modules: ["Error Mitigation", "Circuit Optimization", "Hardware Constraints", "Benchmarking"],
+                    completed: 2,
+                    total: 4,
+                    status: "available",
+                    difficulty: "Expert"
+                  },
+                  {
+                    title: "Quantum Collaboration",
+                    description: "Advanced teamwork and collaboration in quantum research",
+                    modules: ["Team Protocols", "Shared Resources", "Peer Review", "Knowledge Sharing"],
+                    completed: 0,
+                    total: 4,
+                    status: "locked",
+                    difficulty: "Expert"
+                  }
+                ].map((path, idx) => (
+                  <Card key={idx} className={`${path.status === 'locked' ? 'opacity-60' : ''}`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-semibold">{path.title}</h3>
+                            <Badge variant={
+                              path.status === 'completed' ? 'default' :
+                              path.status === 'in_progress' ? 'secondary' :
+                              path.status === 'locked' ? 'outline' : 'outline'
+                            }>
+                              {path.difficulty}
+                            </Badge>
+                            {path.status === 'completed' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
+                            {path.status === 'locked' && <Lock className="h-5 w-5 text-gray-400" />}
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 mb-4">{path.description}</p>
+                          
+                          <div className="mb-4">
+                            <div className="flex justify-between text-sm mb-2">
+                              <span>Progress</span>
+                              <span>{path.completed}/{path.total} modules</span>
+                            </div>
+                            <Progress value={(path.completed / path.total) * 100} className="h-2" />
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            {path.modules.map((module, midx) => (
+                              <Badge key={midx} variant={
+                                midx < path.completed ? 'default' :
+                                midx === path.completed && path.status === 'in_progress' ? 'secondary' :
+                                'outline'
+                              } className="text-xs">
+                                {midx < path.completed && '✓ '}
+                                {module}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="ml-4">
+                          <Button 
+                            disabled={path.status === 'locked'}
+                            data-testid={`button-${path.status === 'completed' ? 'review' : path.status === 'in_progress' ? 'continue' : 'start'}-path-${idx}`}
+                            className="mb-2"
+                          >
+                            {path.status === 'completed' ? 'Review' : 
+                             path.status === 'in_progress' ? 'Continue' : 
+                             path.status === 'locked' ? 'Locked' : 'Start'}
+                          </Button>
+                          {path.status !== 'locked' && (
+                            <Button variant="outline" size="sm" className="w-full" data-testid={`button-view-curriculum-${idx}`}>
+                              View Curriculum
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Recommended Next Steps */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Route className="h-4 w-4" />
+                    Recommended Next Steps
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <BookOpen className="h-5 w-5 text-blue-500" />
+                      <div>
+                        <div className="font-medium">Complete VQE Module</div>
+                        <div className="text-sm text-gray-600">Finish the last module in Quantum Algorithms</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <Users className="h-5 w-5 text-green-500" />
+                      <div>
+                        <div className="font-medium">Join Study Group</div>
+                        <div className="text-sm text-gray-600">Connect with peers learning Quantum ML</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </DialogContent>
+        </Dialog>
+
       </div>
     </div>
   );
