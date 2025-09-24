@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Users, 
-  Plus, 
-  Share2, 
-  Globe, 
-  Lock, 
-  Calendar, 
-  Clock, 
-  GitBranch, 
+import {
+  Users,
+  Plus,
+  Share2,
+  Globe,
+  Lock,
+  Calendar,
+  Clock,
+  GitBranch,
   Activity,
   Settings,
   UserPlus,
@@ -114,37 +114,43 @@ import {
   ZoomOut,
   Maximize,
   EyeOff,
-  Unlock
+  Unlock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator 
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -157,7 +163,8 @@ const mockWorkspaces = [
   {
     id: "ws-1",
     name: "Quantum ML Research",
-    description: "Exploring quantum machine learning algorithms with variational circuits",
+    description:
+      "Exploring quantum machine learning algorithms with variational circuits",
     members: ["Alice Chen", "Bob Wilson", "Dr. Sarah Kim"],
     status: "active",
     privacy: "private",
@@ -172,18 +179,34 @@ const mockWorkspaces = [
       hardwareReserved: "ibm_cairo",
       nextReservation: new Date(Date.now() + 4 * 60 * 60 * 1000),
       experimentsSaved: 24,
-      hypothesesTesting: 2
+      hypothesesTesting: 2,
     },
     recentActivity: [
-      { user: "Alice Chen", action: "edited Variational Circuit #4", time: "2 min ago", type: "circuit" },
-      { user: "Bob Wilson", action: "shared VQE experiment results", time: "15 min ago", type: "results" },
-      { user: "Dr. Sarah Kim", action: "reserved ibm_cairo for 2pm-4pm", time: "1 hour ago", type: "hardware" }
-    ]
+      {
+        user: "Alice Chen",
+        action: "edited Variational Circuit #4",
+        time: "2 min ago",
+        type: "circuit",
+      },
+      {
+        user: "Bob Wilson",
+        action: "shared VQE experiment results",
+        time: "15 min ago",
+        type: "results",
+      },
+      {
+        user: "Dr. Sarah Kim",
+        action: "reserved ibm_cairo for 2pm-4pm",
+        time: "1 hour ago",
+        type: "hardware",
+      },
+    ],
   },
   {
-    id: "ws-2", 
+    id: "ws-2",
     name: "Optimization Algorithms",
-    description: "Developing QAOA solutions for combinatorial optimization problems",
+    description:
+      "Developing QAOA solutions for combinatorial optimization problems",
     members: ["John Doe", "Emma Davis", "Mike Thompson", "Lisa Zhang"],
     status: "active",
     privacy: "public",
@@ -198,18 +221,34 @@ const mockWorkspaces = [
       hardwareReserved: "ibm_brisbane",
       nextReservation: new Date(Date.now() + 6 * 60 * 60 * 1000),
       experimentsSaved: 18,
-      hypothesesTesting: 1
+      hypothesesTesting: 1,
     },
     recentActivity: [
-      { user: "John Doe", action: "optimized QAOA parameters", time: "5 min ago", type: "algorithm" },
-      { user: "Emma Davis", action: "commented on Max-Cut results", time: "12 min ago", type: "discussion" },
-      { user: "Mike Thompson", action: "scheduled hardware test", time: "30 min ago", type: "hardware" }
-    ]
+      {
+        user: "John Doe",
+        action: "optimized QAOA parameters",
+        time: "5 min ago",
+        type: "algorithm",
+      },
+      {
+        user: "Emma Davis",
+        action: "commented on Max-Cut results",
+        time: "12 min ago",
+        type: "discussion",
+      },
+      {
+        user: "Mike Thompson",
+        action: "scheduled hardware test",
+        time: "30 min ago",
+        type: "hardware",
+      },
+    ],
   },
   {
     id: "ws-3",
     name: "Quantum Cryptography",
-    description: "Building quantum key distribution protocols and security analysis",
+    description:
+      "Building quantum key distribution protocols and security analysis",
     members: ["Dr. Alex Moore", "Rachel Green"],
     status: "paused",
     privacy: "private",
@@ -224,13 +263,23 @@ const mockWorkspaces = [
       hardwareReserved: null,
       nextReservation: null,
       experimentsSaved: 12,
-      hypothesesTesting: 0
+      hypothesesTesting: 0,
     },
     recentActivity: [
-      { user: "Dr. Alex Moore", action: "paused BB84 protocol development", time: "1 day ago", type: "project" },
-      { user: "Rachel Green", action: "documented key distribution analysis", time: "1 day ago", type: "documentation" }
-    ]
-  }
+      {
+        user: "Dr. Alex Moore",
+        action: "paused BB84 protocol development",
+        time: "1 day ago",
+        type: "project",
+      },
+      {
+        user: "Rachel Green",
+        action: "documented key distribution analysis",
+        time: "1 day ago",
+        type: "documentation",
+      },
+    ],
+  },
 ];
 
 // Enhanced quantum project data with advanced collaboration features
@@ -255,13 +304,13 @@ const mockProjects = [
       comments: 7,
       versions: 15,
       experiments: 3,
-      sharedResults: 2
-    }
+      sharedResults: 2,
+    },
   },
   {
     id: "proj-2",
     name: "QAOA Max-Cut Implementation",
-    workspace: "Optimization Algorithms", 
+    workspace: "Optimization Algorithms",
     owner: "John Doe",
     collaborators: 2,
     status: "completed",
@@ -278,8 +327,8 @@ const mockProjects = [
       comments: 12,
       versions: 8,
       experiments: 5,
-      sharedResults: 5
-    }
+      sharedResults: 5,
+    },
   },
   {
     id: "proj-3",
@@ -301,9 +350,9 @@ const mockProjects = [
       comments: 3,
       versions: 4,
       experiments: 1,
-      sharedResults: 0
-    }
-  }
+      sharedResults: 0,
+    },
+  },
 ];
 
 // Mock quantum hardware scheduling data
@@ -316,7 +365,7 @@ const mockHardwareSchedule = [
     startTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
     duration: 120, // minutes
     purpose: "VQE Parameter Optimization",
-    status: "confirmed"
+    status: "confirmed",
   },
   {
     id: "hw-2",
@@ -326,8 +375,8 @@ const mockHardwareSchedule = [
     startTime: new Date(Date.now() + 6 * 60 * 60 * 1000),
     duration: 90,
     purpose: "QAOA Circuit Testing",
-    status: "pending"
-  }
+    status: "pending",
+  },
 ];
 
 // Mock quantum collaboration chat data
@@ -335,27 +384,30 @@ const mockQuantumChat = [
   {
     id: "msg-1",
     user: "Alice Chen",
-    message: "Just optimized the VQE circuit depth to 12 layers. The new ansatz shows 8% improvement in convergence!",
+    message:
+      "Just optimized the VQE circuit depth to 12 layers. The new ansatz shows 8% improvement in convergence!",
     timestamp: new Date(Date.now() - 10 * 60 * 1000),
     type: "algorithm",
-    attachments: [{ type: "circuit", name: "optimized_vqe_v2.qasm" }]
+    attachments: [{ type: "circuit", name: "optimized_vqe_v2.qasm" }],
   },
   {
     id: "msg-2",
     user: "Bob Wilson",
-    message: "Great work! I'm seeing similar improvements in my simulation. Should we test this on real hardware?",
+    message:
+      "Great work! I'm seeing similar improvements in my simulation. Should we test this on real hardware?",
     timestamp: new Date(Date.now() - 8 * 60 * 1000),
     type: "discussion",
-    replyTo: "msg-1"
+    replyTo: "msg-1",
   },
   {
     id: "msg-3",
     user: "Dr. Sarah Kim",
-    message: "I've reserved ibm_cairo for 2-4pm today. Let's run the full parameter sweep.",
+    message:
+      "I've reserved ibm_cairo for 2-4pm today. Let's run the full parameter sweep.",
     timestamp: new Date(Date.now() - 5 * 60 * 1000),
     type: "hardware",
-    attachments: [{ type: "reservation", name: "Hardware Booking #HW-1247" }]
-  }
+    attachments: [{ type: "reservation", name: "Hardware Booking #HW-1247" }],
+  },
 ];
 
 export default function Teamwork() {
@@ -363,7 +415,9 @@ export default function Teamwork() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [privacyFilter, setPrivacyFilter] = useState("all");
   const [isCreateWorkspaceOpen, setIsCreateWorkspaceOpen] = useState(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(
+    null,
+  );
   const [activeTab, setActiveTab] = useState("workspaces");
   const [showQuantumChat, setShowQuantumChat] = useState(false);
   const [showHardwareScheduler, setShowHardwareScheduler] = useState(false);
@@ -379,7 +433,7 @@ export default function Teamwork() {
   const [challengesInProgress, setChallengesInProgress] = useState(2);
   const [aiRecommendations, setAiRecommendations] = useState(5);
   const [liveCollaborators, setLiveCollaborators] = useState(7);
-  
+
   // New modal states for comprehensive features
   const [showResearchChat, setShowResearchChat] = useState(false);
   const [showVoiceChat, setShowVoiceChat] = useState(false);
@@ -392,27 +446,34 @@ export default function Teamwork() {
   const [showActiveChallenges, setShowActiveChallenges] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showLearningPath, setShowLearningPath] = useState(false);
-  
+
   // Feature states
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
-  const [whiteboardTool, setWhiteboardTool] = useState('pen');
+  const [whiteboardTool, setWhiteboardTool] = useState("pen");
   const [chatMessages, setChatMessages] = useState<any[]>([]);
-  const [currentChatMessage, setCurrentChatMessage] = useState('');
+  const [currentChatMessage, setCurrentChatMessage] = useState("");
 
   // Filter workspaces based on search and filters
-  const filteredWorkspaces = mockWorkspaces.filter(workspace => {
-    const matchesSearch = workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         workspace.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || workspace.status === statusFilter;
-    const matchesPrivacy = privacyFilter === "all" || workspace.privacy === privacyFilter;
-    
+  const filteredWorkspaces = mockWorkspaces.filter((workspace) => {
+    const matchesSearch =
+      workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      workspace.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || workspace.status === statusFilter;
+    const matchesPrivacy =
+      privacyFilter === "all" || workspace.privacy === privacyFilter;
+
     return matchesSearch && matchesStatus && matchesPrivacy;
   });
 
   // Filter projects for selected workspace
-  const workspaceProjects = selectedWorkspace 
-    ? mockProjects.filter(p => p.workspace === mockWorkspaces.find(w => w.id === selectedWorkspace)?.name)
+  const workspaceProjects = selectedWorkspace
+    ? mockProjects.filter(
+        (p) =>
+          p.workspace ===
+          mockWorkspaces.find((w) => w.id === selectedWorkspace)?.name,
+      )
     : mockProjects;
 
   const handleSearch = (query: string) => {
@@ -429,23 +490,33 @@ export default function Teamwork() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-      case "paused": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-      case "completed": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
-      case "running": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-      case "draft": return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
-      default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+      case "active":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "paused":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "completed":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "running":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "draft":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getPrivacyIcon = (privacy: string) => {
-    return privacy === "private" ? <Lock className="h-3 w-3" /> : <Globe className="h-3 w-3" />;
+    return privacy === "private" ? (
+      <Lock className="h-3 w-3" />
+    ) : (
+      <Globe className="h-3 w-3" />
+    );
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <Header 
+      <Header
         onSearch={handleSearch}
         onRefreshIntervalChange={handleRefreshIntervalChange}
         onManualRefresh={handleManualRefresh}
@@ -465,12 +536,19 @@ export default function Teamwork() {
                 Team Collaboration
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
-                Work together on quantum computing projects with real-time collaboration
+                Work together on quantum computing projects with real-time
+                collaboration
               </p>
             </div>
-            <Dialog open={isCreateWorkspaceOpen} onOpenChange={setIsCreateWorkspaceOpen}>
+            <Dialog
+              open={isCreateWorkspaceOpen}
+              onOpenChange={setIsCreateWorkspaceOpen}
+            >
               <DialogTrigger asChild>
-                <Button className="flex items-center gap-2" data-testid="button-create-workspace">
+                <Button
+                  className="flex items-center gap-2"
+                  data-testid="button-create-workspace"
+                >
                   <Plus className="h-4 w-4" />
                   Create Workspace
                 </Button>
@@ -479,36 +557,46 @@ export default function Teamwork() {
                 <DialogHeader>
                   <DialogTitle>Create New Workspace</DialogTitle>
                   <DialogDescription>
-                    Set up a collaborative workspace for your quantum computing project.
+                    Set up a collaborative workspace for your quantum computing
+                    project.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
                     <Label htmlFor="workspace-name">Workspace Name</Label>
-                    <Input 
-                      id="workspace-name" 
+                    <Input
+                      id="workspace-name"
                       placeholder="Enter workspace name..."
                       data-testid="input-workspace-name"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="workspace-desc">Description</Label>
-                    <Textarea 
-                      id="workspace-desc" 
+                    <Textarea
+                      id="workspace-desc"
                       placeholder="Describe your project goals and scope..."
                       data-testid="textarea-workspace-description"
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <Label htmlFor="workspace-private">Private Workspace</Label>
-                    <Switch id="workspace-private" data-testid="switch-workspace-private" />
+                    <Switch
+                      id="workspace-private"
+                      data-testid="switch-workspace-private"
+                    />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsCreateWorkspaceOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCreateWorkspaceOpen(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={() => setIsCreateWorkspaceOpen(false)} data-testid="button-create-workspace-confirm">
+                  <Button
+                    onClick={() => setIsCreateWorkspaceOpen(false)}
+                    data-testid="button-create-workspace-confirm"
+                  >
                     Create Workspace
                   </Button>
                 </DialogFooter>
@@ -538,7 +626,10 @@ export default function Teamwork() {
             </div>
             <div className="flex gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-32" data-testid="select-status-filter">
+                <SelectTrigger
+                  className="w-32"
+                  data-testid="select-status-filter"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -549,7 +640,10 @@ export default function Teamwork() {
                 </SelectContent>
               </Select>
               <Select value={privacyFilter} onValueChange={setPrivacyFilter}>
-                <SelectTrigger className="w-32" data-testid="select-privacy-filter">
+                <SelectTrigger
+                  className="w-32"
+                  data-testid="select-privacy-filter"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -563,7 +657,7 @@ export default function Teamwork() {
         </motion.div>
 
         {/* Advanced AI-Powered Collaboration Toolbar */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
@@ -574,33 +668,43 @@ export default function Teamwork() {
             <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
               <div className="flex items-center gap-2 mb-2 w-full">
                 <Users2 className="h-4 w-4 text-blue-500" />
-                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Live Collaboration</span>
-                <Badge variant="secondary" className="ml-auto">{liveCollaborators} active</Badge>
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  Live Collaboration
+                </span>
+                <Badge variant="secondary" className="ml-auto">
+                  {liveCollaborators} active
+                </Badge>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowResearchChat(true)}
                 className="flex items-center gap-2"
                 data-testid="button-research-chat"
               >
                 <MessageSquare className="h-4 w-4" />
                 Research Chat
-                {showQuantumChat && <div className="w-2 h-2 bg-green-500 rounded-full" />}
+                {showQuantumChat && (
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                )}
               </Button>
-              <Button 
-                variant={isVoiceChatActive ? "default" : "outline"} 
-                size="sm" 
+              <Button
+                variant={isVoiceChatActive ? "default" : "outline"}
+                size="sm"
                 onClick={() => setShowVoiceChat(true)}
                 className="flex items-center gap-2"
                 data-testid="button-voice-chat"
               >
-                {isVoiceChatActive ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
+                {isVoiceChatActive ? (
+                  <Mic className="h-4 w-4" />
+                ) : (
+                  <MicOff className="h-4 w-4" />
+                )}
                 Voice Chat
               </Button>
-              <Button 
-                variant={isScreenSharing ? "default" : "outline"} 
-                size="sm" 
+              <Button
+                variant={isScreenSharing ? "default" : "outline"}
+                size="sm"
                 onClick={() => setShowScreenShare(true)}
                 className="flex items-center gap-2"
                 data-testid="button-screen-share"
@@ -608,9 +712,9 @@ export default function Teamwork() {
                 <ScreenShare className="h-4 w-4" />
                 Share Screen
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowWhiteboard(true)}
                 className="flex items-center gap-2"
                 data-testid="button-whiteboard"
@@ -624,23 +728,34 @@ export default function Teamwork() {
             <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-700">
               <div className="flex items-center gap-2 mb-2 w-full">
                 <Brain className="h-4 w-4 text-green-500" />
-                <span className="text-sm font-medium text-green-700 dark:text-green-300">AI Intelligence</span>
-                <Badge variant="secondary" className="ml-auto">{aiRecommendations} insights</Badge>
+                <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                  AI Intelligence
+                </span>
+                <Badge variant="secondary" className="ml-auto">
+                  {aiRecommendations} insights
+                </Badge>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowSmartSuggestions(true)}
                 className="flex items-center gap-2"
                 data-testid="button-smart-suggestions"
               >
                 <Lightbulb className="h-4 w-4" />
                 Smart Suggestions
-                {aiRecommendations > 0 && <Badge variant="destructive" className="ml-1 px-1 py-0 text-xs">{aiRecommendations}</Badge>}
+                {aiRecommendations > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="ml-1 px-1 py-0 text-xs"
+                  >
+                    {aiRecommendations}
+                  </Badge>
+                )}
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowTeamAnalytics(true)}
                 className="flex items-center gap-2"
                 data-testid="button-team-analytics"
@@ -648,9 +763,9 @@ export default function Teamwork() {
                 <BarChart3 className="h-4 w-4" />
                 Team Analytics
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowAICodeReview(true)}
                 className="flex items-center gap-2"
                 data-testid="button-ai-code-review"
@@ -663,7 +778,7 @@ export default function Teamwork() {
         </motion.div>
 
         {/* Gamification Dashboard */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -672,7 +787,9 @@ export default function Teamwork() {
           <div className="flex flex-wrap gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
             <div className="flex items-center gap-2 mb-2 w-full">
               <Trophy className="h-4 w-4 text-purple-500" />
-              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Quantum Achievements & Challenges</span>
+              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                Quantum Achievements & Challenges
+              </span>
               <div className="ml-auto flex items-center gap-3">
                 <div className="flex items-center gap-1">
                   <Crown className="h-3 w-3 text-yellow-500" />
@@ -684,31 +801,37 @@ export default function Teamwork() {
                 </div>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowAchievements(true)}
               className="flex items-center gap-2"
               data-testid="button-achievements"
             >
               <Medal className="h-4 w-4" />
               Achievements
-              {currentAchievements > 0 && <Badge variant="secondary" className="ml-1 px-1 py-0 text-xs">{currentAchievements} new</Badge>}
+              {currentAchievements > 0 && (
+                <Badge variant="secondary" className="ml-1 px-1 py-0 text-xs">
+                  {currentAchievements} new
+                </Badge>
+              )}
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowActiveChallenges(true)}
               className="flex items-center gap-2"
               data-testid="button-active-challenges"
             >
               <Target className="h-4 w-4" />
               Active Challenges
-              <Badge variant="secondary" className="ml-1 px-2 py-1 text-xs">{challengesInProgress} in progress</Badge>
+              <Badge variant="secondary" className="ml-1 px-2 py-1 text-xs">
+                {challengesInProgress} in progress
+              </Badge>
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowLeaderboard(true)}
               className="flex items-center gap-2"
               data-testid="button-team-leaderboard"
@@ -716,9 +839,9 @@ export default function Teamwork() {
               <TrendingUp className="h-4 w-4" />
               Team Leaderboard
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowLearningPath(true)}
               className="flex items-center gap-2"
               data-testid="button-learning-path"
@@ -730,7 +853,7 @@ export default function Teamwork() {
         </motion.div>
 
         {/* Hardware & Resources */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
@@ -739,12 +862,16 @@ export default function Teamwork() {
           <div className="flex flex-wrap gap-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
             <div className="flex items-center gap-2 mb-2 w-full">
               <Cpu className="h-4 w-4 text-orange-500" />
-              <span className="text-sm font-medium text-orange-700 dark:text-orange-300">Quantum Hardware & Resources</span>
-              <Badge variant="secondary" className="ml-auto">{mockHardwareSchedule.length} reservations</Badge>
+              <span className="text-sm font-medium text-orange-700 dark:text-orange-300">
+                Quantum Hardware & Resources
+              </span>
+              <Badge variant="secondary" className="ml-auto">
+                {mockHardwareSchedule.length} reservations
+              </Badge>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowHardwareScheduler(!showHardwareScheduler)}
               className="flex items-center gap-2"
               data-testid="button-hardware-scheduler"
@@ -752,18 +879,18 @@ export default function Teamwork() {
               <Calendar className="h-4 w-4" />
               Smart Scheduler
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="flex items-center gap-2"
               data-testid="button-resource-optimizer"
             >
               <Zap className="h-4 w-4" />
               Resource Optimizer
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="flex items-center gap-2"
               data-testid="button-live-circuit"
             >
@@ -774,40 +901,46 @@ export default function Teamwork() {
                 <div className="w-4 h-4 bg-blue-500 rounded-full border border-white" />
               </div>
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="flex items-center gap-2"
               data-testid="button-experiment-tracker"
             >
               <FlaskConical className="h-4 w-4" />
               Experiment Tracker
-              <Badge variant="secondary" className="ml-1 px-2 py-1 text-xs">5 active</Badge>
+              <Badge variant="secondary" className="ml-1 px-2 py-1 text-xs">
+                5 active
+              </Badge>
             </Button>
           </div>
         </motion.div>
 
         {/* Smart Notifications */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="mb-6"
         >
           <div className="relative">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowNotifications(!showNotifications)}
               className="flex items-center gap-2 w-full p-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-cyan-200 dark:border-cyan-700"
               data-testid="button-notifications"
             >
               <Bell className="h-4 w-4 text-cyan-500" />
-              <span className="text-sm font-medium text-cyan-700 dark:text-cyan-300">Smart Notifications & Context Alerts</span>
-              <Badge variant="destructive" className="ml-auto">3 new</Badge>
+              <span className="text-sm font-medium text-cyan-700 dark:text-cyan-300">
+                Smart Notifications & Context Alerts
+              </span>
+              <Badge variant="destructive" className="ml-auto">
+                3 new
+              </Badge>
             </Button>
-            
+
             {showNotifications && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="absolute top-full left-0 right-0 mt-2 p-4 bg-white dark:bg-gray-800 border rounded-lg shadow-lg z-50"
@@ -816,22 +949,35 @@ export default function Teamwork() {
                   <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
                     <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
                     <div className="flex-1">
-                      <div className="text-sm font-medium">VQE Job Completed Successfully!</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Your optimization found ground state with 92% fidelity</div>
+                      <div className="text-sm font-medium">
+                        VQE Job Completed Successfully!
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        Your optimization found ground state with 92% fidelity
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
                     <Lightbulb className="h-4 w-4 text-blue-500 mt-0.5" />
                     <div className="flex-1">
-                      <div className="text-sm font-medium">AI Collaboration Suggestion</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Team member Alice has similar QAOA work - consider collaborating</div>
+                      <div className="text-sm font-medium">
+                        AI Collaboration Suggestion
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        Team member Alice has similar QAOA work - consider
+                        collaborating
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
                     <Trophy className="h-4 w-4 text-purple-500 mt-0.5" />
                     <div className="flex-1">
-                      <div className="text-sm font-medium">Achievement Unlocked: Circuit Optimizer!</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">You've optimized 10 quantum circuits - earned 150 points</div>
+                      <div className="text-sm font-medium">
+                        Achievement Unlocked: Circuit Optimizer!
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        You've optimized 10 quantum circuits - earned 150 points
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -840,14 +986,30 @@ export default function Teamwork() {
           </div>
         </motion.div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full max-w-3xl grid-cols-6">
-            <TabsTrigger value="workspaces" data-testid="tab-workspaces">Workspaces</TabsTrigger>
-            <TabsTrigger value="projects" data-testid="tab-projects">Live Projects</TabsTrigger>
-            <TabsTrigger value="ai-insights" data-testid="tab-ai-insights">AI Insights</TabsTrigger>
-            <TabsTrigger value="gamification" data-testid="tab-gamification">Achievements</TabsTrigger>
-            <TabsTrigger value="analytics" data-testid="tab-analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="research" data-testid="tab-research">Research Hub</TabsTrigger>
+            <TabsTrigger value="workspaces" data-testid="tab-workspaces">
+              Workspaces
+            </TabsTrigger>
+            <TabsTrigger value="projects" data-testid="tab-projects">
+              Live Projects
+            </TabsTrigger>
+            <TabsTrigger value="ai-insights" data-testid="tab-ai-insights">
+              AI Insights
+            </TabsTrigger>
+            <TabsTrigger value="gamification" data-testid="tab-gamification">
+              Achievements
+            </TabsTrigger>
+            <TabsTrigger value="analytics" data-testid="tab-analytics">
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="research" data-testid="tab-research">
+              Research Hub
+            </TabsTrigger>
           </TabsList>
 
           {/* Workspaces Tab */}
@@ -865,15 +1027,20 @@ export default function Teamwork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
                 >
-                  <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer" onClick={() => setSelectedWorkspace(workspace.id)}>
+                  <Card
+                    className="hover:shadow-lg transition-all duration-200 cursor-pointer"
+                    onClick={() => setSelectedWorkspace(workspace.id)}
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
-                          <CardTitle className="text-lg">{workspace.name}</CardTitle>
+                          <CardTitle className="text-lg">
+                            {workspace.name}
+                          </CardTitle>
                           <div className="flex items-center gap-1">
                             {getPrivacyIcon(workspace.privacy)}
-                            <Badge 
-                              variant="secondary" 
+                            <Badge
+                              variant="secondary"
                               className={`${getStatusColor(workspace.status)} text-xs px-2 py-1`}
                             >
                               {workspace.status}
@@ -882,7 +1049,11 @@ export default function Teamwork() {
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -915,8 +1086,12 @@ export default function Teamwork() {
                       {/* Progress */}
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600 dark:text-gray-400">Progress</span>
-                          <span className="font-medium">{workspace.progress}%</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Progress
+                          </span>
+                          <span className="font-medium">
+                            {workspace.progress}%
+                          </span>
                         </div>
                         <Progress value={workspace.progress} className="h-2" />
                       </div>
@@ -925,19 +1100,27 @@ export default function Teamwork() {
                       <div className="space-y-3">
                         <div className="grid grid-cols-3 gap-4 text-center">
                           <div>
-                            <div className="text-lg font-semibold text-blue-600">{workspace.circuits}</div>
-                            <div className="text-xs text-gray-500">Circuits</div>
+                            <div className="text-lg font-semibold text-blue-600">
+                              {workspace.circuits}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Circuits
+                            </div>
                           </div>
                           <div>
-                            <div className="text-lg font-semibold text-green-600">{workspace.jobs}</div>
+                            <div className="text-lg font-semibold text-green-600">
+                              {workspace.jobs}
+                            </div>
                             <div className="text-xs text-gray-500">Jobs</div>
                           </div>
                           <div>
-                            <div className="text-lg font-semibold text-purple-600">{workspace.members.length}</div>
+                            <div className="text-lg font-semibold text-purple-600">
+                              {workspace.members.length}
+                            </div>
                             <div className="text-xs text-gray-500">Members</div>
                           </div>
                         </div>
-                        
+
                         {/* Quantum-specific metrics */}
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
@@ -945,21 +1128,27 @@ export default function Teamwork() {
                               <Atom className="h-3 w-3 text-blue-500" />
                               Live Circuits
                             </span>
-                            <span className="font-semibold">{workspace.quantumFeatures.liveCircuits}</span>
+                            <span className="font-semibold">
+                              {workspace.quantumFeatures.liveCircuits}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
                             <span className="flex items-center gap-1">
                               <Users className="h-3 w-3 text-green-500" />
                               Active Now
                             </span>
-                            <span className="font-semibold">{workspace.quantumFeatures.activeCollaborators}</span>
+                            <span className="font-semibold">
+                              {workspace.quantumFeatures.activeCollaborators}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
                             <span className="flex items-center gap-1">
                               <FlaskConical className="h-3 w-3 text-purple-500" />
                               Experiments
                             </span>
-                            <span className="font-semibold">{workspace.quantumFeatures.experimentsSaved}</span>
+                            <span className="font-semibold">
+                              {workspace.quantumFeatures.experimentsSaved}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
                             <span className="flex items-center gap-1">
@@ -967,7 +1156,8 @@ export default function Teamwork() {
                               Hardware
                             </span>
                             <span className="font-semibold text-xs">
-                              {workspace.quantumFeatures.hardwareReserved || 'None'}
+                              {workspace.quantumFeatures.hardwareReserved ||
+                                "None"}
                             </span>
                           </div>
                         </div>
@@ -975,23 +1165,39 @@ export default function Teamwork() {
 
                       {/* Members */}
                       <div>
-                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Team Members</div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Team Members
+                        </div>
                         <div className="flex items-center gap-2">
                           <div className="flex -space-x-2">
-                            {workspace.members.slice(0, 3).map((member, idx) => (
-                              <Avatar key={idx} className="h-6 w-6 border-2 border-white dark:border-gray-800">
-                                <AvatarFallback className="text-xs">
-                                  {member.split(' ').map(n => n[0]).join('')}
-                                </AvatarFallback>
-                              </Avatar>
-                            ))}
+                            {workspace.members
+                              .slice(0, 3)
+                              .map((member, idx) => (
+                                <Avatar
+                                  key={idx}
+                                  className="h-6 w-6 border-2 border-white dark:border-gray-800"
+                                >
+                                  <AvatarFallback className="text-xs">
+                                    {member
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")}
+                                  </AvatarFallback>
+                                </Avatar>
+                              ))}
                             {workspace.members.length > 3 && (
                               <div className="h-6 w-6 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center">
-                                <span className="text-xs font-medium">+{workspace.members.length - 3}</span>
+                                <span className="text-xs font-medium">
+                                  +{workspace.members.length - 3}
+                                </span>
                               </div>
                             )}
                           </div>
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                          >
                             <UserPlus className="h-3 w-3" />
                           </Button>
                         </div>
@@ -999,25 +1205,43 @@ export default function Teamwork() {
 
                       {/* Recent Quantum Activity */}
                       <div className="space-y-2">
-                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Recent Activity</div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Recent Activity
+                        </div>
                         <div className="space-y-1 max-h-24 overflow-y-auto">
-                          {workspace.recentActivity.slice(0, 3).map((activity, idx) => (
-                            <div key={idx} className="flex items-start gap-2 text-xs">
-                              <div className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${
-                                activity.type === 'circuit' ? 'bg-blue-500' :
-                                activity.type === 'results' ? 'bg-green-500' :
-                                activity.type === 'hardware' ? 'bg-orange-500' :
-                                activity.type === 'algorithm' ? 'bg-purple-500' :
-                                'bg-gray-500'
-                              }`} />
-                              <div className="flex-1 min-w-0">
-                                <div className="text-gray-900 dark:text-white truncate">
-                                  <span className="font-medium">{activity.user}</span> {activity.action}
+                          {workspace.recentActivity
+                            .slice(0, 3)
+                            .map((activity, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-start gap-2 text-xs"
+                              >
+                                <div
+                                  className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${
+                                    activity.type === "circuit"
+                                      ? "bg-blue-500"
+                                      : activity.type === "results"
+                                        ? "bg-green-500"
+                                        : activity.type === "hardware"
+                                          ? "bg-orange-500"
+                                          : activity.type === "algorithm"
+                                            ? "bg-purple-500"
+                                            : "bg-gray-500"
+                                  }`}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-gray-900 dark:text-white truncate">
+                                    <span className="font-medium">
+                                      {activity.user}
+                                    </span>{" "}
+                                    {activity.action}
+                                  </div>
+                                  <div className="text-gray-500">
+                                    {activity.time}
+                                  </div>
                                 </div>
-                                <div className="text-gray-500">{activity.time}</div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
                         </div>
                       </div>
                     </CardContent>
@@ -1033,18 +1257,24 @@ export default function Teamwork() {
                 className="text-center py-12"
               >
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No workspaces found</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  No workspaces found
+                </h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  {searchQuery || statusFilter !== "all" || privacyFilter !== "all" 
+                  {searchQuery ||
+                  statusFilter !== "all" ||
+                  privacyFilter !== "all"
                     ? "Try adjusting your search or filters"
                     : "Create your first collaborative workspace to get started"}
                 </p>
-                {(!searchQuery && statusFilter === "all" && privacyFilter === "all") && (
-                  <Button onClick={() => setIsCreateWorkspaceOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Workspace
-                  </Button>
-                )}
+                {!searchQuery &&
+                  statusFilter === "all" &&
+                  privacyFilter === "all" && (
+                    <Button onClick={() => setIsCreateWorkspaceOpen(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Workspace
+                    </Button>
+                  )}
               </motion.div>
             )}
           </TabsContent>
@@ -1063,7 +1293,8 @@ export default function Teamwork() {
                     Shared Quantum Projects
                   </CardTitle>
                   <CardDescription>
-                    Real-time collaborative quantum computing projects across all workspaces
+                    Real-time collaborative quantum computing projects across
+                    all workspaces
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -1071,23 +1302,44 @@ export default function Teamwork() {
                     <table className="w-full">
                       <thead className="border-b border-gray-200 dark:border-gray-700">
                         <tr className="text-left">
-                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
-                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Workspace</th>
-                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Runtime</th>
-                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Backend</th>
-                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Collaborators</th>
-                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Project
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Workspace
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Runtime
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Backend
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Collaborators
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Actions
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                         {workspaceProjects.map((project) => (
-                          <tr key={project.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                          <tr
+                            key={project.id}
+                            className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                          >
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
-                                <div className="text-sm font-medium text-gray-900 dark:text-white">{project.name}</div>
+                                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                  {project.name}
+                                </div>
                                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                                  Modified {formatDistanceToNow(project.lastModified)} ago
+                                  Modified{" "}
+                                  {formatDistanceToNow(project.lastModified)}{" "}
+                                  ago
                                 </div>
                               </div>
                             </td>
@@ -1096,10 +1348,18 @@ export default function Teamwork() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-2">
-                                {project.status === "running" && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />}
-                                {project.status === "completed" && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                                {project.status === "draft" && <Edit3 className="h-4 w-4 text-gray-400" />}
-                                <Badge className={getStatusColor(project.status)}>
+                                {project.status === "running" && (
+                                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                )}
+                                {project.status === "completed" && (
+                                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                )}
+                                {project.status === "draft" && (
+                                  <Edit3 className="h-4 w-4 text-gray-400" />
+                                )}
+                                <Badge
+                                  className={getStatusColor(project.status)}
+                                >
                                   {project.status}
                                 </Badge>
                               </div>
@@ -1115,29 +1375,60 @@ export default function Teamwork() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 <div className="flex -space-x-1">
-                                  {Array.from({ length: Math.min(project.collaborators, 3) }, (_, i) => (
-                                    <Avatar key={i} className="h-6 w-6 border-2 border-white dark:border-gray-800">
-                                      <AvatarFallback className="text-xs">U{i + 1}</AvatarFallback>
-                                    </Avatar>
-                                  ))}
+                                  {Array.from(
+                                    {
+                                      length: Math.min(
+                                        project.collaborators,
+                                        3,
+                                      ),
+                                    },
+                                    (_, i) => (
+                                      <Avatar
+                                        key={i}
+                                        className="h-6 w-6 border-2 border-white dark:border-gray-800"
+                                      >
+                                        <AvatarFallback className="text-xs">
+                                          U{i + 1}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    ),
+                                  )}
                                 </div>
-                                <span className="text-sm text-gray-500">+{project.collaborators}</span>
+                                <span className="text-sm text-gray-500">
+                                  +{project.collaborators}
+                                </span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                >
                                   <Eye className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                >
                                   <Edit3 className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                >
                                   <Share2 className="h-4 w-4" />
                                 </Button>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8"
+                                    >
                                       <MoreHorizontal className="h-4 w-4" />
                                     </Button>
                                   </DropdownMenuTrigger>
@@ -1189,20 +1480,32 @@ export default function Teamwork() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {mockHardwareSchedule.map((reservation) => (
-                    <div key={reservation.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div
+                      key={reservation.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                    >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="text-xs">{reservation.backend}</Badge>
-                          <Badge 
-                            variant={reservation.status === 'confirmed' ? 'default' : 'secondary'}
+                          <Badge variant="outline" className="text-xs">
+                            {reservation.backend}
+                          </Badge>
+                          <Badge
+                            variant={
+                              reservation.status === "confirmed"
+                                ? "default"
+                                : "secondary"
+                            }
                             className="text-xs"
                           >
                             {reservation.status}
                           </Badge>
                         </div>
-                        <div className="text-sm font-medium">{reservation.purpose}</div>
+                        <div className="text-sm font-medium">
+                          {reservation.purpose}
+                        </div>
                         <div className="text-xs text-gray-500">
-                          {reservation.user} • {reservation.duration}min • {formatDistanceToNow(reservation.startTime)} from now
+                          {reservation.user} • {reservation.duration}min •{" "}
+                          {formatDistanceToNow(reservation.startTime)} from now
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -1210,7 +1513,11 @@ export default function Teamwork() {
                       </Button>
                     </div>
                   ))}
-                  <Button className="w-full" variant="outline" data-testid="button-reserve-hardware">
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    data-testid="button-reserve-hardware"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Reserve Hardware Time
                   </Button>
@@ -1232,30 +1539,44 @@ export default function Teamwork() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Quantum Jobs</span>
-                      <span className="text-sm text-gray-500">47 this week</span>
+                      <span className="text-sm text-gray-500">
+                        47 this week
+                      </span>
                     </div>
                     <Progress value={78} className="h-2" />
-                    
+
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Hardware Hours</span>
-                      <span className="text-sm text-gray-500">12.5 / 20 hours</span>
+                      <span className="text-sm font-medium">
+                        Hardware Hours
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        12.5 / 20 hours
+                      </span>
                     </div>
                     <Progress value={62} className="h-2" />
-                    
+
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Circuit Complexity</span>
-                      <span className="text-sm text-gray-500">Avg 8.2 qubits</span>
+                      <span className="text-sm font-medium">
+                        Circuit Complexity
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        Avg 8.2 qubits
+                      </span>
                     </div>
                     <Progress value={41} className="h-2" />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-blue-600">94.2%</div>
+                      <div className="text-lg font-semibold text-blue-600">
+                        94.2%
+                      </div>
                       <div className="text-xs text-gray-500">Success Rate</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-green-600">2.1s</div>
+                      <div className="text-lg font-semibold text-green-600">
+                        2.1s
+                      </div>
                       <div className="text-xs text-gray-500">Avg Runtime</div>
                     </div>
                   </div>
@@ -1277,28 +1598,73 @@ export default function Teamwork() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[
-                    { name: 'ibm_cairo', qubits: 27, status: 'online', queue: 3, fidelity: 0.95 },
-                    { name: 'ibm_brisbane', qubits: 127, status: 'online', queue: 8, fidelity: 0.92 },
-                    { name: 'ibm_kyiv', qubits: 127, status: 'maintenance', queue: 0, fidelity: 0.93 },
-                    { name: 'ibm_torino', qubits: 133, status: 'online', queue: 12, fidelity: 0.91 },
-                    { name: 'ionq_harmony', qubits: 56, status: 'online', queue: 2, fidelity: 0.97 },
-                    { name: 'rigetti_aspen', qubits: 80, status: 'offline', queue: 0, fidelity: 0.89 }
+                    {
+                      name: "ibm_cairo",
+                      qubits: 27,
+                      status: "online",
+                      queue: 3,
+                      fidelity: 0.95,
+                    },
+                    {
+                      name: "ibm_brisbane",
+                      qubits: 127,
+                      status: "online",
+                      queue: 8,
+                      fidelity: 0.92,
+                    },
+                    {
+                      name: "ibm_kyiv",
+                      qubits: 127,
+                      status: "maintenance",
+                      queue: 0,
+                      fidelity: 0.93,
+                    },
+                    {
+                      name: "ibm_torino",
+                      qubits: 133,
+                      status: "online",
+                      queue: 12,
+                      fidelity: 0.91,
+                    },
+                    {
+                      name: "ionq_harmony",
+                      qubits: 56,
+                      status: "online",
+                      queue: 2,
+                      fidelity: 0.97,
+                    },
+                    {
+                      name: "rigetti_aspen",
+                      qubits: 80,
+                      status: "offline",
+                      queue: 0,
+                      fidelity: 0.89,
+                    },
                   ].map((backend) => (
-                    <div key={backend.name} className="p-4 border rounded-lg space-y-2">
+                    <div
+                      key={backend.name}
+                      className="p-4 border rounded-lg space-y-2"
+                    >
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{backend.name}</div>
-                        <div className={`w-2 h-2 rounded-full ${
-                          backend.status === 'online' ? 'bg-green-500' :
-                          backend.status === 'maintenance' ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`} />
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            backend.status === "online"
+                              ? "bg-green-500"
+                              : backend.status === "maintenance"
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
+                          }`}
+                        />
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
                         {backend.qubits} qubits • Queue: {backend.queue}
                       </div>
                       <div className="text-sm">
                         <span className="text-gray-500">Fidelity: </span>
-                        <span className="font-medium">{(backend.fidelity * 100).toFixed(1)}%</span>
+                        <span className="font-medium">
+                          {(backend.fidelity * 100).toFixed(1)}%
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -1331,32 +1697,41 @@ export default function Teamwork() {
                     {
                       type: "team_match",
                       title: "Perfect Collaboration Match",
-                      description: "Dr. Sarah Kim's quantum ML expertise complements your VQE optimization work perfectly",
+                      description:
+                        "Dr. Sarah Kim's quantum ML expertise complements your VQE optimization work perfectly",
                       confidence: 95,
-                      action: "Invite to collaborate"
+                      action: "Invite to collaborate",
                     },
                     {
                       type: "mentorship",
                       title: "Mentorship Opportunity",
-                      description: "Bob Wilson could benefit from your QAOA experience - consider offering guidance",
+                      description:
+                        "Bob Wilson could benefit from your QAOA experience - consider offering guidance",
                       confidence: 88,
-                      action: "Offer mentorship"
+                      action: "Offer mentorship",
                     },
                     {
                       type: "project_suggestion",
                       title: "Breakthrough Project Idea",
-                      description: "Hybrid VQE-QAOA approach could solve optimization problems 30% faster",
+                      description:
+                        "Hybrid VQE-QAOA approach could solve optimization problems 30% faster",
                       confidence: 92,
-                      action: "Start project"
-                    }
+                      action: "Start project",
+                    },
                   ].map((insight, idx) => (
                     <div key={idx} className="p-4 border rounded-lg space-y-3">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="font-medium flex items-center gap-2">
-                            {insight.type === 'team_match' && <Users className="h-4 w-4 text-blue-500" />}
-                            {insight.type === 'mentorship' && <Award className="h-4 w-4 text-purple-500" />}
-                            {insight.type === 'project_suggestion' && <Lightbulb className="h-4 w-4 text-yellow-500" />}
+                            {insight.type === "team_match" && (
+                              <Users className="h-4 w-4 text-blue-500" />
+                            )}
+                            {insight.type === "mentorship" && (
+                              <Award className="h-4 w-4 text-purple-500" />
+                            )}
+                            {insight.type === "project_suggestion" && (
+                              <Lightbulb className="h-4 w-4 text-yellow-500" />
+                            )}
                             {insight.title}
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -1367,7 +1742,11 @@ export default function Teamwork() {
                           {insight.confidence}% match
                         </Badge>
                       </div>
-                      <Button size="sm" className="w-full" data-testid={`button-${insight.type}-action`}>
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        data-testid={`button-${insight.type}-action`}
+                      >
                         {insight.action}
                       </Button>
                     </div>
@@ -1390,25 +1769,40 @@ export default function Teamwork() {
                   <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className="font-medium text-green-700 dark:text-green-300">Optimization Found</span>
+                      <span className="font-medium text-green-700 dark:text-green-300">
+                        Optimization Found
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Your VQE circuit can be optimized by 23% by reducing gate depth and using hardware-native gates
+                      Your VQE circuit can be optimized by 23% by reducing gate
+                      depth and using hardware-native gates
                     </div>
-                    <Button size="sm" className="mt-2" data-testid="button-apply-optimization">
+                    <Button
+                      size="sm"
+                      className="mt-2"
+                      data-testid="button-apply-optimization"
+                    >
                       Apply Optimization
                     </Button>
                   </div>
-                  
+
                   <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
                     <div className="flex items-center gap-2 mb-2">
                       <Brain className="h-4 w-4 text-blue-500" />
-                      <span className="font-medium text-blue-700 dark:text-blue-300">Collaboration Insight</span>
+                      <span className="font-medium text-blue-700 dark:text-blue-300">
+                        Collaboration Insight
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Similar algorithm patterns detected in Alice Chen's work - potential for code sharing
+                      Similar algorithm patterns detected in Alice Chen's work -
+                      potential for code sharing
                     </div>
-                    <Button size="sm" variant="outline" className="mt-2" data-testid="button-compare-code">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2"
+                      data-testid="button-compare-code"
+                    >
                       Compare & Collaborate
                     </Button>
                   </div>
@@ -1416,12 +1810,20 @@ export default function Teamwork() {
                   <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
                     <div className="flex items-center gap-2 mb-2">
                       <Sparkles className="h-4 w-4 text-purple-500" />
-                      <span className="font-medium text-purple-700 dark:text-purple-300">Innovation Opportunity</span>
+                      <span className="font-medium text-purple-700 dark:text-purple-300">
+                        Innovation Opportunity
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Novel ansatz structure discovered - potential for research publication
+                      Novel ansatz structure discovered - potential for research
+                      publication
                     </div>
-                    <Button size="sm" variant="outline" className="mt-2" data-testid="button-research-path">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2"
+                      data-testid="button-research-path"
+                    >
                       Explore Research Path
                     </Button>
                   </div>
@@ -1442,17 +1844,25 @@ export default function Teamwork() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-lg font-semibold text-green-600">32%</div>
+                      <div className="text-lg font-semibold text-green-600">
+                        32%
+                      </div>
                       <div className="text-xs text-gray-500">Cost Savings</div>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-lg font-semibold text-blue-600">18min</div>
-                      <div className="text-xs text-gray-500">Avg Queue Time</div>
+                      <div className="text-lg font-semibold text-blue-600">
+                        18min
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Avg Queue Time
+                      </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <div className="text-sm font-medium">Recommended Schedule:</div>
+                    <div className="text-sm font-medium">
+                      Recommended Schedule:
+                    </div>
                     <div className="text-xs text-gray-600 dark:text-gray-400">
                       • Run VQE jobs on ibm_cairo between 2-4 PM (lowest queue)
                     </div>
@@ -1463,8 +1873,12 @@ export default function Teamwork() {
                       • Batch similar experiments to optimize shot allocation
                     </div>
                   </div>
-                  
-                  <Button className="w-full" size="sm" data-testid="button-apply-schedule">
+
+                  <Button
+                    className="w-full"
+                    size="sm"
+                    data-testid="button-apply-schedule"
+                  >
                     Apply Smart Schedule
                   </Button>
                 </CardContent>
@@ -1484,26 +1898,54 @@ export default function Teamwork() {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     {[
-                      { step: 1, title: "Advanced VQE Techniques", status: "in-progress", progress: 75 },
-                      { step: 2, title: "Quantum Error Mitigation", status: "next", progress: 0 },
-                      { step: 3, title: "Hybrid Algorithms", status: "upcoming", progress: 0 }
+                      {
+                        step: 1,
+                        title: "Advanced VQE Techniques",
+                        status: "in-progress",
+                        progress: 75,
+                      },
+                      {
+                        step: 2,
+                        title: "Quantum Error Mitigation",
+                        status: "next",
+                        progress: 0,
+                      },
+                      {
+                        step: 3,
+                        title: "Hybrid Algorithms",
+                        status: "upcoming",
+                        progress: 0,
+                      },
                     ].map((item) => (
                       <div key={item.step} className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                          item.status === 'in-progress' ? 'bg-blue-100 text-blue-600' :
-                          item.status === 'next' ? 'bg-gray-100 text-gray-600' :
-                          'bg-gray-50 text-gray-400'
-                        }`}>
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                            item.status === "in-progress"
+                              ? "bg-blue-100 text-blue-600"
+                              : item.status === "next"
+                                ? "bg-gray-100 text-gray-600"
+                                : "bg-gray-50 text-gray-400"
+                          }`}
+                        >
                           {item.step}
                         </div>
                         <div className="flex-1">
-                          <div className="text-sm font-medium">{item.title}</div>
+                          <div className="text-sm font-medium">
+                            {item.title}
+                          </div>
                           {item.progress > 0 && (
-                            <Progress value={item.progress} className="h-1 mt-1" />
+                            <Progress
+                              value={item.progress}
+                              className="h-1 mt-1"
+                            />
                           )}
                         </div>
-                        {item.status === 'in-progress' && (
-                          <Button size="sm" variant="outline" data-testid={`button-continue-step-${item.step}`}>
+                        {item.status === "in-progress" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            data-testid={`button-continue-step-${item.step}`}
+                          >
                             Continue
                           </Button>
                         )}
@@ -1540,12 +1982,13 @@ export default function Teamwork() {
                       {
                         id: "circuit_optimizer",
                         name: "Circuit Optimizer",
-                        description: "Optimized 10 quantum circuits for better performance",
+                        description:
+                          "Optimized 10 quantum circuits for better performance",
                         icon: "⚡",
                         rarity: "rare",
                         points: 150,
                         unlockedAt: "2 hours ago",
-                        progress: 100
+                        progress: 100,
                       },
                       {
                         id: "collaboration_master",
@@ -1555,33 +1998,46 @@ export default function Teamwork() {
                         rarity: "uncommon",
                         points: 200,
                         unlockedAt: "1 day ago",
-                        progress: 100
+                        progress: 100,
                       },
                       {
                         id: "vqe_expert",
                         name: "VQE Expert",
-                        description: "Master VQE algorithm implementation (8/10)",
+                        description:
+                          "Master VQE algorithm implementation (8/10)",
                         icon: "🔬",
                         rarity: "epic",
                         points: 300,
                         unlockedAt: null,
-                        progress: 80
-                      }
+                        progress: 80,
+                      },
                     ].map((achievement) => (
-                      <div key={achievement.id} className={`p-4 border rounded-lg ${
-                        achievement.progress === 100 ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700' : 'bg-gray-50 dark:bg-gray-800'
-                      }`}>
+                      <div
+                        key={achievement.id}
+                        className={`p-4 border rounded-lg ${
+                          achievement.progress === 100
+                            ? "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700"
+                            : "bg-gray-50 dark:bg-gray-800"
+                        }`}
+                      >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-3">
                             <div className="text-2xl">{achievement.icon}</div>
                             <div>
                               <div className="font-medium flex items-center gap-2">
                                 {achievement.name}
-                                <Badge variant={
-                                  achievement.rarity === 'legendary' ? 'default' :
-                                  achievement.rarity === 'epic' ? 'secondary' :
-                                  achievement.rarity === 'rare' ? 'outline' : 'secondary'
-                                } className="text-xs">
+                                <Badge
+                                  variant={
+                                    achievement.rarity === "legendary"
+                                      ? "default"
+                                      : achievement.rarity === "epic"
+                                        ? "secondary"
+                                        : achievement.rarity === "rare"
+                                          ? "outline"
+                                          : "secondary"
+                                  }
+                                  className="text-xs"
+                                >
                                   {achievement.rarity}
                                 </Badge>
                               </div>
@@ -1591,9 +2047,13 @@ export default function Teamwork() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-sm font-medium text-blue-600">+{achievement.points} pts</div>
+                            <div className="text-sm font-medium text-blue-600">
+                              +{achievement.points} pts
+                            </div>
                             {achievement.unlockedAt && (
-                              <div className="text-xs text-gray-500">{achievement.unlockedAt}</div>
+                              <div className="text-xs text-gray-500">
+                                {achievement.unlockedAt}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -1603,7 +2063,10 @@ export default function Teamwork() {
                               <span>Progress</span>
                               <span>{achievement.progress}%</span>
                             </div>
-                            <Progress value={achievement.progress} className="h-2" />
+                            <Progress
+                              value={achievement.progress}
+                              className="h-2"
+                            />
                           </div>
                         )}
                       </div>
@@ -1627,36 +2090,46 @@ export default function Teamwork() {
                       {
                         id: "quantum_hackathon",
                         name: "Quantum Hackathon 2025",
-                        description: "Build innovative quantum applications in teams",
+                        description:
+                          "Build innovative quantum applications in teams",
                         difficulty: "intermediate",
                         timeLeft: "5 days",
                         participants: 127,
                         maxParticipants: 200,
                         rewards: ["1000 pts", "Certificate", "Recognition"],
-                        progress: 45
+                        progress: 45,
                       },
                       {
                         id: "vqe_challenge",
                         name: "VQE Mastery Challenge",
-                        description: "Implement and optimize VQE for molecular systems",
+                        description:
+                          "Implement and optimize VQE for molecular systems",
                         difficulty: "advanced",
                         timeLeft: "12 days",
                         participants: 67,
                         maxParticipants: 100,
                         rewards: ["500 pts", "VQE Expert Badge"],
-                        progress: 23
-                      }
+                        progress: 23,
+                      },
                     ].map((challenge) => (
-                      <div key={challenge.id} className="p-4 border rounded-lg space-y-3">
+                      <div
+                        key={challenge.id}
+                        className="p-4 border rounded-lg space-y-3"
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="font-medium flex items-center gap-2">
                               {challenge.name}
-                              <Badge variant={
-                                challenge.difficulty === 'expert' ? 'default' :
-                                challenge.difficulty === 'advanced' ? 'secondary' :
-                                'outline'
-                              } className="text-xs">
+                              <Badge
+                                variant={
+                                  challenge.difficulty === "expert"
+                                    ? "default"
+                                    : challenge.difficulty === "advanced"
+                                      ? "secondary"
+                                      : "outline"
+                                }
+                                className="text-xs"
+                              >
                                 {challenge.difficulty}
                               </Badge>
                             </div>
@@ -1665,35 +2138,54 @@ export default function Teamwork() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-sm font-medium text-orange-600">{challenge.timeLeft} left</div>
+                            <div className="text-sm font-medium text-orange-600">
+                              {challenge.timeLeft} left
+                            </div>
                             <div className="text-xs text-gray-500">
-                              {challenge.participants}/{challenge.maxParticipants} joined
+                              {challenge.participants}/
+                              {challenge.maxParticipants} joined
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <div className="flex justify-between text-xs">
                             <span>Your Progress</span>
                             <span>{challenge.progress}%</span>
                           </div>
-                          <Progress value={challenge.progress} className="h-2" />
+                          <Progress
+                            value={challenge.progress}
+                            className="h-2"
+                          />
                         </div>
 
                         <div className="flex items-center justify-between">
                           <div className="flex gap-1">
                             {challenge.rewards.map((reward, idx) => (
-                              <Badge key={idx} variant="secondary" className="text-xs">{reward}</Badge>
+                              <Badge
+                                key={idx}
+                                variant="secondary"
+                                className="text-xs"
+                              >
+                                {reward}
+                              </Badge>
                             ))}
                           </div>
-                          <Button size="sm" data-testid={`button-join-challenge-${challenge.id}`}>
+                          <Button
+                            size="sm"
+                            data-testid={`button-join-challenge-${challenge.id}`}
+                          >
                             Continue Challenge
                           </Button>
                         </div>
                       </div>
                     ))}
-                    
-                    <Button className="w-full" variant="outline" data-testid="button-browse-challenges">
+
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      data-testid="button-browse-challenges"
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Browse All Challenges
                     </Button>
@@ -1713,28 +2205,46 @@ export default function Teamwork() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center space-y-2">
-                      <div className="text-3xl font-bold text-purple-600">Level 7</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Quantum Collaborator</div>
+                      <div className="text-3xl font-bold text-purple-600">
+                        Level 7
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                        Quantum Collaborator
+                      </div>
                       <Progress value={72} className="h-2" />
-                      <div className="text-xs text-gray-500">2,450 / 3,000 XP to Level 8</div>
+                      <div className="text-xs text-gray-500">
+                        2,450 / 3,000 XP to Level 8
+                      </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-3 text-center">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
-                        <div className="text-lg font-semibold text-blue-600">15</div>
-                        <div className="text-xs text-gray-500">Achievements</div>
+                        <div className="text-lg font-semibold text-blue-600">
+                          15
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Achievements
+                        </div>
                       </div>
                       <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                        <div className="text-lg font-semibold text-green-600">8</div>
+                        <div className="text-lg font-semibold text-green-600">
+                          8
+                        </div>
                         <div className="text-xs text-gray-500">Completed</div>
                       </div>
                       <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
-                        <div className="text-lg font-semibold text-purple-600">2</div>
+                        <div className="text-lg font-semibold text-purple-600">
+                          2
+                        </div>
                         <div className="text-xs text-gray-500">Active</div>
                       </div>
                       <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
-                        <div className="text-lg font-semibold text-orange-600">92%</div>
-                        <div className="text-xs text-gray-500">Success Rate</div>
+                        <div className="text-lg font-semibold text-orange-600">
+                          92%
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Success Rate
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -1750,26 +2260,66 @@ export default function Teamwork() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {[
-                      { rank: 1, name: "Alice Chen", points: 3250, change: "+125" },
-                      { rank: 2, name: "You", points: 2450, change: "+89", highlight: true },
-                      { rank: 3, name: "Dr. Sarah Kim", points: 2380, change: "+67" },
-                      { rank: 4, name: "Bob Wilson", points: 2156, change: "+45" },
-                      { rank: 5, name: "John Doe", points: 1890, change: "+23" }
+                      {
+                        rank: 1,
+                        name: "Alice Chen",
+                        points: 3250,
+                        change: "+125",
+                      },
+                      {
+                        rank: 2,
+                        name: "You",
+                        points: 2450,
+                        change: "+89",
+                        highlight: true,
+                      },
+                      {
+                        rank: 3,
+                        name: "Dr. Sarah Kim",
+                        points: 2380,
+                        change: "+67",
+                      },
+                      {
+                        rank: 4,
+                        name: "Bob Wilson",
+                        points: 2156,
+                        change: "+45",
+                      },
+                      {
+                        rank: 5,
+                        name: "John Doe",
+                        points: 1890,
+                        change: "+23",
+                      },
                     ].map((player) => (
-                      <div key={player.rank} className={`flex items-center gap-3 p-2 rounded ${
-                        player.highlight ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700' : ''
-                      }`}>
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                          player.rank === 1 ? 'bg-yellow-100 text-yellow-700' :
-                          player.rank === 2 ? 'bg-gray-100 text-gray-700' :
-                          player.rank === 3 ? 'bg-orange-100 text-orange-700' :
-                          'bg-gray-50 text-gray-600'
-                        }`}>
+                      <div
+                        key={player.rank}
+                        className={`flex items-center gap-3 p-2 rounded ${
+                          player.highlight
+                            ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700"
+                            : ""
+                        }`}
+                      >
+                        <div
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                            player.rank === 1
+                              ? "bg-yellow-100 text-yellow-700"
+                              : player.rank === 2
+                                ? "bg-gray-100 text-gray-700"
+                                : player.rank === 3
+                                  ? "bg-orange-100 text-orange-700"
+                                  : "bg-gray-50 text-gray-600"
+                          }`}
+                        >
                           {player.rank}
                         </div>
                         <div className="flex-1">
-                          <div className="text-sm font-medium">{player.name}</div>
-                          <div className="text-xs text-gray-500">{player.points} pts</div>
+                          <div className="text-sm font-medium">
+                            {player.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {player.points} pts
+                          </div>
                         </div>
                         <div className="text-xs text-green-600">
                           {player.change}
@@ -1788,15 +2338,30 @@ export default function Teamwork() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button className="w-full justify-start" variant="outline" size="sm" data-testid="button-daily-challenge">
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      size="sm"
+                      data-testid="button-daily-challenge"
+                    >
                       <Star className="h-4 w-4 mr-2" />
                       Daily Challenge
                     </Button>
-                    <Button className="w-full justify-start" variant="outline" size="sm" data-testid="button-team-formation">
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      size="sm"
+                      data-testid="button-team-formation"
+                    >
                       <Users className="h-4 w-4 mr-2" />
                       Form Team
                     </Button>
-                    <Button className="w-full justify-start" variant="outline" size="sm" data-testid="button-skill-assessment">
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      size="sm"
+                      data-testid="button-skill-assessment"
+                    >
                       <Brain className="h-4 w-4 mr-2" />
                       Skill Assessment
                     </Button>
@@ -1828,28 +2393,34 @@ export default function Teamwork() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">87%</div>
-                      <div className="text-xs text-gray-500">Team Efficiency</div>
+                      <div className="text-2xl font-bold text-green-600">
+                        87%
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Team Efficiency
+                      </div>
                     </div>
                     <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">94%</div>
+                      <div className="text-2xl font-bold text-blue-600">
+                        94%
+                      </div>
                       <div className="text-xs text-gray-500">Communication</div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Project Completion</span>
                       <span className="text-sm font-medium">8/10</span>
                     </div>
                     <Progress value={80} className="h-2" />
-                    
+
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Code Reviews</span>
                       <span className="text-sm font-medium">15/20</span>
                     </div>
                     <Progress value={75} className="h-2" />
-                    
+
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Knowledge Sharing</span>
                       <span className="text-sm font-medium">12/15</span>
@@ -1873,29 +2444,40 @@ export default function Teamwork() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">92%</div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        92%
+                      </div>
                       <div className="text-xs text-gray-500">Avg Fidelity</div>
                     </div>
                     <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-orange-600">15s</div>
+                      <div className="text-2xl font-bold text-orange-600">
+                        15s
+                      </div>
                       <div className="text-xs text-gray-500">Avg Runtime</div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <div className="text-sm font-medium">Most Used Algorithms:</div>
+                    <div className="text-sm font-medium">
+                      Most Used Algorithms:
+                    </div>
                     <div className="space-y-1">
                       {[
                         { name: "VQE", usage: 45, success: 94 },
                         { name: "QAOA", usage: 32, success: 87 },
                         { name: "Grover", usage: 15, success: 96 },
-                        { name: "Shor", usage: 8, success: 89 }
+                        { name: "Shor", usage: 8, success: 89 },
                       ].map((algo) => (
-                        <div key={algo.name} className="flex items-center justify-between text-xs">
+                        <div
+                          key={algo.name}
+                          className="flex items-center justify-between text-xs"
+                        >
                           <span>{algo.name}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-gray-500">{algo.usage}%</span>
-                            <span className="text-green-600">{algo.success}% ✓</span>
+                            <span className="text-green-600">
+                              {algo.success}% ✓
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -1918,28 +2500,39 @@ export default function Teamwork() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-orange-600">67%</div>
+                      <div className="text-2xl font-bold text-orange-600">
+                        67%
+                      </div>
                       <div className="text-xs text-gray-500">Efficiency</div>
                     </div>
                     <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-red-600">$127</div>
+                      <div className="text-2xl font-bold text-red-600">
+                        $127
+                      </div>
                       <div className="text-xs text-gray-500">Monthly Cost</div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="text-sm font-medium">Backend Usage:</div>
                     <div className="space-y-1">
                       {[
                         { backend: "ibm_cairo", jobs: 23, efficiency: 89 },
                         { backend: "ibm_brisbane", jobs: 18, efficiency: 76 },
-                        { backend: "simulator", jobs: 45, efficiency: 98 }
+                        { backend: "simulator", jobs: 45, efficiency: 98 },
                       ].map((hw) => (
-                        <div key={hw.backend} className="flex items-center justify-between text-xs">
+                        <div
+                          key={hw.backend}
+                          className="flex items-center justify-between text-xs"
+                        >
                           <span>{hw.backend}</span>
                           <div className="flex items-center gap-2">
-                            <span className="text-gray-500">{hw.jobs} jobs</span>
-                            <span className={`${hw.efficiency > 85 ? 'text-green-600' : 'text-orange-600'}`}>
+                            <span className="text-gray-500">
+                              {hw.jobs} jobs
+                            </span>
+                            <span
+                              className={`${hw.efficiency > 85 ? "text-green-600" : "text-orange-600"}`}
+                            >
                               {hw.efficiency}%
                             </span>
                           </div>
@@ -1964,21 +2557,53 @@ export default function Teamwork() {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     {[
-                      { metric: "Live Sessions", value: "+23%", trend: "up", description: "vs last week" },
-                      { metric: "Code Reviews", value: "+15%", trend: "up", description: "vs last week" },
-                      { metric: "Knowledge Sharing", value: "+8%", trend: "up", description: "vs last week" },
-                      { metric: "Response Time", value: "-12%", trend: "down", description: "faster responses" }
+                      {
+                        metric: "Live Sessions",
+                        value: "+23%",
+                        trend: "up",
+                        description: "vs last week",
+                      },
+                      {
+                        metric: "Code Reviews",
+                        value: "+15%",
+                        trend: "up",
+                        description: "vs last week",
+                      },
+                      {
+                        metric: "Knowledge Sharing",
+                        value: "+8%",
+                        trend: "up",
+                        description: "vs last week",
+                      },
+                      {
+                        metric: "Response Time",
+                        value: "-12%",
+                        trend: "down",
+                        description: "faster responses",
+                      },
                     ].map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between"
+                      >
                         <div>
-                          <div className="text-sm font-medium">{item.metric}</div>
-                          <div className="text-xs text-gray-500">{item.description}</div>
+                          <div className="text-sm font-medium">
+                            {item.metric}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {item.description}
+                          </div>
                         </div>
-                        <div className={`text-sm font-bold ${
-                          (item.trend === 'up' && !item.metric.includes('Time')) || 
-                          (item.trend === 'down' && item.metric.includes('Time'))
-                            ? 'text-green-600' : 'text-red-600'
-                        }`}>
+                        <div
+                          className={`text-sm font-bold ${
+                            (item.trend === "up" &&
+                              !item.metric.includes("Time")) ||
+                            (item.trend === "down" &&
+                              item.metric.includes("Time"))
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
                           {item.value}
                         </div>
                       </div>
@@ -2001,24 +2626,35 @@ export default function Teamwork() {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
-                      <div className="text-sm font-medium text-green-700 dark:text-green-300">Project Success</div>
-                      <div className="text-2xl font-bold text-green-600">94%</div>
+                      <div className="text-sm font-medium text-green-700 dark:text-green-300">
+                        Project Success
+                      </div>
+                      <div className="text-2xl font-bold text-green-600">
+                        94%
+                      </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
-                        High probability of completing current VQE project by deadline
+                        High probability of completing current VQE project by
+                        deadline
                       </div>
                     </div>
-                    
+
                     <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                      <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Team Growth</div>
+                      <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        Team Growth
+                      </div>
                       <div className="text-2xl font-bold text-blue-600">+2</div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
                         Optimal team size increase predicted for next month
                       </div>
                     </div>
-                    
+
                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                      <div className="text-sm font-medium text-purple-700 dark:text-purple-300">Innovation Score</div>
-                      <div className="text-2xl font-bold text-purple-600">8.7/10</div>
+                      <div className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                        Innovation Score
+                      </div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        8.7/10
+                      </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
                         High potential for breakthrough discoveries
                       </div>
@@ -2043,30 +2679,38 @@ export default function Teamwork() {
                     {
                       priority: "high",
                       title: "Schedule Team Sync",
-                      description: "Collaboration efficiency can improve with weekly standup",
-                      action: "Schedule Meeting"
+                      description:
+                        "Collaboration efficiency can improve with weekly standup",
+                      action: "Schedule Meeting",
                     },
                     {
                       priority: "medium",
                       title: "Optimize Hardware Usage",
-                      description: "Switch to ibm_cairo for better cost efficiency",
-                      action: "Update Schedule"
+                      description:
+                        "Switch to ibm_cairo for better cost efficiency",
+                      action: "Update Schedule",
                     },
                     {
                       priority: "low",
                       title: "Documentation Update",
-                      description: "VQE implementation needs better documentation",
-                      action: "Add Docs"
-                    }
+                      description:
+                        "VQE implementation needs better documentation",
+                      action: "Add Docs",
+                    },
                   ].map((item, idx) => (
                     <div key={idx} className="p-3 border rounded-lg space-y-2">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="text-sm font-medium flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${
-                              item.priority === 'high' ? 'bg-red-500' :
-                              item.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                            }`} />
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                item.priority === "high"
+                                  ? "bg-red-500"
+                                  : item.priority === "medium"
+                                    ? "bg-yellow-500"
+                                    : "bg-green-500"
+                              }`}
+                            />
                             {item.title}
                           </div>
                           <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
@@ -2074,7 +2718,12 @@ export default function Teamwork() {
                           </div>
                         </div>
                       </div>
-                      <Button size="sm" variant="outline" className="w-full" data-testid={`button-action-${idx}`}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full"
+                        data-testid={`button-action-${idx}`}
+                      >
                         {item.action}
                       </Button>
                     </div>
@@ -2111,24 +2760,27 @@ export default function Teamwork() {
                         author: "Dr. Sarah Kim",
                         updated: "2 hours ago",
                         tags: ["VQE", "Optimization", "NISQ"],
-                        contributors: 3
+                        contributors: 3,
                       },
                       {
                         title: "QAOA Parameter Landscape Analysis",
-                        author: "John Doe", 
+                        author: "John Doe",
                         updated: "1 day ago",
                         tags: ["QAOA", "Parameters", "Analysis"],
-                        contributors: 2
+                        contributors: 2,
                       },
                       {
                         title: "Quantum Error Mitigation Techniques",
                         author: "Alice Chen",
                         updated: "3 days ago",
                         tags: ["Error Mitigation", "NISQ", "Fidelity"],
-                        contributors: 4
-                      }
+                        contributors: 4,
+                      },
                     ].map((doc, idx) => (
-                      <div key={idx} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer">
+                      <div
+                        key={idx}
+                        className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer"
+                      >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
                             <div className="font-medium">{doc.title}</div>
@@ -2143,12 +2795,22 @@ export default function Teamwork() {
                         </div>
                         <div className="flex gap-1">
                           {doc.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {tag}
+                            </Badge>
                           ))}
                         </div>
                       </div>
                     ))}
-                    <Button className="w-full" variant="outline" data-testid="button-create-research-doc">
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      data-testid="button-create-research-doc"
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Create New Research Document
                     </Button>
@@ -2171,18 +2833,20 @@ export default function Teamwork() {
                       {[
                         {
                           title: "Hybrid VQE-QAOA Performance",
-                          hypothesis: "Combining VQE and QAOA improves optimization",
+                          hypothesis:
+                            "Combining VQE and QAOA improves optimization",
                           progress: 75,
                           team: ["Alice Chen", "Bob Wilson"],
-                          status: "testing"
+                          status: "testing",
                         },
                         {
                           title: "Quantum Advantage in Max-Cut",
-                          hypothesis: "Quantum algorithms show advantage for graphs >50 nodes",
+                          hypothesis:
+                            "Quantum algorithms show advantage for graphs >50 nodes",
                           progress: 40,
                           team: ["John Doe", "Emma Davis"],
-                          status: "data-collection"
-                        }
+                          status: "data-collection",
+                        },
                       ].map((exp, idx) => (
                         <div key={idx} className="p-4 border rounded-lg">
                           <div className="flex items-start justify-between mb-2">
@@ -2192,8 +2856,15 @@ export default function Teamwork() {
                                 {exp.hypothesis}
                               </div>
                             </div>
-                            <Badge variant={exp.status === 'testing' ? 'default' : 'secondary'} className="text-xs">
-                              {exp.status.replace('-', ' ')}
+                            <Badge
+                              variant={
+                                exp.status === "testing"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className="text-xs"
+                            >
+                              {exp.status.replace("-", " ")}
                             </Badge>
                           </div>
                           <div className="space-y-2">
@@ -2205,14 +2876,22 @@ export default function Teamwork() {
                             <div className="flex items-center gap-2">
                               <div className="flex -space-x-1">
                                 {exp.team.map((member, midx) => (
-                                  <Avatar key={midx} className="h-6 w-6 border-2 border-white dark:border-gray-800">
+                                  <Avatar
+                                    key={midx}
+                                    className="h-6 w-6 border-2 border-white dark:border-gray-800"
+                                  >
                                     <AvatarFallback className="text-xs">
-                                      {member.split(' ').map(n => n[0]).join('')}
+                                      {member
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")}
                                     </AvatarFallback>
                                   </Avatar>
                                 ))}
                               </div>
-                              <span className="text-xs text-gray-500">{exp.team.join(', ')}</span>
+                              <span className="text-xs text-gray-500">
+                                {exp.team.join(", ")}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -2232,19 +2911,35 @@ export default function Teamwork() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Button className="w-full justify-start" variant="outline" data-testid="button-algorithm-generator">
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      data-testid="button-algorithm-generator"
+                    >
                       <BrainCircuit className="h-4 w-4 mr-2" />
                       Algorithm Template Generator
                     </Button>
-                    <Button className="w-full justify-start" variant="outline" data-testid="button-hypothesis-tracker">
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      data-testid="button-hypothesis-tracker"
+                    >
                       <Target className="h-4 w-4 mr-2" />
                       Hypothesis Tracker
                     </Button>
-                    <Button className="w-full justify-start" variant="outline" data-testid="button-comparison-tool">
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      data-testid="button-comparison-tool"
+                    >
                       <BarChart3 className="h-4 w-4 mr-2" />
                       Result Comparison Tool
                     </Button>
-                    <Button className="w-full justify-start" variant="outline" data-testid="button-paper-generator">
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      data-testid="button-paper-generator"
+                    >
                       <FileText className="h-4 w-4 mr-2" />
                       Research Paper Generator
                     </Button>
@@ -2262,14 +2957,24 @@ export default function Teamwork() {
                     <div className="h-40 overflow-y-auto space-y-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
                       {mockQuantumChat.slice(0, 3).map((msg) => (
                         <div key={msg.id} className="text-sm">
-                          <div className="font-medium text-blue-600">{msg.user}</div>
-                          <div className="text-gray-700 dark:text-gray-300">{msg.message}</div>
-                          <div className="text-xs text-gray-500">{formatDistanceToNow(msg.timestamp)} ago</div>
+                          <div className="font-medium text-blue-600">
+                            {msg.user}
+                          </div>
+                          <div className="text-gray-700 dark:text-gray-300">
+                            {msg.message}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {formatDistanceToNow(msg.timestamp)} ago
+                          </div>
                         </div>
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <Input placeholder="Ask about quantum research..." className="flex-1" data-testid="input-research-chat" />
+                      <Input
+                        placeholder="Ask about quantum research..."
+                        className="flex-1"
+                        data-testid="input-research-chat"
+                      />
                       <Button size="icon" data-testid="button-send-message">
                         <Send className="h-4 w-4" />
                       </Button>
@@ -2285,7 +2990,7 @@ export default function Teamwork() {
 
         {/* 1. Enhanced Research Chat Modal */}
         <Dialog open={showResearchChat} onOpenChange={setShowResearchChat}>
-          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -2293,20 +2998,28 @@ export default function Teamwork() {
                   Research Chat - Quantum Collaboration Hub
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-50 text-green-700 border-green-200"
+                  >
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
                     5 active
                   </Badge>
-                  <Button size="icon" variant="ghost" data-testid="button-chat-settings">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    data-testid="button-chat-settings"
+                  >
                     <Settings className="h-4 w-4" />
                   </Button>
                 </div>
               </DialogTitle>
               <DialogDescription>
-                Advanced research collaboration with AI-powered insights, file sharing, and real-time quantum analysis
+                Advanced research collaboration with AI-powered insights, file
+                sharing, and real-time quantum analysis
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="flex h-[650px] gap-4">
               {/* Main Chat Area */}
               <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border">
@@ -2321,11 +3034,19 @@ export default function Teamwork() {
                         data-testid="input-search-chat"
                       />
                     </div>
-                    <Button size="sm" variant="outline" data-testid="button-thread-view">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-testid="button-thread-view"
+                    >
                       <Hash className="h-4 w-4 mr-1" />
                       Threads
                     </Button>
-                    <Button size="sm" variant="outline" data-testid="button-bookmark-message">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-testid="button-bookmark-message"
+                    >
                       <Bookmark className="h-4 w-4" />
                     </Button>
                   </div>
@@ -2338,45 +3059,86 @@ export default function Teamwork() {
                       <div className="flex gap-4">
                         <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
                           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
-                            {msg.user.split(' ').map(n => n[0]).join('')}
+                            {msg.user
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="font-semibold text-gray-900 dark:text-white">{msg.user}</span>
-                            <Badge 
-                              variant={msg.type === 'algorithm' ? 'default' : msg.type === 'hardware' ? 'destructive' : 'secondary'} 
+                            <span className="font-semibold text-gray-900 dark:text-white">
+                              {msg.user}
+                            </span>
+                            <Badge
+                              variant={
+                                msg.type === "algorithm"
+                                  ? "default"
+                                  : msg.type === "hardware"
+                                    ? "destructive"
+                                    : "secondary"
+                              }
                               className="text-xs px-2 py-0.5"
                             >
                               {msg.type}
                             </Badge>
-                            <span className="text-xs text-gray-500">{formatDistanceToNow(msg.timestamp)} ago</span>
+                            <span className="text-xs text-gray-500">
+                              {formatDistanceToNow(msg.timestamp)} ago
+                            </span>
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-auto">
-                              <Button size="icon" variant="ghost" className="h-6 w-6" data-testid={`button-reply-${msg.id}`}>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                data-testid={`button-reply-${msg.id}`}
+                              >
                                 <MessageSquare className="h-3 w-3" />
                               </Button>
-                              <Button size="icon" variant="ghost" className="h-6 w-6" data-testid={`button-react-${msg.id}`}>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                data-testid={`button-react-${msg.id}`}
+                              >
                                 <Heart className="h-3 w-3" />
                               </Button>
-                              <Button size="icon" variant="ghost" className="h-6 w-6" data-testid={`button-bookmark-${msg.id}`}>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                data-testid={`button-bookmark-${msg.id}`}
+                              >
                                 <BookmarkCheck className="h-3 w-3" />
                               </Button>
                             </div>
                           </div>
                           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                            <p className="text-gray-800 dark:text-gray-200 leading-relaxed">{msg.message}</p>
+                            <p className="text-gray-800 dark:text-gray-200 leading-relaxed">
+                              {msg.message}
+                            </p>
                             {msg.attachments && (
                               <div className="mt-3 space-y-2">
                                 {msg.attachments.map((att, attIdx) => (
-                                  <div key={attIdx} className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                                  <div
+                                    key={attIdx}
+                                    className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800"
+                                  >
                                     <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded">
                                       <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div className="flex-1">
-                                      <div className="font-medium text-blue-900 dark:text-blue-100">{att.name}</div>
-                                      <div className="text-xs text-blue-600 dark:text-blue-400">Quantum Circuit • 2.3 KB</div>
+                                      <div className="font-medium text-blue-900 dark:text-blue-100">
+                                        {att.name}
+                                      </div>
+                                      <div className="text-xs text-blue-600 dark:text-blue-400">
+                                        Quantum Circuit • 2.3 KB
+                                      </div>
                                     </div>
-                                    <Button size="sm" variant="outline" data-testid={`button-download-${attIdx}`}>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      data-testid={`button-download-${attIdx}`}
+                                    >
                                       <Download className="h-4 w-4" />
                                     </Button>
                                   </div>
@@ -2406,15 +3168,25 @@ export default function Teamwork() {
                   {/* Typing Indicator */}
                   <div className="flex gap-4 opacity-70">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-gray-400 text-white text-sm">JD</AvatarFallback>
+                      <AvatarFallback className="bg-gray-400 text-white text-sm">
+                        JD
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
                       <div className="flex gap-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
+                          style={{ animationDelay: "0.4s" }}
+                        ></div>
                       </div>
-                      <span className="text-xs text-gray-500">John is typing...</span>
+                      <span className="text-xs text-gray-500">
+                        John is typing...
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -2423,8 +3195,16 @@ export default function Teamwork() {
                 <div className="p-4 border-t bg-gray-50 dark:bg-gray-900">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <span>Reply to: Alice Chen - "Just optimized the VQE circuit..."</span>
-                      <Button size="icon" variant="ghost" className="h-5 w-5" data-testid="button-clear-reply">
+                      <span>
+                        Reply to: Alice Chen - "Just optimized the VQE
+                        circuit..."
+                      </span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-5 w-5"
+                        data-testid="button-clear-reply"
+                      >
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
@@ -2433,24 +3213,45 @@ export default function Teamwork() {
                         <Textarea
                           placeholder="Share quantum insights, ask questions, or discuss algorithms..."
                           value={currentChatMessage}
-                          onChange={(e) => setCurrentChatMessage(e.target.value)}
+                          onChange={(e) =>
+                            setCurrentChatMessage(e.target.value)
+                          }
                           className="min-h-[80px] resize-none pr-20"
                           data-testid="textarea-chat-message"
                         />
                         <div className="absolute bottom-2 right-2 flex items-center gap-1">
-                          <Button size="icon" variant="ghost" className="h-6 w-6" data-testid="button-emoji">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6"
+                            data-testid="button-emoji"
+                          >
                             <span className="text-lg">😊</span>
                           </Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" data-testid="button-attach-file">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6"
+                            data-testid="button-attach-file"
+                          >
                             <Paperclip className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Button size="icon" className="h-10 w-10" data-testid="button-send-chat">
+                        <Button
+                          size="icon"
+                          className="h-10 w-10"
+                          data-testid="button-send-chat"
+                        >
                           <Send className="h-4 w-4" />
                         </Button>
-                        <Button size="icon" variant="outline" className="h-8 w-8" data-testid="button-voice-message">
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="h-8 w-8"
+                          data-testid="button-voice-message"
+                        >
                           <Mic className="h-3 w-3" />
                         </Button>
                       </div>
@@ -2475,13 +3276,25 @@ export default function Teamwork() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {["Alice Chen", "Bob Wilson", "Dr. Sarah Kim", "John Doe", "Emma Davis"].map((user, idx) => (
-                      <div key={idx} className="flex items-center justify-between group">
+                    {[
+                      "Alice Chen",
+                      "Bob Wilson",
+                      "Dr. Sarah Kim",
+                      "John Doe",
+                      "Emma Davis",
+                    ].map((user, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between group"
+                      >
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <Avatar className="h-8 w-8">
                               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
-                                {user.split(' ').map(n => n[0]).join('')}
+                                {user
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
                               </AvatarFallback>
                             </Avatar>
                             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
@@ -2489,14 +3302,22 @@ export default function Teamwork() {
                           <div>
                             <div className="text-sm font-medium">{user}</div>
                             <div className="text-xs text-gray-500">
-                              {idx === 0 ? "Working on VQE" : idx === 1 ? "Hardware testing" : "Available"}
+                              {idx === 0
+                                ? "Working on VQE"
+                                : idx === 1
+                                  ? "Hardware testing"
+                                  : "Available"}
                             </div>
                           </div>
                         </div>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button size="icon" variant="ghost" className="h-6 w-6">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                              >
                                 <MoreHorizontal className="h-3 w-3" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -2527,7 +3348,9 @@ export default function Teamwork() {
                     <CardTitle className="text-sm flex items-center gap-2">
                       <Brain className="h-4 w-4 text-purple-500" />
                       AI Research Assistant
-                      <Badge variant="secondary" className="ml-auto text-xs">Beta</Badge>
+                      <Badge variant="secondary" className="ml-auto text-xs">
+                        Beta
+                      </Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -2535,33 +3358,52 @@ export default function Teamwork() {
                       <div className="flex items-start gap-2">
                         <Sparkles className="h-4 w-4 text-purple-500 mt-0.5 flex-shrink-0" />
                         <div className="text-sm">
-                          <div className="font-medium text-purple-900 dark:text-purple-100">Optimization Suggestion</div>
-                          <div className="text-purple-700 dark:text-purple-300 mt-1">
-                            Your VQE circuit can achieve 15% better fidelity by adjusting the ansatz depth to 10 layers.
+                          <div className="font-medium text-purple-900 dark:text-purple-100">
+                            Optimization Suggestion
                           </div>
-                          <Button size="sm" className="mt-2" data-testid="button-apply-ai-suggestion">
+                          <div className="text-purple-700 dark:text-purple-300 mt-1">
+                            Your VQE circuit can achieve 15% better fidelity by
+                            adjusting the ansatz depth to 10 layers.
+                          </div>
+                          <Button
+                            size="sm"
+                            className="mt-2"
+                            data-testid="button-apply-ai-suggestion"
+                          >
                             Apply Suggestion
                           </Button>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                       <div className="flex items-start gap-2">
                         <Network className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                         <div className="text-sm">
-                          <div className="font-medium text-blue-900 dark:text-blue-100">Hardware Alert</div>
-                          <div className="text-blue-700 dark:text-blue-300 mt-1">
-                            IBM Cairo will be available for 2 hours starting at 3:00 PM today.
+                          <div className="font-medium text-blue-900 dark:text-blue-100">
+                            Hardware Alert
                           </div>
-                          <Button size="sm" variant="outline" className="mt-2" data-testid="button-reserve-hardware">
+                          <div className="text-blue-700 dark:text-blue-300 mt-1">
+                            IBM Cairo will be available for 2 hours starting at
+                            3:00 PM today.
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-2"
+                            data-testid="button-reserve-hardware"
+                          >
                             Reserve Time
                           </Button>
                         </div>
                       </div>
                     </div>
 
-                    <Button className="w-full" size="sm" data-testid="button-ask-ai">
+                    <Button
+                      className="w-full"
+                      size="sm"
+                      data-testid="button-ask-ai"
+                    >
                       <MessageSquare className="h-4 w-4 mr-2" />
                       Ask AI Assistant
                     </Button>
@@ -2578,17 +3420,39 @@ export default function Teamwork() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {[
-                      { name: "VQE_optimization_v2.qasm", size: "2.3 KB", user: "Alice", time: "2m ago" },
-                      { name: "QAOA_results.pdf", size: "1.8 MB", user: "Bob", time: "15m ago" },
-                      { name: "quantum_error_analysis.py", size: "5.2 KB", user: "Sarah", time: "1h ago" }
+                      {
+                        name: "VQE_optimization_v2.qasm",
+                        size: "2.3 KB",
+                        user: "Alice",
+                        time: "2m ago",
+                      },
+                      {
+                        name: "QAOA_results.pdf",
+                        size: "1.8 MB",
+                        user: "Bob",
+                        time: "15m ago",
+                      },
+                      {
+                        name: "quantum_error_analysis.py",
+                        size: "5.2 KB",
+                        user: "Sarah",
+                        time: "1h ago",
+                      },
                     ].map((file, idx) => (
-                      <div key={idx} className="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded cursor-pointer">
+                      <div
+                        key={idx}
+                        className="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded cursor-pointer"
+                      >
                         <div className="p-1 bg-blue-100 dark:bg-blue-800 rounded">
                           <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-medium truncate">{file.name}</div>
-                          <div className="text-xs text-gray-500">{file.user} • {file.time}</div>
+                          <div className="text-xs font-medium truncate">
+                            {file.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {file.user} • {file.time}
+                          </div>
                         </div>
                         <Button size="icon" variant="ghost" className="h-6 w-6">
                           <Download className="h-3 w-3" />
@@ -2604,7 +3468,7 @@ export default function Teamwork() {
 
         {/* 2. Enhanced Voice Chat Modal */}
         <Dialog open={showVoiceChat} onOpenChange={setShowVoiceChat}>
-          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -2613,18 +3477,29 @@ export default function Teamwork() {
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   </div>
                   <div>
-                    <div className="text-lg font-semibold">Quantum Research Voice Room</div>
-                    <div className="text-sm text-gray-500 font-normal">Room ID: QR-2024-789 • 4 participants</div>
+                    <div className="text-lg font-semibold">
+                      Quantum Research Voice Room
+                    </div>
+                    <div className="text-sm text-gray-500 font-normal">
+                      Room ID: QR-2024-789 • 4 participants
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-50 text-green-700 border-green-200"
+                  >
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
                     LIVE • 12:34
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="ghost" data-testid="button-voice-settings">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        data-testid="button-voice-settings"
+                      >
                         <Settings className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -2651,35 +3526,74 @@ export default function Teamwork() {
                 </div>
               </DialogTitle>
               <DialogDescription>
-                Professional voice collaboration with HD audio, screen sharing, and quantum research tools
+                Professional voice collaboration with HD audio, screen sharing,
+                and quantum research tools
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="flex h-[700px] gap-6">
               {/* Main Video/Audio Area */}
               <div className="flex-1 flex flex-col">
                 {/* Participants Grid */}
                 <div className="flex-1 grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                   {[
-                    { name: "Alice Chen (You)", status: "speaking", muted: false, camera: true, role: "Host" },
-                    { name: "Bob Wilson", status: "listening", muted: true, camera: false, role: "Researcher" },
-                    { name: "Dr. Sarah Kim", status: "speaking", muted: false, camera: true, role: "Mentor" },
-                    { name: "John Doe", status: "away", muted: false, camera: false, role: "Student" }
+                    {
+                      name: "Alice Chen (You)",
+                      status: "speaking",
+                      muted: false,
+                      camera: true,
+                      role: "Host",
+                    },
+                    {
+                      name: "Bob Wilson",
+                      status: "listening",
+                      muted: true,
+                      camera: false,
+                      role: "Researcher",
+                    },
+                    {
+                      name: "Dr. Sarah Kim",
+                      status: "speaking",
+                      muted: false,
+                      camera: true,
+                      role: "Mentor",
+                    },
+                    {
+                      name: "John Doe",
+                      status: "away",
+                      muted: false,
+                      camera: false,
+                      role: "Student",
+                    },
                   ].map((user, idx) => (
-                    <div key={idx} className={`relative rounded-xl overflow-hidden ${
-                      user.status === 'speaking' ? 'ring-4 ring-green-400 ring-opacity-60' : 
-                      user.status === 'away' ? 'ring-2 ring-yellow-400 ring-opacity-40' : 
-                      'ring-2 ring-gray-300 ring-opacity-20'
-                    }`}>
+                    <div
+                      key={idx}
+                      className={`relative rounded-xl overflow-hidden ${
+                        user.status === "speaking"
+                          ? "ring-4 ring-green-400 ring-opacity-60"
+                          : user.status === "away"
+                            ? "ring-2 ring-yellow-400 ring-opacity-40"
+                            : "ring-2 ring-gray-300 ring-opacity-20"
+                      }`}
+                    >
                       <div className="bg-gradient-to-br from-gray-800 to-gray-900 h-48 flex items-center justify-center relative">
                         {user.camera ? (
                           <div className="w-full h-full bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
                             <div className="text-center text-white">
                               <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-sm">
-                                <span className="text-2xl font-bold">{user.name.split(' ').map(n => n[0]).join('')}</span>
+                                <span className="text-2xl font-bold">
+                                  {user.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")}
+                                </span>
                               </div>
-                              <div className="text-lg font-semibold">{user.name}</div>
-                              <div className="text-sm opacity-80">{user.role}</div>
+                              <div className="text-lg font-semibold">
+                                {user.name}
+                              </div>
+                              <div className="text-sm opacity-80">
+                                {user.role}
+                              </div>
                             </div>
                           </div>
                         ) : (
@@ -2687,36 +3601,58 @@ export default function Teamwork() {
                             <div className="w-20 h-20 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-3">
                               <CameraOff className="h-8 w-8" />
                             </div>
-                            <div className="text-lg font-semibold">{user.name}</div>
-                            <div className="text-sm opacity-80">{user.role}</div>
+                            <div className="text-lg font-semibold">
+                              {user.name}
+                            </div>
+                            <div className="text-sm opacity-80">
+                              {user.role}
+                            </div>
                           </div>
                         )}
-                        
+
                         {/* Status Indicators */}
                         <div className="absolute top-3 left-3 flex gap-2">
-                          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            user.status === 'speaking' ? 'bg-green-500 text-white' :
-                            user.status === 'away' ? 'bg-yellow-500 text-white' :
-                            'bg-gray-500 text-white'
-                          }`}>
-                            {user.status === 'speaking' ? '🎤 Speaking' : 
-                             user.status === 'away' ? '⏰ Away' : 
-                             '👂 Listening'}
+                          <div
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              user.status === "speaking"
+                                ? "bg-green-500 text-white"
+                                : user.status === "away"
+                                  ? "bg-yellow-500 text-white"
+                                  : "bg-gray-500 text-white"
+                            }`}
+                          >
+                            {user.status === "speaking"
+                              ? "🎤 Speaking"
+                              : user.status === "away"
+                                ? "⏰ Away"
+                                : "👂 Listening"}
                           </div>
                         </div>
-                        
+
                         {/* Controls Overlay */}
                         <div className="absolute bottom-3 right-3 flex gap-1">
-                          <div className={`p-2 rounded-full ${user.muted ? 'bg-red-500' : 'bg-green-500'}`}>
-                            {user.muted ? <MicOff className="h-3 w-3 text-white" /> : <Mic className="h-3 w-3 text-white" />}
+                          <div
+                            className={`p-2 rounded-full ${user.muted ? "bg-red-500" : "bg-green-500"}`}
+                          >
+                            {user.muted ? (
+                              <MicOff className="h-3 w-3 text-white" />
+                            ) : (
+                              <Mic className="h-3 w-3 text-white" />
+                            )}
                           </div>
-                          <div className={`p-2 rounded-full ${user.camera ? 'bg-blue-500' : 'bg-gray-500'}`}>
-                            {user.camera ? <Camera className="h-3 w-3 text-white" /> : <CameraOff className="h-3 w-3 text-white" />}
+                          <div
+                            className={`p-2 rounded-full ${user.camera ? "bg-blue-500" : "bg-gray-500"}`}
+                          >
+                            {user.camera ? (
+                              <Camera className="h-3 w-3 text-white" />
+                            ) : (
+                              <CameraOff className="h-3 w-3 text-white" />
+                            )}
                           </div>
                         </div>
 
                         {/* Audio Visualization */}
-                        {user.status === 'speaking' && (
+                        {user.status === "speaking" && (
                           <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-blue-500">
                             <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 animate-pulse"></div>
                           </div>
@@ -2738,7 +3674,11 @@ export default function Teamwork() {
                         className="h-14 w-14 rounded-full"
                         data-testid="button-toggle-mute"
                       >
-                        {isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                        {isMuted ? (
+                          <MicOff className="h-6 w-6" />
+                        ) : (
+                          <Mic className="h-6 w-6" />
+                        )}
                       </Button>
                       <Button
                         size="lg"
@@ -2747,7 +3687,11 @@ export default function Teamwork() {
                         className="h-14 w-14 rounded-full"
                         data-testid="button-toggle-camera"
                       >
-                        {isCameraOn ? <Camera className="h-6 w-6" /> : <CameraOff className="h-6 w-6" />}
+                        {isCameraOn ? (
+                          <Camera className="h-6 w-6" />
+                        ) : (
+                          <CameraOff className="h-6 w-6" />
+                        )}
                       </Button>
                       <Button
                         size="lg"
@@ -2763,10 +3707,18 @@ export default function Teamwork() {
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                         <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm font-medium text-red-700 dark:text-red-300">Recording</span>
-                        <span className="text-xs text-red-600 dark:text-red-400">12:34</span>
+                        <span className="text-sm font-medium text-red-700 dark:text-red-300">
+                          Recording
+                        </span>
+                        <span className="text-xs text-red-600 dark:text-red-400">
+                          12:34
+                        </span>
                       </div>
-                      <Button size="sm" variant="outline" data-testid="button-stop-recording">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-stop-recording"
+                      >
                         <StopCircle className="h-4 w-4 mr-2" />
                         Stop
                       </Button>
@@ -2789,23 +3741,35 @@ export default function Teamwork() {
                   <div className="flex items-center gap-6 mt-4 pt-4 border-t">
                     <div className="flex items-center gap-2">
                       <Volume2 className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Speaker</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Speaker
+                      </span>
                       <div className="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
                         <div className="w-3/4 h-full bg-blue-500 rounded-full"></div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Mic className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Microphone</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Microphone
+                      </span>
                       <div className="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
                         <div className="w-2/3 h-full bg-green-500 rounded-full"></div>
                       </div>
                     </div>
-                    <Button size="sm" variant="outline" data-testid="button-audio-test">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-testid="button-audio-test"
+                    >
                       <TestTube className="h-4 w-4 mr-2" />
                       Test Audio
                     </Button>
-                    <Button size="sm" variant="outline" data-testid="button-noise-cancellation">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-testid="button-noise-cancellation"
+                    >
                       <Waves className="h-4 w-4 mr-2" />
                       Noise Cancellation
                     </Button>
@@ -2825,33 +3789,71 @@ export default function Teamwork() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {[
-                      { name: "Alice Chen", role: "Host", status: "speaking", muted: false },
-                      { name: "Bob Wilson", role: "Researcher", status: "listening", muted: true },
-                      { name: "Dr. Sarah Kim", role: "Mentor", status: "speaking", muted: false },
-                      { name: "John Doe", role: "Student", status: "away", muted: false }
+                      {
+                        name: "Alice Chen",
+                        role: "Host",
+                        status: "speaking",
+                        muted: false,
+                      },
+                      {
+                        name: "Bob Wilson",
+                        role: "Researcher",
+                        status: "listening",
+                        muted: true,
+                      },
+                      {
+                        name: "Dr. Sarah Kim",
+                        role: "Mentor",
+                        status: "speaking",
+                        muted: false,
+                      },
+                      {
+                        name: "John Doe",
+                        role: "Student",
+                        status: "away",
+                        muted: false,
+                      },
                     ].map((user, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                      >
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <Avatar className="h-8 w-8">
                               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
-                                {user.name.split(' ').map(n => n[0]).join('')}
+                                {user.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full ${
-                              user.status === 'speaking' ? 'bg-green-500' :
-                              user.status === 'away' ? 'bg-yellow-500' :
-                              'bg-gray-400'
-                            }`}></div>
+                            <div
+                              className={`absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full ${
+                                user.status === "speaking"
+                                  ? "bg-green-500"
+                                  : user.status === "away"
+                                    ? "bg-yellow-500"
+                                    : "bg-gray-400"
+                              }`}
+                            ></div>
                           </div>
                           <div>
-                            <div className="text-sm font-medium">{user.name}</div>
-                            <div className="text-xs text-gray-500">{user.role}</div>
+                            <div className="text-sm font-medium">
+                              {user.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {user.role}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
-                          {user.muted && <MicOff className="h-3 w-3 text-red-500" />}
-                          {user.role === 'Host' && <Crown className="h-3 w-3 text-yellow-500" />}
+                          {user.muted && (
+                            <MicOff className="h-3 w-3 text-red-500" />
+                          )}
+                          {user.role === "Host" && (
+                            <Crown className="h-3 w-3 text-yellow-500" />
+                          )}
                         </div>
                       </div>
                     ))}
@@ -2869,21 +3871,41 @@ export default function Teamwork() {
                   <CardContent className="space-y-3">
                     <div className="h-32 bg-gray-50 dark:bg-gray-900 rounded-lg p-3 text-sm space-y-2 overflow-y-auto">
                       <div className="flex gap-2">
-                        <span className="font-medium text-blue-600 text-xs">Bob:</span>
-                        <span className="text-xs">Can everyone hear me clearly?</span>
+                        <span className="font-medium text-blue-600 text-xs">
+                          Bob:
+                        </span>
+                        <span className="text-xs">
+                          Can everyone hear me clearly?
+                        </span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="font-medium text-green-600 text-xs">Alice:</span>
-                        <span className="text-xs">Perfect audio quality! 👍</span>
+                        <span className="font-medium text-green-600 text-xs">
+                          Alice:
+                        </span>
+                        <span className="text-xs">
+                          Perfect audio quality! 👍
+                        </span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="font-medium text-purple-600 text-xs">Sarah:</span>
-                        <span className="text-xs">Let's discuss the VQE optimization now</span>
+                        <span className="font-medium text-purple-600 text-xs">
+                          Sarah:
+                        </span>
+                        <span className="text-xs">
+                          Let's discuss the VQE optimization now
+                        </span>
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Input placeholder="Type a message..." className="flex-1 text-sm" data-testid="input-voice-chat-message" />
-                      <Button size="icon" className="h-8 w-8" data-testid="button-send-voice-message">
+                      <Input
+                        placeholder="Type a message..."
+                        className="flex-1 text-sm"
+                        data-testid="input-voice-chat-message"
+                      />
+                      <Button
+                        size="icon"
+                        className="h-8 w-8"
+                        data-testid="button-send-voice-message"
+                      >
                         <Send className="h-3 w-3" />
                       </Button>
                     </div>
@@ -2899,19 +3921,39 @@ export default function Teamwork() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-quantum-circuit">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-share-quantum-circuit"
+                    >
                       <Atom className="h-4 w-4 mr-2" />
                       Share Quantum Circuit
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-collaborative-whiteboard">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-collaborative-whiteboard"
+                    >
                       <PenTool className="h-4 w-4 mr-2" />
                       Open Whiteboard
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-hardware-scheduler">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-hardware-scheduler"
+                    >
                       <Calendar className="h-4 w-4 mr-2" />
                       Hardware Scheduler
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-meeting-notes">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-meeting-notes"
+                    >
                       <FileText className="h-4 w-4 mr-2" />
                       Meeting Notes
                     </Button>
@@ -2928,12 +3970,20 @@ export default function Teamwork() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded text-xs">
-                      <div className="font-medium text-purple-900 dark:text-purple-100">Live Transcription</div>
+                      <div className="font-medium text-purple-900 dark:text-purple-100">
+                        Live Transcription
+                      </div>
                       <div className="text-purple-700 dark:text-purple-300 mt-1">
-                        "The VQE optimization shows promising results with 8 qubits..."
+                        "The VQE optimization shows promising results with 8
+                        qubits..."
                       </div>
                     </div>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-ai-summary">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-ai-summary"
+                    >
                       <Sparkles className="h-4 w-4 mr-2" />
                       Generate Summary
                     </Button>
@@ -2946,7 +3996,7 @@ export default function Teamwork() {
 
         {/* 3. Enhanced Screen Share Modal */}
         <Dialog open={showScreenShare} onOpenChange={setShowScreenShare}>
-          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -2955,18 +4005,29 @@ export default function Teamwork() {
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                   </div>
                   <div>
-                    <div className="text-lg font-semibold">Professional Screen Share Studio</div>
-                    <div className="text-sm text-gray-500 font-normal">Quantum Circuit Collaboration • HD Quality</div>
+                    <div className="text-lg font-semibold">
+                      Professional Screen Share Studio
+                    </div>
+                    <div className="text-sm text-gray-500 font-normal">
+                      Quantum Circuit Collaboration • HD Quality
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="destructive" className="bg-red-50 text-red-700 border-red-200 animate-pulse">
+                  <Badge
+                    variant="destructive"
+                    className="bg-red-50 text-red-700 border-red-200 animate-pulse"
+                  >
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
                     LIVE • 1080p
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="ghost" data-testid="button-screen-settings">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        data-testid="button-screen-settings"
+                      >
                         <Settings className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -2993,10 +4054,11 @@ export default function Teamwork() {
                 </div>
               </DialogTitle>
               <DialogDescription>
-                High-definition screen sharing with real-time collaboration, annotations, and quantum circuit visualization
+                High-definition screen sharing with real-time collaboration,
+                annotations, and quantum circuit visualization
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="flex h-[750px] gap-6">
               {/* Main Screen Share Area */}
               <div className="flex-1 flex flex-col">
@@ -3009,20 +4071,36 @@ export default function Teamwork() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-semibold text-purple-900 dark:text-purple-100">Alice Chen is presenting</div>
-                      <div className="text-sm text-purple-700 dark:text-purple-300">Quantum Circuit Editor • Application Window</div>
+                      <div className="font-semibold text-purple-900 dark:text-purple-100">
+                        Alice Chen is presenting
+                      </div>
+                      <div className="text-sm text-purple-700 dark:text-purple-300">
+                        Quantum Circuit Editor • Application Window
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline" data-testid="button-request-control">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-testid="button-request-control"
+                    >
                       <MousePointer className="h-4 w-4 mr-2" />
                       Request Control
                     </Button>
-                    <Button size="sm" variant="outline" data-testid="button-annotation-mode">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-testid="button-annotation-mode"
+                    >
                       <PenTool className="h-4 w-4 mr-2" />
                       Annotate
                     </Button>
-                    <Button size="sm" variant="outline" data-testid="button-presentation-mode">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      data-testid="button-presentation-mode"
+                    >
                       <Maximize2 className="h-4 w-4 mr-2" />
                       Full Screen
                     </Button>
@@ -3037,31 +4115,43 @@ export default function Teamwork() {
                     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 h-full">
                       <div className="flex items-center justify-between mb-6">
                         <div className="text-white">
-                          <h2 className="text-2xl font-bold">VQE Optimization Circuit</h2>
-                          <p className="text-blue-200">8-Qubit Variational Quantum Eigensolver</p>
+                          <h2 className="text-2xl font-bold">
+                            VQE Optimization Circuit
+                          </h2>
+                          <p className="text-blue-200">
+                            8-Qubit Variational Quantum Eigensolver
+                          </p>
                         </div>
                         <div className="flex gap-4 text-sm">
                           <div className="bg-blue-500/20 p-3 rounded-lg text-center">
-                            <div className="text-blue-300 font-semibold">Depth</div>
+                            <div className="text-blue-300 font-semibold">
+                              Depth
+                            </div>
                             <div className="text-white text-xl">12</div>
                           </div>
                           <div className="bg-green-500/20 p-3 rounded-lg text-center">
-                            <div className="text-green-300 font-semibold">Gates</div>
+                            <div className="text-green-300 font-semibold">
+                              Gates
+                            </div>
                             <div className="text-white text-xl">156</div>
                           </div>
                           <div className="bg-purple-500/20 p-3 rounded-lg text-center">
-                            <div className="text-purple-300 font-semibold">Fidelity</div>
+                            <div className="text-purple-300 font-semibold">
+                              Fidelity
+                            </div>
                             <div className="text-white text-xl">92.4%</div>
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Circuit Visualization */}
                       <div className="bg-black/20 rounded-lg p-4 mb-4">
                         <div className="space-y-4">
                           {Array.from({ length: 4 }, (_, i) => (
                             <div key={i} className="flex items-center gap-4">
-                              <div className="text-blue-300 text-sm w-8">q{i}</div>
+                              <div className="text-blue-300 text-sm w-8">
+                                q{i}
+                              </div>
                               <div className="flex-1 h-0.5 bg-blue-400/50 relative">
                                 <div className="absolute left-8 top-1/2 transform -translate-y-1/2 w-6 h-6 border-2 border-yellow-400 bg-yellow-400/20 rounded flex items-center justify-center text-xs text-yellow-300 font-bold">
                                   H
@@ -3075,25 +4165,31 @@ export default function Teamwork() {
                           ))}
                         </div>
                       </div>
-                      
+
                       {/* Live Statistics */}
                       <div className="grid grid-cols-3 gap-4">
                         <div className="bg-blue-500/20 p-3 rounded">
-                          <div className="text-blue-300 text-sm">Expected Value</div>
+                          <div className="text-blue-300 text-sm">
+                            Expected Value
+                          </div>
                           <div className="text-white font-bold">-1.236</div>
                         </div>
                         <div className="bg-green-500/20 p-3 rounded">
-                          <div className="text-green-300 text-sm">Convergence</div>
+                          <div className="text-green-300 text-sm">
+                            Convergence
+                          </div>
                           <div className="text-white font-bold">87.3%</div>
                         </div>
                         <div className="bg-purple-500/20 p-3 rounded">
-                          <div className="text-purple-300 text-sm">Iterations</div>
+                          <div className="text-purple-300 text-sm">
+                            Iterations
+                          </div>
                           <div className="text-white font-bold">156</div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Live Cursors and Annotations */}
                   <div className="absolute top-24 left-40 flex items-center gap-2 pointer-events-none">
                     <div className="relative">
@@ -3103,7 +4199,7 @@ export default function Teamwork() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="absolute top-32 right-32 flex items-center gap-2 pointer-events-none">
                     <div className="relative">
                       <MousePointer className="h-5 w-5 text-blue-400 transform -rotate-12" />
@@ -3126,24 +4222,46 @@ export default function Teamwork() {
                   <div className="flex items-center justify-between">
                     {/* Annotation Tools */}
                     <div className="flex items-center gap-3">
-                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Annotation Tools:</div>
-                      <Button size="sm" variant="outline" data-testid="button-pen-annotation">
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Annotation Tools:
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-pen-annotation"
+                      >
                         <PenTool className="h-4 w-4 mr-1" />
                         Draw
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-text-annotation">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-text-annotation"
+                      >
                         <Type className="h-4 w-4 mr-1" />
                         Text
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-arrow-annotation">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-arrow-annotation"
+                      >
                         <Mouse className="h-4 w-4 mr-1" />
                         Arrow
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-highlight-annotation">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-highlight-annotation"
+                      >
                         <Highlighter className="h-4 w-4 mr-1" />
                         Highlight
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-clear-annotations">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-clear-annotations"
+                      >
                         <Eraser className="h-4 w-4 mr-1" />
                         Clear
                       </Button>
@@ -3153,13 +4271,23 @@ export default function Teamwork() {
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2 text-sm">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-gray-600 dark:text-gray-400">1080p • 60fps</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          1080p • 60fps
+                        </span>
                       </div>
-                      <Button size="sm" variant="outline" data-testid="button-record-screen">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-record-screen"
+                      >
                         <Camera className="h-4 w-4 mr-1" />
                         Record
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-screenshot">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-screenshot"
+                      >
                         <Download className="h-4 w-4 mr-1" />
                         Screenshot
                       </Button>
@@ -3180,33 +4308,63 @@ export default function Teamwork() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {[
-                      { name: "Bob Wilson", status: "controlling", role: "Researcher" },
-                      { name: "Dr. Sarah Kim", status: "annotating", role: "Mentor" },
+                      {
+                        name: "Bob Wilson",
+                        status: "controlling",
+                        role: "Researcher",
+                      },
+                      {
+                        name: "Dr. Sarah Kim",
+                        status: "annotating",
+                        role: "Mentor",
+                      },
                       { name: "John Doe", status: "viewing", role: "Student" },
-                      { name: "Emma Davis", status: "viewing", role: "Researcher" }
+                      {
+                        name: "Emma Davis",
+                        status: "viewing",
+                        role: "Researcher",
+                      },
                     ].map((user, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                      >
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <Avatar className="h-8 w-8">
                               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-600 text-white text-xs">
-                                {user.name.split(' ').map(n => n[0]).join('')}
+                                {user.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full ${
-                              user.status === 'controlling' ? 'bg-red-500' :
-                              user.status === 'annotating' ? 'bg-yellow-500' :
-                              'bg-green-500'
-                            }`}></div>
+                            <div
+                              className={`absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full ${
+                                user.status === "controlling"
+                                  ? "bg-red-500"
+                                  : user.status === "annotating"
+                                    ? "bg-yellow-500"
+                                    : "bg-green-500"
+                              }`}
+                            ></div>
                           </div>
                           <div>
-                            <div className="text-sm font-medium">{user.name}</div>
-                            <div className="text-xs text-gray-500 capitalize">{user.status}</div>
+                            <div className="text-sm font-medium">
+                              {user.name}
+                            </div>
+                            <div className="text-xs text-gray-500 capitalize">
+                              {user.status}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
-                          {user.status === 'controlling' && <MousePointer className="h-3 w-3 text-red-500" />}
-                          {user.status === 'annotating' && <PenTool className="h-3 w-3 text-yellow-500" />}
+                          {user.status === "controlling" && (
+                            <MousePointer className="h-3 w-3 text-red-500" />
+                          )}
+                          {user.status === "annotating" && (
+                            <PenTool className="h-3 w-3 text-yellow-500" />
+                          )}
                         </div>
                       </div>
                     ))}
@@ -3224,10 +4382,17 @@ export default function Teamwork() {
                   <CardContent className="space-y-3">
                     <div className="h-40 bg-gray-50 dark:bg-gray-900 rounded-lg p-3 space-y-3 overflow-y-auto">
                       <div className="flex gap-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">B</div>
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          B
+                        </div>
                         <div className="flex-1">
-                          <div className="text-xs text-gray-500">Bob Wilson • 2m ago</div>
-                          <div className="text-sm">Can we adjust the rotation angle on qubit 3? The current value seems suboptimal.</div>
+                          <div className="text-xs text-gray-500">
+                            Bob Wilson • 2m ago
+                          </div>
+                          <div className="text-sm">
+                            Can we adjust the rotation angle on qubit 3? The
+                            current value seems suboptimal.
+                          </div>
                           <div className="flex items-center gap-1 mt-1">
                             <span className="text-xs">👍 2</span>
                             <span className="text-xs">💡 1</span>
@@ -3235,10 +4400,17 @@ export default function Teamwork() {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">S</div>
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          S
+                        </div>
                         <div className="flex-1">
-                          <div className="text-xs text-gray-500">Dr. Sarah Kim • 1m ago</div>
-                          <div className="text-sm">Excellent optimization! The convergence rate improved significantly.</div>
+                          <div className="text-xs text-gray-500">
+                            Dr. Sarah Kim • 1m ago
+                          </div>
+                          <div className="text-sm">
+                            Excellent optimization! The convergence rate
+                            improved significantly.
+                          </div>
                           <div className="flex items-center gap-1 mt-1">
                             <span className="text-xs">🎉 3</span>
                             <span className="text-xs">⚛️ 2</span>
@@ -3247,16 +4419,32 @@ export default function Teamwork() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Input placeholder="Add a comment..." className="flex-1 text-sm" data-testid="input-screen-comment" />
-                      <Button size="icon" className="h-8 w-8" data-testid="button-send-screen-comment">
+                      <Input
+                        placeholder="Add a comment..."
+                        className="flex-1 text-sm"
+                        data-testid="input-screen-comment"
+                      />
+                      <Button
+                        size="icon"
+                        className="h-8 w-8"
+                        data-testid="button-send-screen-comment"
+                      >
                         <Send className="h-3 w-3" />
                       </Button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">Quick reactions:</span>
+                      <span className="text-xs text-gray-500">
+                        Quick reactions:
+                      </span>
                       <div className="flex gap-1">
                         {["👍", "💡", "⚛️", "🎉", "❓"].map((emoji, idx) => (
-                          <Button key={idx} size="icon" variant="ghost" className="h-6 w-6 text-sm" data-testid={`button-reaction-${idx}`}>
+                          <Button
+                            key={idx}
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6 text-sm"
+                            data-testid={`button-reaction-${idx}`}
+                          >
                             {emoji}
                           </Button>
                         ))}
@@ -3274,19 +4462,39 @@ export default function Teamwork() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-switch-window">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-switch-window"
+                    >
                       <Monitor className="h-4 w-4 mr-2" />
                       Switch Window
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-application">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-share-application"
+                    >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Share Application
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-desktop">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-share-desktop"
+                    >
                       <Monitor className="h-4 w-4 mr-2" />
                       Share Desktop
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-pause-sharing">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-pause-sharing"
+                    >
                       <PauseCircle className="h-4 w-4 mr-2" />
                       Pause Sharing
                     </Button>
@@ -3305,17 +4513,33 @@ export default function Teamwork() {
                     <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm font-medium text-red-700 dark:text-red-300">Recording Active</span>
+                        <span className="text-sm font-medium text-red-700 dark:text-red-300">
+                          Recording Active
+                        </span>
                       </div>
-                      <div className="text-xs text-red-600 dark:text-red-400">Duration: 15:32</div>
-                      <div className="text-xs text-red-600 dark:text-red-400">Size: 45.8 MB</div>
+                      <div className="text-xs text-red-600 dark:text-red-400">
+                        Duration: 15:32
+                      </div>
+                      <div className="text-xs text-red-600 dark:text-red-400">
+                        Size: 45.8 MB
+                      </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="flex-1" data-testid="button-pause-recording">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        data-testid="button-pause-recording"
+                      >
                         <PauseCircle className="h-4 w-4 mr-1" />
                         Pause
                       </Button>
-                      <Button size="sm" variant="destructive" className="flex-1" data-testid="button-stop-recording">
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="flex-1"
+                        data-testid="button-stop-recording"
+                      >
                         <StopCircle className="h-4 w-4 mr-1" />
                         Stop
                       </Button>
@@ -3329,7 +4553,7 @@ export default function Teamwork() {
 
         {/* 4. Enhanced Quantum Whiteboard Modal */}
         <Dialog open={showWhiteboard} onOpenChange={setShowWhiteboard}>
-          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -3338,18 +4562,29 @@ export default function Teamwork() {
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
                   </div>
                   <div>
-                    <div className="text-lg font-semibold">Quantum Collaborative Whiteboard Studio</div>
-                    <div className="text-sm text-gray-500 font-normal">Interactive quantum circuit design and brainstorming</div>
+                    <div className="text-lg font-semibold">
+                      Quantum Collaborative Whiteboard Studio
+                    </div>
+                    <div className="text-sm text-gray-500 font-normal">
+                      Interactive quantum circuit design and brainstorming
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-indigo-50 text-indigo-700 border-indigo-200"
+                  >
                     <div className="w-2 h-2 bg-indigo-500 rounded-full mr-1 animate-pulse"></div>
                     4 active
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="ghost" data-testid="button-whiteboard-settings">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        data-testid="button-whiteboard-settings"
+                      >
                         <Settings className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -3376,10 +4611,11 @@ export default function Teamwork() {
                 </div>
               </DialogTitle>
               <DialogDescription>
-                Professional-grade collaborative whiteboard with quantum circuit templates, real-time sync, and advanced drawing tools
+                Professional-grade collaborative whiteboard with quantum circuit
+                templates, real-time sync, and advanced drawing tools
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="flex h-[750px] gap-6">
               {/* Main Whiteboard Area */}
               <div className="flex-1 flex flex-col">
@@ -3389,83 +4625,107 @@ export default function Teamwork() {
                     {/* Drawing Tools */}
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2 border-r pr-3">
-                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">Drawing:</span>
+                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                          Drawing:
+                        </span>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'pen' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('pen')}
+                          variant={
+                            whiteboardTool === "pen" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("pen")}
                           data-testid="button-pen-tool"
                         >
                           <PenTool className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'brush' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('brush')}
+                          variant={
+                            whiteboardTool === "brush" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("brush")}
                           data-testid="button-brush-tool"
                         >
                           <Paintbrush className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'eraser' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('eraser')}
+                          variant={
+                            whiteboardTool === "eraser" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("eraser")}
                           data-testid="button-eraser-tool"
                         >
                           <Eraser className="h-4 w-4" />
                         </Button>
                       </div>
-                      
+
                       <div className="flex items-center gap-2 border-r pr-3">
-                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">Shapes:</span>
+                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                          Shapes:
+                        </span>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'circle' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('circle')}
+                          variant={
+                            whiteboardTool === "circle" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("circle")}
                           data-testid="button-circle-tool"
                         >
                           <Circle className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'square' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('square')}
+                          variant={
+                            whiteboardTool === "square" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("square")}
                           data-testid="button-square-tool"
                         >
                           <Square className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'arrow' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('arrow')}
+                          variant={
+                            whiteboardTool === "arrow" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("arrow")}
                           data-testid="button-arrow-tool"
                         >
                           <ArrowUpRight className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'line' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('line')}
+                          variant={
+                            whiteboardTool === "line" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("line")}
                           data-testid="button-line-tool"
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">Text:</span>
+                        <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                          Text:
+                        </span>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'text' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('text')}
+                          variant={
+                            whiteboardTool === "text" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("text")}
                           data-testid="button-text-tool"
                         >
                           <Type className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant={whiteboardTool === 'sticky' ? 'default' : 'outline'}
-                          onClick={() => setWhiteboardTool('sticky')}
+                          variant={
+                            whiteboardTool === "sticky" ? "default" : "outline"
+                          }
+                          onClick={() => setWhiteboardTool("sticky")}
                           data-testid="button-sticky-tool"
                         >
                           <StickyNote className="h-4 w-4" />
@@ -3475,19 +4735,39 @@ export default function Teamwork() {
 
                     {/* Action Tools */}
                     <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline" data-testid="button-undo">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-undo"
+                      >
                         <Undo className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-redo">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-redo"
+                      >
                         <Redo className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-zoom-in">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-zoom-in"
+                      >
                         <ZoomIn className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-zoom-out">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-zoom-out"
+                      >
                         <ZoomOut className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" data-testid="button-fit-screen">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-testid="button-fit-screen"
+                      >
                         <Maximize className="h-4 w-4" />
                       </Button>
                       <Button size="sm" data-testid="button-save-whiteboard">
@@ -3501,9 +4781,19 @@ export default function Teamwork() {
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-indigo-200 dark:border-indigo-700">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-indigo-800 dark:text-indigo-200">Color:</span>
+                        <span className="text-xs font-medium text-indigo-800 dark:text-indigo-200">
+                          Color:
+                        </span>
                         <div className="flex gap-1">
-                          {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'].map((color, idx) => (
+                          {[
+                            "#000000",
+                            "#FF0000",
+                            "#00FF00",
+                            "#0000FF",
+                            "#FFFF00",
+                            "#FF00FF",
+                            "#00FFFF",
+                          ].map((color, idx) => (
                             <div
                               key={idx}
                               className="w-6 h-6 rounded border-2 border-white shadow cursor-pointer hover:scale-110 transition-transform"
@@ -3514,7 +4804,9 @@ export default function Teamwork() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-indigo-800 dark:text-indigo-200">Stroke:</span>
+                        <span className="text-xs font-medium text-indigo-800 dark:text-indigo-200">
+                          Stroke:
+                        </span>
                         <div className="flex gap-1">
                           {[1, 2, 4, 8].map((width, idx) => (
                             <div
@@ -3522,7 +4814,10 @@ export default function Teamwork() {
                               className="w-8 h-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
                               data-testid={`stroke-${width}`}
                             >
-                              <div className="bg-black dark:bg-white rounded" style={{ width: '80%', height: `${width}px` }} />
+                              <div
+                                className="bg-black dark:bg-white rounded"
+                                style={{ width: "80%", height: `${width}px` }}
+                              />
                             </div>
                           ))}
                         </div>
@@ -3541,16 +4836,17 @@ export default function Teamwork() {
                 {/* Enhanced Whiteboard Canvas */}
                 <div className="flex-1 relative bg-gradient-to-br from-white via-gray-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 border-2 border-indigo-200 dark:border-indigo-800 rounded-xl overflow-hidden">
                   {/* Grid Background */}
-                  <div className="absolute inset-0 opacity-20"
+                  <div
+                    className="absolute inset-0 opacity-20"
                     style={{
                       backgroundImage: `
                         linear-gradient(to right, #e5e7eb 1px, transparent 1px),
                         linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
                       `,
-                      backgroundSize: '20px 20px'
+                      backgroundSize: "20px 20px",
                     }}
                   ></div>
-                  
+
                   {/* Canvas Content */}
                   <div className="absolute inset-0 p-8">
                     {/* Quantum Circuit Example */}
@@ -3572,10 +4868,10 @@ export default function Teamwork() {
                           <div className="w-4 h-4 bg-indigo-600 rounded-full"></div>
                           <div className="h-0.5 bg-indigo-400 w-24"></div>
                         </div>
-                        
+
                         {/* Connection Line */}
                         <div className="ml-52 w-0.5 h-6 bg-indigo-400"></div>
-                        
+
                         {/* Qubit 1 */}
                         <div className="flex items-center gap-6">
                           <div className="w-8 h-8 bg-indigo-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
@@ -3590,7 +4886,7 @@ export default function Teamwork() {
                           <div className="h-0.5 bg-indigo-400 w-24"></div>
                         </div>
                       </div>
-                      
+
                       {/* Formula */}
                       <div className="mt-6 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-indigo-200 dark:border-indigo-700">
                         <div className="text-indigo-900 dark:text-indigo-100 font-mono text-lg">
@@ -3603,19 +4899,21 @@ export default function Teamwork() {
                     <div className="absolute top-12 right-12">
                       <div className="space-y-4">
                         <div className="bg-yellow-200 dark:bg-yellow-800 p-3 rounded-lg shadow-lg w-48">
-                          <div className="font-semibold text-yellow-900 dark:text-yellow-100">Optimization Ideas</div>
+                          <div className="font-semibold text-yellow-900 dark:text-yellow-100">
+                            Optimization Ideas
+                          </div>
                           <div className="text-sm text-yellow-800 dark:text-yellow-200 mt-1">
-                            • Reduce gate depth
-                            • Use hardware-native gates
-                            • Apply error mitigation
+                            • Reduce gate depth • Use hardware-native gates •
+                            Apply error mitigation
                           </div>
                         </div>
                         <div className="bg-blue-200 dark:bg-blue-800 p-3 rounded-lg shadow-lg w-48">
-                          <div className="font-semibold text-blue-900 dark:text-blue-100">Next Steps</div>
+                          <div className="font-semibold text-blue-900 dark:text-blue-100">
+                            Next Steps
+                          </div>
                           <div className="text-sm text-blue-800 dark:text-blue-200 mt-1">
-                            1. Test on simulator
-                            2. Hardware reservation
-                            3. Compare results
+                            1. Test on simulator 2. Hardware reservation 3.
+                            Compare results
                           </div>
                         </div>
                       </div>
@@ -3630,7 +4928,7 @@ export default function Teamwork() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="absolute top-96 right-80 pointer-events-none">
                       <div className="relative">
                         <MousePointer className="h-5 w-5 text-green-500 transform -rotate-12" />
@@ -3658,7 +4956,9 @@ export default function Teamwork() {
                     <div className="flex items-center gap-6 text-sm">
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-green-500" />
-                        <span className="font-medium">4 collaborators active</span>
+                        <span className="font-medium">
+                          4 collaborators active
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Activity className="h-4 w-4 text-blue-500" />
@@ -3671,13 +4971,31 @@ export default function Teamwork() {
                     </div>
                     <div className="flex items-center gap-2">
                       {[
-                        { name: "Alice", color: "from-blue-500 to-indigo-600", active: true },
-                        { name: "Bob", color: "from-red-500 to-pink-600", active: true },
-                        { name: "Sarah", color: "from-green-500 to-emerald-600", active: true },
-                        { name: "John", color: "from-purple-500 to-violet-600", active: false }
+                        {
+                          name: "Alice",
+                          color: "from-blue-500 to-indigo-600",
+                          active: true,
+                        },
+                        {
+                          name: "Bob",
+                          color: "from-red-500 to-pink-600",
+                          active: true,
+                        },
+                        {
+                          name: "Sarah",
+                          color: "from-green-500 to-emerald-600",
+                          active: true,
+                        },
+                        {
+                          name: "John",
+                          color: "from-purple-500 to-violet-600",
+                          active: false,
+                        },
                       ].map((user, idx) => (
                         <div key={idx} className="relative group">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${user.color} flex items-center justify-center text-white text-xs font-bold ${user.active ? 'ring-2 ring-white shadow-lg' : 'opacity-50'}`}>
+                          <div
+                            className={`w-8 h-8 rounded-full bg-gradient-to-br ${user.color} flex items-center justify-center text-white text-xs font-bold ${user.active ? "ring-2 ring-white shadow-lg" : "opacity-50"}`}
+                          >
                             {user.name[0]}
                           </div>
                           {user.active && (
@@ -3707,16 +5025,32 @@ export default function Teamwork() {
                     {[
                       { name: "Bell State", gates: "H, CNOT", qubits: 2 },
                       { name: "GHZ State", gates: "H, CNOT×2", qubits: 3 },
-                      { name: "Quantum Fourier", gates: "H, R, SWAP", qubits: 4 },
-                      { name: "VQE Ansatz", gates: "RY, RZ, CNOT", qubits: 8 }
+                      {
+                        name: "Quantum Fourier",
+                        gates: "H, R, SWAP",
+                        qubits: 4,
+                      },
+                      { name: "VQE Ansatz", gates: "RY, RZ, CNOT", qubits: 8 },
                     ].map((template, idx) => (
-                      <div key={idx} className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group">
+                      <div
+                        key={idx}
+                        className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group"
+                      >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-sm">{template.name}</div>
-                            <div className="text-xs text-gray-500">{template.gates} • {template.qubits} qubits</div>
+                            <div className="font-medium text-sm">
+                              {template.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {template.gates} • {template.qubits} qubits
+                            </div>
                           </div>
-                          <Button size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100" data-testid={`template-${idx}`}>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                            data-testid={`template-${idx}`}
+                          >
                             <Plus className="h-3 w-3" />
                           </Button>
                         </div>
@@ -3737,17 +5071,38 @@ export default function Teamwork() {
                     {[
                       { name: "Circuit Diagram", visible: true, locked: false },
                       { name: "Annotations", visible: true, locked: false },
-                      { name: "Background", visible: true, locked: true }
+                      { name: "Background", visible: true, locked: true },
                     ].map((layer, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800"
+                      >
                         <div className="flex items-center gap-2">
-                          <Button size="icon" variant="ghost" className="h-4 w-4" data-testid={`layer-visibility-${idx}`}>
-                            {layer.visible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-4 w-4"
+                            data-testid={`layer-visibility-${idx}`}
+                          >
+                            {layer.visible ? (
+                              <Eye className="h-3 w-3" />
+                            ) : (
+                              <EyeOff className="h-3 w-3" />
+                            )}
                           </Button>
                           <span className="text-sm">{layer.name}</span>
                         </div>
-                        <Button size="icon" variant="ghost" className="h-4 w-4" data-testid={`layer-lock-${idx}`}>
-                          {layer.locked ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-4 w-4"
+                          data-testid={`layer-lock-${idx}`}
+                        >
+                          {layer.locked ? (
+                            <Lock className="h-3 w-3" />
+                          ) : (
+                            <Unlock className="h-3 w-3" />
+                          )}
                         </Button>
                       </div>
                     ))}
@@ -3765,16 +5120,28 @@ export default function Teamwork() {
                   <CardContent className="space-y-2">
                     <div className="h-32 space-y-2 overflow-y-auto text-xs">
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">A</div>
-                        <span className="text-gray-600 dark:text-gray-400">Alice added H gate • 30s ago</span>
+                        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
+                          A
+                        </div>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Alice added H gate • 30s ago
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">B</div>
-                        <span className="text-gray-600 dark:text-gray-400">Bob drew connection line • 1m ago</span>
+                        <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+                          B
+                        </div>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Bob drew connection line • 1m ago
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">S</div>
-                        <span className="text-gray-600 dark:text-gray-400">Sarah added formula • 2m ago</span>
+                        <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">
+                          S
+                        </div>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Sarah added formula • 2m ago
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -3789,19 +5156,39 @@ export default function Teamwork() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-export-png">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-export-png"
+                    >
                       <Camera className="h-4 w-4 mr-2" />
                       Export as PNG
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-export-svg">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-export-svg"
+                    >
                       <FileText className="h-4 w-4 mr-2" />
                       Export as SVG
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-export-qasm">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-export-qasm"
+                    >
                       <Code2 className="h-4 w-4 mr-2" />
                       Export QASM
                     </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-link">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      data-testid="button-share-link"
+                    >
                       <Share2 className="h-4 w-4 mr-2" />
                       Share Link
                     </Button>
@@ -3813,7 +5200,10 @@ export default function Teamwork() {
         </Dialog>
 
         {/* 5. Smart Suggestions Modal */}
-        <Dialog open={showSmartSuggestions} onOpenChange={setShowSmartSuggestions}>
+        <Dialog
+          open={showSmartSuggestions}
+          onOpenChange={setShowSmartSuggestions}
+        >
           <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -3821,7 +5211,8 @@ export default function Teamwork() {
                 AI Smart Suggestions
               </DialogTitle>
               <DialogDescription>
-                Intelligent recommendations to optimize your quantum research and collaboration
+                Intelligent recommendations to optimize your quantum research
+                and collaboration
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 max-h-[600px] overflow-y-auto">
@@ -3835,29 +5226,60 @@ export default function Teamwork() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">1</div>
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
+                      1
+                    </div>
                     <div className="flex-1">
-                      <h4 className="font-medium">Schedule team synchronization</h4>
+                      <h4 className="font-medium">
+                        Schedule team synchronization
+                      </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Alice and Bob have overlapping availability for 3 hours today. Consider scheduling a joint research session on VQE optimization.
+                        Alice and Bob have overlapping availability for 3 hours
+                        today. Consider scheduling a joint research session on
+                        VQE optimization.
                       </p>
                       <div className="flex gap-2 mt-2">
-                        <Button size="sm" data-testid="button-apply-suggestion-1">Apply</Button>
-                        <Button size="sm" variant="outline" data-testid="button-dismiss-suggestion-1">Dismiss</Button>
+                        <Button
+                          size="sm"
+                          data-testid="button-apply-suggestion-1"
+                        >
+                          Apply
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          data-testid="button-dismiss-suggestion-1"
+                        >
+                          Dismiss
+                        </Button>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">2</div>
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
+                      2
+                    </div>
                     <div className="flex-1">
-                      <h4 className="font-medium">Knowledge sharing opportunity</h4>
+                      <h4 className="font-medium">
+                        Knowledge sharing opportunity
+                      </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Dr. Sarah Kim has expertise in quantum error correction that could benefit the current project. Suggest adding her to the research chat.
+                        Dr. Sarah Kim has expertise in quantum error correction
+                        that could benefit the current project. Suggest adding
+                        her to the research chat.
                       </p>
                       <div className="flex gap-2 mt-2">
-                        <Button size="sm" data-testid="button-invite-expert">Invite Sarah</Button>
-                        <Button size="sm" variant="outline" data-testid="button-learn-more">Learn More</Button>
+                        <Button size="sm" data-testid="button-invite-expert">
+                          Invite Sarah
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          data-testid="button-learn-more"
+                        >
+                          Learn More
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -3874,29 +5296,60 @@ export default function Teamwork() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm">!</div>
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm">
+                      !
+                    </div>
                     <div className="flex-1">
-                      <h4 className="font-medium">Circuit depth reduction available</h4>
+                      <h4 className="font-medium">
+                        Circuit depth reduction available
+                      </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Your current VQE circuit can be optimized to reduce depth by 23% while maintaining fidelity above 90%. This would improve noise resilience.
+                        Your current VQE circuit can be optimized to reduce
+                        depth by 23% while maintaining fidelity above 90%. This
+                        would improve noise resilience.
                       </p>
                       <div className="flex gap-2 mt-2">
-                        <Button size="sm" data-testid="button-optimize-circuit">Auto-Optimize</Button>
-                        <Button size="sm" variant="outline" data-testid="button-show-comparison">Show Comparison</Button>
+                        <Button size="sm" data-testid="button-optimize-circuit">
+                          Auto-Optimize
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          data-testid="button-show-comparison"
+                        >
+                          Show Comparison
+                        </Button>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm">⚡</div>
+                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm">
+                      ⚡
+                    </div>
                     <div className="flex-1">
-                      <h4 className="font-medium">Hardware-optimized parameters</h4>
+                      <h4 className="font-medium">
+                        Hardware-optimized parameters
+                      </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Based on ibm_cairo's calibration data, adjusting rotation angles by 12° would improve gate fidelity for your specific circuit.
+                        Based on ibm_cairo's calibration data, adjusting
+                        rotation angles by 12° would improve gate fidelity for
+                        your specific circuit.
                       </p>
                       <div className="flex gap-2 mt-2">
-                        <Button size="sm" data-testid="button-apply-calibration">Apply Parameters</Button>
-                        <Button size="sm" variant="outline" data-testid="button-schedule-test">Schedule Test</Button>
+                        <Button
+                          size="sm"
+                          data-testid="button-apply-calibration"
+                        >
+                          Apply Parameters
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          data-testid="button-schedule-test"
+                        >
+                          Schedule Test
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -3913,15 +5366,29 @@ export default function Teamwork() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm">$</div>
+                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm">
+                      $
+                    </div>
                     <div className="flex-1">
-                      <h4 className="font-medium">Cost-efficient hardware scheduling</h4>
+                      <h4 className="font-medium">
+                        Cost-efficient hardware scheduling
+                      </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Running your experiment at 2 AM UTC (off-peak hours) would reduce costs by 40% and provide better queue priority.
+                        Running your experiment at 2 AM UTC (off-peak hours)
+                        would reduce costs by 40% and provide better queue
+                        priority.
                       </p>
                       <div className="flex gap-2 mt-2">
-                        <Button size="sm" data-testid="button-schedule-optimal">Schedule Optimal Time</Button>
-                        <Button size="sm" variant="outline" data-testid="button-view-pricing">View Pricing</Button>
+                        <Button size="sm" data-testid="button-schedule-optimal">
+                          Schedule Optimal Time
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          data-testid="button-view-pricing"
+                        >
+                          View Pricing
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -3933,10 +5400,15 @@ export default function Teamwork() {
                 <div className="text-sm text-gray-600">
                   <span className="flex items-center gap-1">
                     <Activity className="h-4 w-4" />
-                    AI continuously analyzes your workflow for optimization opportunities
+                    AI continuously analyzes your workflow for optimization
+                    opportunities
                   </span>
                 </div>
-                <Button size="sm" variant="outline" data-testid="button-configure-ai">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  data-testid="button-configure-ai"
+                >
                   <Settings className="h-4 w-4 mr-1" />
                   Configure AI
                 </Button>
@@ -3954,7 +5426,8 @@ export default function Teamwork() {
                 Team Analytics Dashboard
               </DialogTitle>
               <DialogDescription>
-                Comprehensive analytics and insights about your team's quantum research collaboration
+                Comprehensive analytics and insights about your team's quantum
+                research collaboration
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-6 max-h-[700px] overflow-y-auto">
@@ -3974,7 +5447,9 @@ export default function Teamwork() {
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-purple-500">156h</div>
+                    <div className="text-2xl font-bold text-purple-500">
+                      156h
+                    </div>
                     <div className="text-sm text-gray-600">Total Runtime</div>
                   </CardContent>
                 </Card>
@@ -3998,8 +5473,12 @@ export default function Teamwork() {
                   <div className="h-48 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-lg flex items-center justify-center">
                     <div className="text-center">
                       <BarChart3 className="h-12 w-12 text-blue-500 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">Interactive performance charts</p>
-                      <p className="text-xs text-gray-500">7-day trending data</p>
+                      <p className="text-sm text-gray-600">
+                        Interactive performance charts
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        7-day trending data
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -4015,27 +5494,45 @@ export default function Teamwork() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {["Alice Chen", "Bob Wilson", "Dr. Sarah Kim", "John Doe", "Emma Davis"].map((member, idx) => (
-                      <div key={idx} className="flex items-center justify-between">
+                    {[
+                      "Alice Chen",
+                      "Bob Wilson",
+                      "Dr. Sarah Kim",
+                      "John Doe",
+                      "Emma Davis",
+                    ].map((member, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between"
+                      >
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
                             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white text-sm">
-                              {member.split(' ').map(n => n[0]).join('')}
+                              {member
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
                             </AvatarFallback>
                           </Avatar>
                           <span className="font-medium">{member}</span>
                         </div>
                         <div className="flex items-center gap-4 text-sm">
                           <div className="text-center">
-                            <div className="font-semibold text-blue-500">{12 + idx * 5}</div>
+                            <div className="font-semibold text-blue-500">
+                              {12 + idx * 5}
+                            </div>
                             <div className="text-gray-500">Commits</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-semibold text-green-500">{3 + idx * 2}</div>
+                            <div className="font-semibold text-green-500">
+                              {3 + idx * 2}
+                            </div>
                             <div className="text-gray-500">Projects</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-semibold text-purple-500">{85 + idx * 3}%</div>
+                            <div className="font-semibold text-purple-500">
+                              {85 + idx * 3}%
+                            </div>
                             <div className="text-gray-500">Quality</div>
                           </div>
                         </div>
@@ -4069,16 +5566,22 @@ export default function Teamwork() {
                       <Code2 className="h-4 w-4" />
                       Latest Code Review: VQE_optimization.py
                     </span>
-                    <Badge variant="default" className="bg-green-500">Approved</Badge>
+                    <Badge variant="default" className="bg-green-500">
+                      Approved
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Code Quality Score */}
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Overall Code Quality</span>
+                    <span className="text-sm font-medium">
+                      Overall Code Quality
+                    </span>
                     <div className="flex items-center gap-2">
                       <Progress value={87} className="w-32" />
-                      <span className="text-sm font-semibold text-green-600">87/100</span>
+                      <span className="text-sm font-semibold text-green-600">
+                        87/100
+                      </span>
                     </div>
                   </div>
 
@@ -4087,9 +5590,13 @@ export default function Teamwork() {
                     <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-medium text-green-700 dark:text-green-300">Excellent quantum circuit structure</h4>
+                        <h4 className="font-medium text-green-700 dark:text-green-300">
+                          Excellent quantum circuit structure
+                        </h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          Your VQE ansatz implementation follows quantum computing best practices with proper gate sequencing and parameterization.
+                          Your VQE ansatz implementation follows quantum
+                          computing best practices with proper gate sequencing
+                          and parameterization.
                         </p>
                       </div>
                     </div>
@@ -4097,11 +5604,18 @@ export default function Teamwork() {
                     <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                       <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-medium text-yellow-700 dark:text-yellow-300">Minor optimization opportunity</h4>
+                        <h4 className="font-medium text-yellow-700 dark:text-yellow-300">
+                          Minor optimization opportunity
+                        </h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          Line 45: Consider using hardware-efficient gate decomposition for better NISQ performance.
+                          Line 45: Consider using hardware-efficient gate
+                          decomposition for better NISQ performance.
                         </p>
-                        <Button size="sm" className="mt-2" data-testid="button-apply-fix">
+                        <Button
+                          size="sm"
+                          className="mt-2"
+                          data-testid="button-apply-fix"
+                        >
                           Apply Suggested Fix
                         </Button>
                       </div>
@@ -4110,9 +5624,12 @@ export default function Teamwork() {
                     <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <Lightbulb className="h-5 w-5 text-blue-500 mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-medium text-blue-700 dark:text-blue-300">Performance enhancement suggestion</h4>
+                        <h4 className="font-medium text-blue-700 dark:text-blue-300">
+                          Performance enhancement suggestion
+                        </h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          Your gradient computation could be 23% faster with parameter-shift rule optimization.
+                          Your gradient computation could be 23% faster with
+                          parameter-shift rule optimization.
                         </p>
                       </div>
                     </div>
@@ -4121,16 +5638,24 @@ export default function Teamwork() {
                   {/* Code Metrics */}
                   <div className="grid grid-cols-3 gap-4 pt-4 border-t">
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-blue-500">156</div>
+                      <div className="text-lg font-semibold text-blue-500">
+                        156
+                      </div>
                       <div className="text-sm text-gray-600">Lines of Code</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-green-500">94%</div>
+                      <div className="text-lg font-semibold text-green-500">
+                        94%
+                      </div>
                       <div className="text-sm text-gray-600">Test Coverage</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-purple-500">A+</div>
-                      <div className="text-sm text-gray-600">Maintainability</div>
+                      <div className="text-lg font-semibold text-purple-500">
+                        A+
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Maintainability
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -4144,18 +5669,46 @@ export default function Teamwork() {
                 <CardContent>
                   <div className="space-y-2">
                     {[
-                      { file: "QAOA_maxcut.py", score: 92, status: "approved", time: "2h ago" },
-                      { file: "quantum_teleportation.py", score: 78, status: "needs_review", time: "5h ago" },
-                      { file: "error_mitigation.py", score: 95, status: "approved", time: "1d ago" }
+                      {
+                        file: "QAOA_maxcut.py",
+                        score: 92,
+                        status: "approved",
+                        time: "2h ago",
+                      },
+                      {
+                        file: "quantum_teleportation.py",
+                        score: 78,
+                        status: "needs_review",
+                        time: "5h ago",
+                      },
+                      {
+                        file: "error_mitigation.py",
+                        score: 95,
+                        status: "approved",
+                        time: "1d ago",
+                      },
                     ].map((review, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded"
+                      >
                         <span className="font-mono text-sm">{review.file}</span>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm font-semibold">{review.score}/100</span>
-                          <Badge variant={review.status === 'approved' ? 'default' : 'secondary'}>
-                            {review.status.replace('_', ' ')}
+                          <span className="text-sm font-semibold">
+                            {review.score}/100
+                          </span>
+                          <Badge
+                            variant={
+                              review.status === "approved"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {review.status.replace("_", " ")}
                           </Badge>
-                          <span className="text-xs text-gray-500">{review.time}</span>
+                          <span className="text-xs text-gray-500">
+                            {review.time}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -4191,87 +5744,115 @@ export default function Teamwork() {
                 <TabsContent value="recent" className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { 
-                        name: "Quantum Pioneer", 
-                        description: "Successfully executed your first VQE algorithm", 
-                        icon: Rocket, 
-                        rarity: "rare", 
+                      {
+                        name: "Quantum Pioneer",
+                        description:
+                          "Successfully executed your first VQE algorithm",
+                        icon: Rocket,
+                        rarity: "rare",
                         points: 500,
                         unlocked: true,
-                        date: "2 days ago"
+                        date: "2 days ago",
                       },
-                      { 
-                        name: "Circuit Master", 
-                        description: "Optimized a quantum circuit to reduce depth by >20%", 
-                        icon: Lightning, 
-                        rarity: "epic", 
+                      {
+                        name: "Circuit Master",
+                        description:
+                          "Optimized a quantum circuit to reduce depth by >20%",
+                        icon: Lightning,
+                        rarity: "epic",
                         points: 1000,
                         unlocked: true,
-                        date: "1 week ago"
+                        date: "1 week ago",
                       },
-                      { 
-                        name: "Collaboration Expert", 
-                        description: "Completed 10 successful team projects", 
-                        icon: Users, 
-                        rarity: "legendary", 
+                      {
+                        name: "Collaboration Expert",
+                        description: "Completed 10 successful team projects",
+                        icon: Users,
+                        rarity: "legendary",
                         points: 2500,
                         unlocked: false,
-                        progress: 7
+                        progress: 7,
                       },
-                      { 
-                        name: "Quantum Debugger", 
-                        description: "Fixed critical errors in quantum algorithms", 
-                        icon: Shield, 
-                        rarity: "common", 
+                      {
+                        name: "Quantum Debugger",
+                        description:
+                          "Fixed critical errors in quantum algorithms",
+                        icon: Shield,
+                        rarity: "common",
                         points: 200,
                         unlocked: true,
-                        date: "3 days ago"
-                      }
+                        date: "3 days ago",
+                      },
                     ].map((achievement, idx) => (
-                      <Card key={idx} className={`relative overflow-hidden ${achievement.unlocked ? '' : 'opacity-60'}`}>
+                      <Card
+                        key={idx}
+                        className={`relative overflow-hidden ${achievement.unlocked ? "" : "opacity-60"}`}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                              achievement.rarity === 'legendary' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                              achievement.rarity === 'epic' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
-                              achievement.rarity === 'rare' ? 'bg-gradient-to-br from-blue-400 to-cyan-500' :
-                              'bg-gradient-to-br from-gray-400 to-gray-500'
-                            }`}>
+                            <div
+                              className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                                achievement.rarity === "legendary"
+                                  ? "bg-gradient-to-br from-yellow-400 to-orange-500"
+                                  : achievement.rarity === "epic"
+                                    ? "bg-gradient-to-br from-purple-400 to-pink-500"
+                                    : achievement.rarity === "rare"
+                                      ? "bg-gradient-to-br from-blue-400 to-cyan-500"
+                                      : "bg-gradient-to-br from-gray-400 to-gray-500"
+                              }`}
+                            >
                               <achievement.icon className="h-6 w-6 text-white" />
                             </div>
                             <div className="flex-1">
                               <h3 className="font-semibold flex items-center gap-2">
                                 {achievement.name}
-                                {achievement.unlocked && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                                {achievement.unlocked && (
+                                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                )}
                               </h3>
                               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                 {achievement.description}
                               </p>
                               <div className="flex items-center justify-between mt-3">
-                                <Badge variant={
-                                  achievement.rarity === 'legendary' ? 'default' :
-                                  achievement.rarity === 'epic' ? 'secondary' :
-                                  achievement.rarity === 'rare' ? 'outline' : 'secondary'
-                                } className="text-xs">
+                                <Badge
+                                  variant={
+                                    achievement.rarity === "legendary"
+                                      ? "default"
+                                      : achievement.rarity === "epic"
+                                        ? "secondary"
+                                        : achievement.rarity === "rare"
+                                          ? "outline"
+                                          : "secondary"
+                                  }
+                                  className="text-xs"
+                                >
                                   {achievement.rarity}
                                 </Badge>
                                 <div className="flex items-center gap-1 text-sm">
                                   <Flame className="h-3 w-3 text-orange-500" />
-                                  <span className="font-semibold">{achievement.points} pts</span>
+                                  <span className="font-semibold">
+                                    {achievement.points} pts
+                                  </span>
                                 </div>
                               </div>
                               {achievement.unlocked && achievement.date && (
-                                <div className="text-xs text-gray-500 mt-2">Unlocked {achievement.date}</div>
-                              )}
-                              {!achievement.unlocked && achievement.progress && (
-                                <div className="mt-2">
-                                  <div className="flex justify-between text-xs mb-1">
-                                    <span>Progress</span>
-                                    <span>{achievement.progress}/10</span>
-                                  </div>
-                                  <Progress value={achievement.progress * 10} className="h-1" />
+                                <div className="text-xs text-gray-500 mt-2">
+                                  Unlocked {achievement.date}
                                 </div>
                               )}
+                              {!achievement.unlocked &&
+                                achievement.progress && (
+                                  <div className="mt-2">
+                                    <div className="flex justify-between text-xs mb-1">
+                                      <span>Progress</span>
+                                      <span>{achievement.progress}/10</span>
+                                    </div>
+                                    <Progress
+                                      value={achievement.progress * 10}
+                                      className="h-1"
+                                    />
+                                  </div>
+                                )}
                             </div>
                           </div>
                         </CardContent>
@@ -4283,16 +5864,25 @@ export default function Teamwork() {
                 <TabsContent value="collaboration">
                   <div className="text-center py-8">
                     <Users className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold">Team Collaboration Achievements</h3>
-                    <p className="text-gray-600 mt-2">Unlock achievements by working together on quantum projects</p>
+                    <h3 className="text-lg font-semibold">
+                      Team Collaboration Achievements
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      Unlock achievements by working together on quantum
+                      projects
+                    </p>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="research">
                   <div className="text-center py-8">
                     <BookOpen className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold">Research Milestones</h3>
-                    <p className="text-gray-600 mt-2">Achievements for scientific contributions and discoveries</p>
+                    <h3 className="text-lg font-semibold">
+                      Research Milestones
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      Achievements for scientific contributions and discoveries
+                    </p>
                   </div>
                 </TabsContent>
 
@@ -4300,7 +5890,9 @@ export default function Teamwork() {
                   <div className="text-center py-8">
                     <Crown className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold">Quantum Mastery</h3>
-                    <p className="text-gray-600 mt-2">Expert-level achievements for quantum computing mastery</p>
+                    <p className="text-gray-600 mt-2">
+                      Expert-level achievements for quantum computing mastery
+                    </p>
                   </div>
                 </TabsContent>
               </Tabs>
@@ -4309,7 +5901,10 @@ export default function Teamwork() {
         </Dialog>
 
         {/* 9. Active Challenges Modal */}
-        <Dialog open={showActiveChallenges} onOpenChange={setShowActiveChallenges}>
+        <Dialog
+          open={showActiveChallenges}
+          onOpenChange={setShowActiveChallenges}
+        >
           <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -4351,63 +5946,80 @@ export default function Teamwork() {
                 {[
                   {
                     name: "VQE Optimization Challenge",
-                    description: "Optimize a VQE algorithm to achieve >95% accuracy with minimum circuit depth",
+                    description:
+                      "Optimize a VQE algorithm to achieve >95% accuracy with minimum circuit depth",
                     difficulty: "Expert",
                     participants: 156,
                     timeLeft: "5 days",
                     reward: 5000,
                     progress: 65,
-                    status: "in_progress"
+                    status: "in_progress",
                   },
                   {
                     name: "Quantum Error Correction",
-                    description: "Implement and test a surface code error correction scheme",
+                    description:
+                      "Implement and test a surface code error correction scheme",
                     difficulty: "Advanced",
                     participants: 89,
                     timeLeft: "12 days",
                     reward: 3500,
                     progress: 0,
-                    status: "available"
+                    status: "available",
                   },
                   {
                     name: "Team Circuit Design",
-                    description: "Collaborate with 2+ members to design an efficient QAOA circuit",
+                    description:
+                      "Collaborate with 2+ members to design an efficient QAOA circuit",
                     difficulty: "Intermediate",
                     participants: 234,
                     timeLeft: "8 days",
                     reward: 2000,
                     progress: 30,
-                    status: "in_progress"
-                  }
+                    status: "in_progress",
+                  },
                 ].map((challenge, idx) => (
                   <Card key={idx}>
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-lg">{challenge.name}</h3>
-                            <Badge variant={
-                              challenge.difficulty === 'Expert' ? 'destructive' :
-                              challenge.difficulty === 'Advanced' ? 'default' :
-                              'secondary'
-                            }>
+                            <h3 className="font-semibold text-lg">
+                              {challenge.name}
+                            </h3>
+                            <Badge
+                              variant={
+                                challenge.difficulty === "Expert"
+                                  ? "destructive"
+                                  : challenge.difficulty === "Advanced"
+                                    ? "default"
+                                    : "secondary"
+                              }
+                            >
                               {challenge.difficulty}
                             </Badge>
-                            {challenge.status === 'in_progress' && (
-                              <Badge variant="outline" className="text-blue-600 border-blue-600">
+                            {challenge.status === "in_progress" && (
+                              <Badge
+                                variant="outline"
+                                className="text-blue-600 border-blue-600"
+                              >
                                 In Progress
                               </Badge>
                             )}
                           </div>
-                          <p className="text-gray-600 dark:text-gray-400 mb-4">{challenge.description}</p>
-                          
-                          {challenge.status === 'in_progress' && (
+                          <p className="text-gray-600 dark:text-gray-400 mb-4">
+                            {challenge.description}
+                          </p>
+
+                          {challenge.status === "in_progress" && (
                             <div className="mb-4">
                               <div className="flex justify-between text-sm mb-1">
                                 <span>Your Progress</span>
                                 <span>{challenge.progress}%</span>
                               </div>
-                              <Progress value={challenge.progress} className="h-2" />
+                              <Progress
+                                value={challenge.progress}
+                                className="h-2"
+                              />
                             </div>
                           )}
 
@@ -4422,19 +6034,28 @@ export default function Teamwork() {
                             </div>
                             <div className="flex items-center gap-1">
                               <Flame className="h-4 w-4 text-orange-500" />
-                              <span className="font-semibold">{challenge.reward.toLocaleString()} pts</span>
+                              <span className="font-semibold">
+                                {challenge.reward.toLocaleString()} pts
+                              </span>
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="ml-4">
-                          <Button 
-                            data-testid={`button-${challenge.status === 'in_progress' ? 'continue' : 'join'}-challenge-${idx}`}
+                          <Button
+                            data-testid={`button-${challenge.status === "in_progress" ? "continue" : "join"}-challenge-${idx}`}
                             className="mb-2"
                           >
-                            {challenge.status === 'in_progress' ? 'Continue' : 'Join Challenge'}
+                            {challenge.status === "in_progress"
+                              ? "Continue"
+                              : "Join Challenge"}
                           </Button>
-                          <Button variant="outline" size="sm" className="w-full" data-testid={`button-view-details-${idx}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            data-testid={`button-view-details-${idx}`}
+                          >
                             View Details
                           </Button>
                         </div>
@@ -4472,56 +6093,111 @@ export default function Teamwork() {
                 <TabsContent value="points" className="space-y-4">
                   <div className="space-y-3">
                     {[
-                      { name: "Dr. Sarah Kim", points: 8750, level: 12, streak: 28, rank: 1, change: "up" },
-                      { name: "Alice Chen", points: 7200, level: 10, streak: 15, rank: 2, change: "same" },
-                      { name: "Bob Wilson", points: 6800, level: 9, streak: 12, rank: 3, change: "down" },
-                      { name: "John Doe", points: 5500, level: 8, streak: 8, rank: 4, change: "up" },
-                      { name: "Emma Davis", points: 4900, level: 7, streak: 5, rank: 5, change: "up" },
+                      {
+                        name: "Dr. Sarah Kim",
+                        points: 8750,
+                        level: 12,
+                        streak: 28,
+                        rank: 1,
+                        change: "up",
+                      },
+                      {
+                        name: "Alice Chen",
+                        points: 7200,
+                        level: 10,
+                        streak: 15,
+                        rank: 2,
+                        change: "same",
+                      },
+                      {
+                        name: "Bob Wilson",
+                        points: 6800,
+                        level: 9,
+                        streak: 12,
+                        rank: 3,
+                        change: "down",
+                      },
+                      {
+                        name: "John Doe",
+                        points: 5500,
+                        level: 8,
+                        streak: 8,
+                        rank: 4,
+                        change: "up",
+                      },
+                      {
+                        name: "Emma Davis",
+                        points: 4900,
+                        level: 7,
+                        streak: 5,
+                        rank: 5,
+                        change: "up",
+                      },
                     ].map((member, idx) => (
-                      <Card key={idx} className={`${idx < 3 ? 'ring-2 ring-yellow-200 dark:ring-yellow-800' : ''}`}>
+                      <Card
+                        key={idx}
+                        className={`${idx < 3 ? "ring-2 ring-yellow-200 dark:ring-yellow-800" : ""}`}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               {/* Rank Badge */}
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
-                                idx === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white' :
-                                idx === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white' :
-                                idx === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white' :
-                                'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
-                              }`}>
+                              <div
+                                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                                  idx === 0
+                                    ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white"
+                                    : idx === 1
+                                      ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white"
+                                      : idx === 2
+                                        ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white"
+                                        : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                                }`}
+                              >
                                 {member.rank}
                               </div>
-                              
+
                               {/* Member Info */}
                               <div className="flex items-center gap-3">
                                 <Avatar className="h-10 w-10">
                                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                                    {member.name.split(' ').map(n => n[0]).join('')}
+                                    {member.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div>
                                   <div className="font-semibold flex items-center gap-2">
                                     {member.name}
-                                    {idx < 3 && <Crown className="h-4 w-4 text-yellow-500" />}
+                                    {idx < 3 && (
+                                      <Crown className="h-4 w-4 text-yellow-500" />
+                                    )}
                                   </div>
                                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                                    Level {member.level} • {member.streak} day streak
+                                    Level {member.level} • {member.streak} day
+                                    streak
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            
+
                             {/* Points and Change */}
                             <div className="text-right">
-                              <div className="text-lg font-bold text-blue-600">{member.points.toLocaleString()}</div>
-                              <div className={`text-sm flex items-center gap-1 ${
-                                member.change === 'up' ? 'text-green-600' : 
-                                member.change === 'down' ? 'text-red-600' : 
-                                'text-gray-500'
-                              }`}>
-                                {member.change === 'up' && '↗'} 
-                                {member.change === 'down' && '↘'} 
-                                {member.change === 'same' && '—'}
+                              <div className="text-lg font-bold text-blue-600">
+                                {member.points.toLocaleString()}
+                              </div>
+                              <div
+                                className={`text-sm flex items-center gap-1 ${
+                                  member.change === "up"
+                                    ? "text-green-600"
+                                    : member.change === "down"
+                                      ? "text-red-600"
+                                      : "text-gray-500"
+                                }`}
+                              >
+                                {member.change === "up" && "↗"}
+                                {member.change === "down" && "↘"}
+                                {member.change === "same" && "—"}
                                 <span>points</span>
                               </div>
                             </div>
@@ -4535,24 +6211,36 @@ export default function Teamwork() {
                 <TabsContent value="contributions">
                   <div className="text-center py-8">
                     <GitBranch className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold">Contribution Rankings</h3>
-                    <p className="text-gray-600 mt-2">Based on commits, reviews, and collaboration</p>
+                    <h3 className="text-lg font-semibold">
+                      Contribution Rankings
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      Based on commits, reviews, and collaboration
+                    </p>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="achievements">
                   <div className="text-center py-8">
                     <Medal className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold">Achievement Leaders</h3>
-                    <p className="text-gray-600 mt-2">Top performers in quantum achievements</p>
+                    <h3 className="text-lg font-semibold">
+                      Achievement Leaders
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      Top performers in quantum achievements
+                    </p>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="monthly">
                   <div className="text-center py-8">
                     <Calendar className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold">This Month's Champions</h3>
-                    <p className="text-gray-600 mt-2">September 2025 leaderboard</p>
+                    <h3 className="text-lg font-semibold">
+                      This Month's Champions
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      September 2025 leaderboard
+                    </p>
                   </div>
                 </TabsContent>
               </Tabs>
@@ -4569,7 +6257,8 @@ export default function Teamwork() {
                 Quantum Learning Path
               </DialogTitle>
               <DialogDescription>
-                Structured learning journey to master quantum computing and collaboration
+                Structured learning journey to master quantum computing and
+                collaboration
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-6 max-h-[700px] overflow-y-auto">
@@ -4577,8 +6266,12 @@ export default function Teamwork() {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">Your Learning Progress</h3>
-                    <Badge variant="default" className="bg-indigo-500">Advanced Level</Badge>
+                    <h3 className="text-lg font-semibold">
+                      Your Learning Progress
+                    </h3>
+                    <Badge variant="default" className="bg-indigo-500">
+                      Advanced Level
+                    </Badge>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
@@ -4588,15 +6281,21 @@ export default function Teamwork() {
                     <Progress value={73} className="h-3" />
                     <div className="grid grid-cols-3 gap-4 mt-4 text-center">
                       <div>
-                        <div className="text-2xl font-bold text-green-500">11</div>
+                        <div className="text-2xl font-bold text-green-500">
+                          11
+                        </div>
                         <div className="text-sm text-gray-600">Completed</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-blue-500">2</div>
+                        <div className="text-2xl font-bold text-blue-500">
+                          2
+                        </div>
                         <div className="text-sm text-gray-600">In Progress</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-500">2</div>
+                        <div className="text-2xl font-bold text-gray-500">
+                          2
+                        </div>
                         <div className="text-sm text-gray-600">Locked</div>
                       </div>
                     </div>
@@ -4609,102 +6308,170 @@ export default function Teamwork() {
                 {[
                   {
                     title: "Quantum Fundamentals",
-                    description: "Master the basics of qubits, superposition, and entanglement",
-                    modules: ["Qubit States", "Quantum Gates", "Measurement", "Entanglement"],
+                    description:
+                      "Master the basics of qubits, superposition, and entanglement",
+                    modules: [
+                      "Qubit States",
+                      "Quantum Gates",
+                      "Measurement",
+                      "Entanglement",
+                    ],
                     completed: 4,
                     total: 4,
                     status: "completed",
-                    difficulty: "Beginner"
+                    difficulty: "Beginner",
                   },
                   {
                     title: "Quantum Algorithms",
-                    description: "Learn key quantum algorithms and their implementations",
-                    modules: ["Deutsch Algorithm", "Grover Search", "Shor's Algorithm", "VQE"],
+                    description:
+                      "Learn key quantum algorithms and their implementations",
+                    modules: [
+                      "Deutsch Algorithm",
+                      "Grover Search",
+                      "Shor's Algorithm",
+                      "VQE",
+                    ],
                     completed: 3,
                     total: 4,
                     status: "in_progress",
-                    difficulty: "Intermediate"
+                    difficulty: "Intermediate",
                   },
                   {
                     title: "Quantum Machine Learning",
-                    description: "Explore the intersection of quantum computing and ML",
-                    modules: ["Quantum Features", "QSVM", "Quantum Neural Networks", "Hybrid Models"],
+                    description:
+                      "Explore the intersection of quantum computing and ML",
+                    modules: [
+                      "Quantum Features",
+                      "QSVM",
+                      "Quantum Neural Networks",
+                      "Hybrid Models",
+                    ],
                     completed: 2,
                     total: 4,
                     status: "in_progress",
-                    difficulty: "Advanced"
+                    difficulty: "Advanced",
                   },
                   {
                     title: "NISQ Programming",
-                    description: "Programming for Noisy Intermediate-Scale Quantum devices",
-                    modules: ["Error Mitigation", "Circuit Optimization", "Hardware Constraints", "Benchmarking"],
+                    description:
+                      "Programming for Noisy Intermediate-Scale Quantum devices",
+                    modules: [
+                      "Error Mitigation",
+                      "Circuit Optimization",
+                      "Hardware Constraints",
+                      "Benchmarking",
+                    ],
                     completed: 2,
                     total: 4,
                     status: "available",
-                    difficulty: "Expert"
+                    difficulty: "Expert",
                   },
                   {
                     title: "Quantum Collaboration",
-                    description: "Advanced teamwork and collaboration in quantum research",
-                    modules: ["Team Protocols", "Shared Resources", "Peer Review", "Knowledge Sharing"],
+                    description:
+                      "Advanced teamwork and collaboration in quantum research",
+                    modules: [
+                      "Team Protocols",
+                      "Shared Resources",
+                      "Peer Review",
+                      "Knowledge Sharing",
+                    ],
                     completed: 0,
                     total: 4,
                     status: "locked",
-                    difficulty: "Expert"
-                  }
+                    difficulty: "Expert",
+                  },
                 ].map((path, idx) => (
-                  <Card key={idx} className={`${path.status === 'locked' ? 'opacity-60' : ''}`}>
+                  <Card
+                    key={idx}
+                    className={`${path.status === "locked" ? "opacity-60" : ""}`}
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-semibold">{path.title}</h3>
-                            <Badge variant={
-                              path.status === 'completed' ? 'default' :
-                              path.status === 'in_progress' ? 'secondary' :
-                              path.status === 'locked' ? 'outline' : 'outline'
-                            }>
+                            <h3 className="text-lg font-semibold">
+                              {path.title}
+                            </h3>
+                            <Badge
+                              variant={
+                                path.status === "completed"
+                                  ? "default"
+                                  : path.status === "in_progress"
+                                    ? "secondary"
+                                    : path.status === "locked"
+                                      ? "outline"
+                                      : "outline"
+                              }
+                            >
                               {path.difficulty}
                             </Badge>
-                            {path.status === 'completed' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
-                            {path.status === 'locked' && <Lock className="h-5 w-5 text-gray-400" />}
+                            {path.status === "completed" && (
+                              <CheckCircle2 className="h-5 w-5 text-green-500" />
+                            )}
+                            {path.status === "locked" && (
+                              <Lock className="h-5 w-5 text-gray-400" />
+                            )}
                           </div>
-                          <p className="text-gray-600 dark:text-gray-400 mb-4">{path.description}</p>
-                          
+                          <p className="text-gray-600 dark:text-gray-400 mb-4">
+                            {path.description}
+                          </p>
+
                           <div className="mb-4">
                             <div className="flex justify-between text-sm mb-2">
                               <span>Progress</span>
-                              <span>{path.completed}/{path.total} modules</span>
+                              <span>
+                                {path.completed}/{path.total} modules
+                              </span>
                             </div>
-                            <Progress value={(path.completed / path.total) * 100} className="h-2" />
+                            <Progress
+                              value={(path.completed / path.total) * 100}
+                              className="h-2"
+                            />
                           </div>
 
                           <div className="flex flex-wrap gap-2">
                             {path.modules.map((module, midx) => (
-                              <Badge key={midx} variant={
-                                midx < path.completed ? 'default' :
-                                midx === path.completed && path.status === 'in_progress' ? 'secondary' :
-                                'outline'
-                              } className="text-xs">
-                                {midx < path.completed && '✓ '}
+                              <Badge
+                                key={midx}
+                                variant={
+                                  midx < path.completed
+                                    ? "default"
+                                    : midx === path.completed &&
+                                        path.status === "in_progress"
+                                      ? "secondary"
+                                      : "outline"
+                                }
+                                className="text-xs"
+                              >
+                                {midx < path.completed && "✓ "}
                                 {module}
                               </Badge>
                             ))}
                           </div>
                         </div>
-                        
+
                         <div className="ml-4">
-                          <Button 
-                            disabled={path.status === 'locked'}
-                            data-testid={`button-${path.status === 'completed' ? 'review' : path.status === 'in_progress' ? 'continue' : 'start'}-path-${idx}`}
+                          <Button
+                            disabled={path.status === "locked"}
+                            data-testid={`button-${path.status === "completed" ? "review" : path.status === "in_progress" ? "continue" : "start"}-path-${idx}`}
                             className="mb-2"
                           >
-                            {path.status === 'completed' ? 'Review' : 
-                             path.status === 'in_progress' ? 'Continue' : 
-                             path.status === 'locked' ? 'Locked' : 'Start'}
+                            {path.status === "completed"
+                              ? "Review"
+                              : path.status === "in_progress"
+                                ? "Continue"
+                                : path.status === "locked"
+                                  ? "Locked"
+                                  : "Start"}
                           </Button>
-                          {path.status !== 'locked' && (
-                            <Button variant="outline" size="sm" className="w-full" data-testid={`button-view-curriculum-${idx}`}>
+                          {path.status !== "locked" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                              data-testid={`button-view-curriculum-${idx}`}
+                            >
                               View Curriculum
                             </Button>
                           )}
@@ -4729,14 +6496,18 @@ export default function Teamwork() {
                       <BookOpen className="h-5 w-5 text-blue-500" />
                       <div>
                         <div className="font-medium">Complete VQE Module</div>
-                        <div className="text-sm text-gray-600">Finish the last module in Quantum Algorithms</div>
+                        <div className="text-sm text-gray-600">
+                          Finish the last module in Quantum Algorithms
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                       <Users className="h-5 w-5 text-green-500" />
                       <div>
                         <div className="font-medium">Join Study Group</div>
-                        <div className="text-sm text-gray-600">Connect with peers learning Quantum ML</div>
+                        <div className="text-sm text-gray-600">
+                          Connect with peers learning Quantum ML
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -4745,7 +6516,6 @@ export default function Teamwork() {
             </div>
           </DialogContent>
         </Dialog>
-
       </div>
     </div>
   );
