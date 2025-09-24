@@ -103,7 +103,10 @@ import {
   Puzzle,
   StopCircle,
   Heart,
-  TestTube
+  TestTube,
+  Mouse,
+  Highlighter,
+  PauseCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -2933,89 +2936,384 @@ export default function Teamwork() {
           </DialogContent>
         </Dialog>
 
-        {/* 3. Screen Share Modal */}
+        {/* 3. Enhanced Screen Share Modal */}
         <Dialog open={showScreenShare} onOpenChange={setShowScreenShare}>
-          <DialogContent className="max-w-6xl max-h-[90vh]">
+          <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Monitor className="h-5 w-5 text-purple-500" />
-                Screen Share - Quantum Circuit Collaboration
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Monitor className="h-6 w-6 text-purple-500" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-semibold">Professional Screen Share Studio</div>
+                    <div className="text-sm text-gray-500 font-normal">Quantum Circuit Collaboration • HD Quality</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="destructive" className="bg-red-50 text-red-700 border-red-200 animate-pulse">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
+                    LIVE • 1080p
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="ghost" data-testid="button-screen-settings">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Monitor className="h-4 w-4 mr-2" />
+                        Display Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Maximize2 className="h-4 w-4 mr-2" />
+                        Full Screen
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Camera className="h-4 w-4 mr-2" />
+                        Record Session
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-red-600">
+                        <StopCircle className="h-4 w-4 mr-2" />
+                        Stop Sharing
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </DialogTitle>
               <DialogDescription>
-                Share and collaborate on quantum circuits in real-time
+                High-definition screen sharing with real-time collaboration, annotations, and quantum circuit visualization
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              {/* Screen Share Controls */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Badge variant="destructive" className="animate-pulse">● LIVE</Badge>
-                  <span className="text-sm text-gray-600">Alice Chen is sharing: Quantum Circuit Editor</span>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" data-testid="button-request-control">
-                    <MousePointer className="h-4 w-4 mr-2" />
-                    Request Control
-                  </Button>
-                  <Button size="sm" variant="outline" data-testid="button-fullscreen">
-                    <Maximize2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Shared Screen Content (Simulated) */}
-              <div className="bg-gray-900 rounded-lg h-96 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20"></div>
-                <div className="text-center text-white z-10">
-                  <div className="mb-4">
-                    <div className="w-20 h-20 border-2 border-blue-400 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <Atom className="h-10 w-10 text-blue-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold">Quantum Circuit Editor</h3>
-                    <p className="text-gray-300 mt-2">VQE Circuit with 8 Qubits - Live Collaboration</p>
-                  </div>
-                  <div className="flex justify-center gap-8 text-sm">
+            
+            <div className="flex h-[750px] gap-6">
+              {/* Main Screen Share Area */}
+              <div className="flex-1 flex flex-col">
+                {/* Screen Share Header */}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50 border border-purple-200 dark:border-purple-800 rounded-lg mb-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 ring-2 ring-purple-200">
+                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white font-semibold">
+                        AC
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
-                      <div className="text-blue-400 font-semibold">Circuit Depth</div>
-                      <div>12 layers</div>
-                    </div>
-                    <div>
-                      <div className="text-green-400 font-semibold">Gates</div>
-                      <div>156 total</div>
-                    </div>
-                    <div>
-                      <div className="text-purple-400 font-semibold">Fidelity</div>
-                      <div>92.4%</div>
+                      <div className="font-semibold text-purple-900 dark:text-purple-100">Alice Chen is presenting</div>
+                      <div className="text-sm text-purple-700 dark:text-purple-300">Quantum Circuit Editor • Application Window</div>
                     </div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" data-testid="button-request-control">
+                      <MousePointer className="h-4 w-4 mr-2" />
+                      Request Control
+                    </Button>
+                    <Button size="sm" variant="outline" data-testid="button-annotation-mode">
+                      <PenTool className="h-4 w-4 mr-2" />
+                      Annotate
+                    </Button>
+                    <Button size="sm" variant="outline" data-testid="button-presentation-mode">
+                      <Maximize2 className="h-4 w-4 mr-2" />
+                      Full Screen
+                    </Button>
+                  </div>
                 </div>
-                {/* Cursor indicators */}
-                <div className="absolute top-16 left-32 flex items-center gap-1">
-                  <MousePointer className="h-4 w-4 text-red-400" />
-                  <span className="text-xs text-red-400 bg-black/50 px-1 rounded">Bob Wilson</span>
-                </div>
-              </div>
 
-              {/* Participants and Chat */}
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <h3 className="font-medium mb-2">Viewing Participants (3)</h3>
-                  <div className="flex gap-2">
-                    {["Bob Wilson", "Dr. Sarah Kim", "John Doe"].map((user, idx) => (
-                      <div key={idx} className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-2 rounded text-sm">
+                {/* Enhanced Shared Screen Content */}
+                <div className="flex-1 relative bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl overflow-hidden border-2 border-purple-200 dark:border-purple-800">
+                  {/* Screen Content */}
+                  <div className="absolute inset-0 p-8">
+                    {/* Simulated Quantum Circuit Interface */}
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 h-full">
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="text-white">
+                          <h2 className="text-2xl font-bold">VQE Optimization Circuit</h2>
+                          <p className="text-blue-200">8-Qubit Variational Quantum Eigensolver</p>
+                        </div>
+                        <div className="flex gap-4 text-sm">
+                          <div className="bg-blue-500/20 p-3 rounded-lg text-center">
+                            <div className="text-blue-300 font-semibold">Depth</div>
+                            <div className="text-white text-xl">12</div>
+                          </div>
+                          <div className="bg-green-500/20 p-3 rounded-lg text-center">
+                            <div className="text-green-300 font-semibold">Gates</div>
+                            <div className="text-white text-xl">156</div>
+                          </div>
+                          <div className="bg-purple-500/20 p-3 rounded-lg text-center">
+                            <div className="text-purple-300 font-semibold">Fidelity</div>
+                            <div className="text-white text-xl">92.4%</div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Circuit Visualization */}
+                      <div className="bg-black/20 rounded-lg p-4 mb-4">
+                        <div className="space-y-4">
+                          {Array.from({ length: 4 }, (_, i) => (
+                            <div key={i} className="flex items-center gap-4">
+                              <div className="text-blue-300 text-sm w-8">q{i}</div>
+                              <div className="flex-1 h-0.5 bg-blue-400/50 relative">
+                                <div className="absolute left-8 top-1/2 transform -translate-y-1/2 w-6 h-6 border-2 border-yellow-400 bg-yellow-400/20 rounded flex items-center justify-center text-xs text-yellow-300 font-bold">
+                                  H
+                                </div>
+                                <div className="absolute left-20 top-1/2 transform -translate-y-1/2 w-6 h-6 border-2 border-green-400 bg-green-400/20 rounded flex items-center justify-center text-xs text-green-300 font-bold">
+                                  R
+                                </div>
+                                <div className="absolute left-32 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-red-400 rounded-full"></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Live Statistics */}
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-blue-500/20 p-3 rounded">
+                          <div className="text-blue-300 text-sm">Expected Value</div>
+                          <div className="text-white font-bold">-1.236</div>
+                        </div>
+                        <div className="bg-green-500/20 p-3 rounded">
+                          <div className="text-green-300 text-sm">Convergence</div>
+                          <div className="text-white font-bold">87.3%</div>
+                        </div>
+                        <div className="bg-purple-500/20 p-3 rounded">
+                          <div className="text-purple-300 text-sm">Iterations</div>
+                          <div className="text-white font-bold">156</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Live Cursors and Annotations */}
+                  <div className="absolute top-24 left-40 flex items-center gap-2 pointer-events-none">
+                    <div className="relative">
+                      <MousePointer className="h-5 w-5 text-red-400 transform rotate-12" />
+                      <div className="absolute top-5 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-lg">
+                        Bob Wilson
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute top-32 right-32 flex items-center gap-2 pointer-events-none">
+                    <div className="relative">
+                      <MousePointer className="h-5 w-5 text-blue-400 transform -rotate-12" />
+                      <div className="absolute top-5 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded shadow-lg">
+                        Dr. Sarah Kim
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Annotation Layer */}
+                  <div className="absolute top-48 left-48 pointer-events-none">
+                    <div className="bg-yellow-400/80 text-black text-sm px-2 py-1 rounded-lg font-medium">
+                      💡 Try increasing this parameter
+                    </div>
+                  </div>
+                </div>
+
+                {/* Enhanced Control Bar */}
+                <div className="p-4 bg-white dark:bg-gray-800 border-t mt-4 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    {/* Annotation Tools */}
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Annotation Tools:</div>
+                      <Button size="sm" variant="outline" data-testid="button-pen-annotation">
+                        <PenTool className="h-4 w-4 mr-1" />
+                        Draw
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-text-annotation">
+                        <Type className="h-4 w-4 mr-1" />
+                        Text
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-arrow-annotation">
+                        <Mouse className="h-4 w-4 mr-1" />
+                        Arrow
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-highlight-annotation">
+                        <Highlighter className="h-4 w-4 mr-1" />
+                        Highlight
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-clear-annotations">
+                        <Eraser className="h-4 w-4 mr-1" />
+                        Clear
+                      </Button>
+                    </div>
+
+                    {/* Quality and Recording */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 text-sm">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        {user}
+                        <span className="text-gray-600 dark:text-gray-400">1080p • 60fps</span>
+                      </div>
+                      <Button size="sm" variant="outline" data-testid="button-record-screen">
+                        <Camera className="h-4 w-4 mr-1" />
+                        Record
+                      </Button>
+                      <Button size="sm" variant="outline" data-testid="button-screenshot">
+                        <Download className="h-4 w-4 mr-1" />
+                        Screenshot
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced Sidebar */}
+              <div className="w-80 space-y-4">
+                {/* Active Viewers */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Eye className="h-4 w-4 text-blue-500" />
+                      Active Viewers (4)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { name: "Bob Wilson", status: "controlling", role: "Researcher" },
+                      { name: "Dr. Sarah Kim", status: "annotating", role: "Mentor" },
+                      { name: "John Doe", status: "viewing", role: "Student" },
+                      { name: "Emma Davis", status: "viewing", role: "Researcher" }
+                    ].map((user, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-600 text-white text-xs">
+                                {user.name.split(' ').map(n => n[0]).join('')}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full ${
+                              user.status === 'controlling' ? 'bg-red-500' :
+                              user.status === 'annotating' ? 'bg-yellow-500' :
+                              'bg-green-500'
+                            }`}></div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{user.name}</div>
+                            <div className="text-xs text-gray-500 capitalize">{user.status}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {user.status === 'controlling' && <MousePointer className="h-3 w-3 text-red-500" />}
+                          {user.status === 'annotating' && <PenTool className="h-3 w-3 text-yellow-500" />}
+                        </div>
                       </div>
                     ))}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium mb-2">Live Comments</h3>
-                  <div className="h-20 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm space-y-1 overflow-y-auto">
-                    <div><span className="font-medium text-blue-600">Bob:</span> Can we adjust the rotation angle on qubit 3?</div>
-                    <div><span className="font-medium text-green-600">Sarah:</span> The current parameterization looks good!</div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
+
+                {/* Live Comments & Reactions */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-green-500" />
+                      Live Comments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="h-40 bg-gray-50 dark:bg-gray-900 rounded-lg p-3 space-y-3 overflow-y-auto">
+                      <div className="flex gap-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">B</div>
+                        <div className="flex-1">
+                          <div className="text-xs text-gray-500">Bob Wilson • 2m ago</div>
+                          <div className="text-sm">Can we adjust the rotation angle on qubit 3? The current value seems suboptimal.</div>
+                          <div className="flex items-center gap-1 mt-1">
+                            <span className="text-xs">👍 2</span>
+                            <span className="text-xs">💡 1</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">S</div>
+                        <div className="flex-1">
+                          <div className="text-xs text-gray-500">Dr. Sarah Kim • 1m ago</div>
+                          <div className="text-sm">Excellent optimization! The convergence rate improved significantly.</div>
+                          <div className="flex items-center gap-1 mt-1">
+                            <span className="text-xs">🎉 3</span>
+                            <span className="text-xs">⚛️ 2</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Input placeholder="Add a comment..." className="flex-1 text-sm" data-testid="input-screen-comment" />
+                      <Button size="icon" className="h-8 w-8" data-testid="button-send-screen-comment">
+                        <Send className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Quick reactions:</span>
+                      <div className="flex gap-1">
+                        {["👍", "💡", "⚛️", "🎉", "❓"].map((emoji, idx) => (
+                          <Button key={idx} size="icon" variant="ghost" className="h-6 w-6 text-sm" data-testid={`button-reaction-${idx}`}>
+                            {emoji}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Screen Share Controls */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Settings className="h-4 w-4 text-orange-500" />
+                      Screen Controls
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-switch-window">
+                      <Monitor className="h-4 w-4 mr-2" />
+                      Switch Window
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-application">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Share Application
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-share-desktop">
+                      <Monitor className="h-4 w-4 mr-2" />
+                      Share Desktop
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" data-testid="button-pause-sharing">
+                      <PauseCircle className="h-4 w-4 mr-2" />
+                      Pause Sharing
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Session Recording */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Camera className="h-4 w-4 text-red-500" />
+                      Session Recording
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-red-700 dark:text-red-300">Recording Active</span>
+                      </div>
+                      <div className="text-xs text-red-600 dark:text-red-400">Duration: 15:32</div>
+                      <div className="text-xs text-red-600 dark:text-red-400">Size: 45.8 MB</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" className="flex-1" data-testid="button-pause-recording">
+                        <PauseCircle className="h-4 w-4 mr-1" />
+                        Pause
+                      </Button>
+                      <Button size="sm" variant="destructive" className="flex-1" data-testid="button-stop-recording">
+                        <StopCircle className="h-4 w-4 mr-1" />
+                        Stop
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </DialogContent>
