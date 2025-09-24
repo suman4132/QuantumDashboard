@@ -2285,7 +2285,7 @@ export default function Teamwork() {
 
         {/* 1. Enhanced Research Chat Modal */}
         <Dialog open={showResearchChat} onOpenChange={setShowResearchChat}>
-          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -2604,7 +2604,7 @@ export default function Teamwork() {
 
         {/* 2. Enhanced Voice Chat Modal */}
         <Dialog open={showVoiceChat} onOpenChange={setShowVoiceChat}>
-          <DialogContent className="max-w-5xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -3814,7 +3814,7 @@ export default function Teamwork() {
 
         {/* 5. Smart Suggestions Modal */}
         <Dialog open={showSmartSuggestions} onOpenChange={setShowSmartSuggestions}>
-          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5 text-yellow-500" />
@@ -3947,7 +3947,7 @@ export default function Teamwork() {
 
         {/* 6. Team Analytics Modal */}
         <Dialog open={showTeamAnalytics} onOpenChange={setShowTeamAnalytics}>
-          <DialogContent className="max-w-5xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-green-500" />
@@ -4050,7 +4050,7 @@ export default function Teamwork() {
 
         {/* 7. AI Code Review Modal */}
         <Dialog open={showAICodeReview} onOpenChange={setShowAICodeReview}>
-          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Radar className="h-5 w-5 text-indigo-500" />
@@ -4168,7 +4168,7 @@ export default function Teamwork() {
 
         {/* 8. Achievements Modal */}
         <Dialog open={showAchievements} onOpenChange={setShowAchievements}>
-          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Medal className="h-5 w-5 text-yellow-500" />
@@ -4310,7 +4310,7 @@ export default function Teamwork() {
 
         {/* 9. Active Challenges Modal */}
         <Dialog open={showActiveChallenges} onOpenChange={setShowActiveChallenges}>
-          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5 text-red-500" />
@@ -4449,7 +4449,7 @@ export default function Teamwork() {
 
         {/* 10. Team Leaderboard Modal */}
         <Dialog open={showLeaderboard} onOpenChange={setShowLeaderboard}>
-          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-purple-500" />
@@ -4562,7 +4562,7 @@ export default function Teamwork() {
 
         {/* 11. Learning Path Modal */}
         <Dialog open={showLearningPath} onOpenChange={setShowLearningPath}>
-          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <GraduationCap className="h-5 w-5 text-indigo-500" />
