@@ -115,6 +115,10 @@ import {
   Maximize,
   EyeOff,
   Unlock,
+  RefreshCw,
+  CircuitBoard,
+  Play,
+  Pause,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -379,6 +383,128 @@ const mockHardwareSchedule = [
   },
 ];
 
+// Mock backend data for hardware scheduling
+const mockBackends = [
+  {
+    id: "ibm_cairo",
+    name: "IBM Cairo",
+    qubits: 27,
+    status: "available",
+    queueLength: 12,
+    averageWaitTime: 45,
+    uptime: "99.2%",
+    currentJobs: 3,
+    maxJobs: 20,
+  },
+  {
+    id: "ibm_brisbane", 
+    name: "IBM Brisbane",
+    qubits: 127,
+    status: "busy",
+    queueLength: 45,
+    averageWaitTime: 120,
+    uptime: "98.7%",
+    currentJobs: 18,
+    maxJobs: 20,
+  },
+  {
+    id: "ibm_sherbrooke",
+    name: "IBM Sherbrooke", 
+    qubits: 127,
+    status: "maintenance",
+    queueLength: 0,
+    averageWaitTime: 0,
+    uptime: "97.5%",
+    currentJobs: 0,
+    maxJobs: 20,
+  },
+  {
+    id: "simulator",
+    name: "Quantum Simulator",
+    qubits: 32,
+    status: "available", 
+    queueLength: 0,
+    averageWaitTime: 0,
+    uptime: "100%",
+    currentJobs: 156,
+    maxJobs: 1000,
+  },
+];
+
+// Mock live circuits data
+const mockLiveCircuits = [
+  {
+    id: "circuit-1",
+    name: "Variational Quantum Eigensolver",
+    owner: "Alice Chen",
+    collaborators: [
+      { name: "Bob Wilson", status: "editing" },
+      { name: "Dr. Sarah Kim", status: "viewing" },
+    ],
+    qubits: 8,
+    gates: 156,
+    depth: 12,
+    status: "editing",
+    backend: "ibm_cairo",
+  },
+];
+
+// Mock experiments data
+const mockExperiments = [
+  {
+    id: "exp-1",
+    title: "VQE Ground State Convergence Analysis",
+    description: "Testing convergence rates with different ansatz depths",
+    owner: "Alice Chen",
+    workspace: "Quantum ML Research",
+    status: "running",
+    progress: 75,
+    jobsCompleted: 45,
+    totalJobs: 60,
+    currentBackend: "ibm_cairo",
+    tags: ["VQE", "optimization", "ground-state"],
+  },
+  {
+    id: "exp-2", 
+    title: "QAOA Performance Comparison",
+    description: "Comparing performance across different quantum backends",
+    owner: "John Doe",
+    workspace: "Optimization Algorithms", 
+    status: "paused",
+    progress: 40,
+    jobsCompleted: 24,
+    totalJobs: 60,
+    currentBackend: null,
+    tags: ["QAOA", "benchmarking", "hardware"],
+  },
+  {
+    id: "exp-3",
+    title: "Quantum Error Mitigation Study", 
+    description: "Testing different error mitigation techniques",
+    owner: "Dr. Sarah Kim",
+    workspace: "Quantum ML Research",
+    status: "completed",
+    progress: 100,
+    jobsCompleted: 120,
+    totalJobs: 120,
+    currentBackend: "ibm_brisbane",
+    tags: ["error-mitigation", "fidelity", "ZNE"],
+  },
+  {
+    id: "exp-4",
+    title: "Quantum Speedup Verification",
+    description: "Measuring quantum advantage in optimization problems", 
+    owner: "Emma Davis",
+    workspace: "Optimization Algorithms",
+    status: "planning",
+    progress: 5,
+    jobsCompleted: 0,
+    totalJobs: 200,
+    currentBackend: null,
+    tags: ["speedup", "complexity", "graphs"],
+  },
+];
+
 // Mock quantum collaboration chat data
 const mockQuantumChat = [
   {
@@ -446,6 +572,12 @@ export default function Teamwork() {
   const [showActiveChallenges, setShowActiveChallenges] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showLearningPath, setShowLearningPath] = useState(false);
+
+  // Quantum Hardware & Resources modal states
+  const [showSmartScheduler, setShowSmartScheduler] = useState(false);
+  const [showResourceOptimizer, setShowResourceOptimizer] = useState(false);
+  const [showLiveCircuitEditor, setShowLiveCircuitEditor] = useState(false);
+  const [showExperimentTracker, setShowExperimentTracker] = useState(false);
 
   // Feature states
   const [isMuted, setIsMuted] = useState(false);
@@ -872,7 +1004,7 @@ export default function Teamwork() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowHardwareScheduler(!showHardwareScheduler)}
+              onClick={() => setShowSmartScheduler(true)}
               className="flex items-center gap-2"
               data-testid="button-hardware-scheduler"
             >
@@ -882,6 +1014,7 @@ export default function Teamwork() {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowResourceOptimizer(true)}
               className="flex items-center gap-2"
               data-testid="button-resource-optimizer"
             >
@@ -891,6 +1024,7 @@ export default function Teamwork() {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowLiveCircuitEditor(true)}
               className="flex items-center gap-2"
               data-testid="button-live-circuit"
             >
@@ -904,6 +1038,7 @@ export default function Teamwork() {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowExperimentTracker(true)}
               className="flex items-center gap-2"
               data-testid="button-experiment-tracker"
             >
@@ -6513,6 +6648,833 @@ export default function Teamwork() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* ================ QUANTUM HARDWARE & RESOURCES MODAL INTERFACES ================ */}
+
+        {/* 1. Smart Scheduler Modal */}
+        <Dialog open={showSmartScheduler} onOpenChange={setShowSmartScheduler}>
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-orange-500" />
+                  Smart Hardware Scheduler
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                    3 backends available
+                  </Badge>
+                  <Button size="icon" variant="ghost" data-testid="button-scheduler-settings">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </div>
+              </DialogTitle>
+              <DialogDescription>
+                Intelligent quantum hardware scheduling with optimal resource allocation and cost optimization
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex h-[650px] gap-4">
+              {/* Main Scheduler Interface */}
+              <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border">
+                {/* Hardware Status Overview */}
+                <div className="p-4 border-b bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/50 dark:to-red-950/50">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">3</div>
+                      <div className="text-sm text-gray-500">Available</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-yellow-600">1</div>
+                      <div className="text-sm text-gray-500">Busy</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-red-600">1</div>
+                      <div className="text-sm text-gray-500">Maintenance</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Backend Selection Grid */}
+                <div className="flex-1 p-4 space-y-4">
+                  <h3 className="text-lg font-semibold">Select Quantum Backend</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {mockBackends.slice(0, 4).map((backend) => (
+                      <Card key={backend.id} className="cursor-pointer hover:shadow-md transition-all duration-200 border-2 hover:border-orange-300">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold">{backend.name}</h4>
+                            <Badge className={backend.status === 'available' ? 'bg-green-100 text-green-800' : backend.status === 'busy' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}>
+                              {backend.status}
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div><span className="text-gray-500">Qubits:</span> <span className="font-medium">{backend.qubits}</span></div>
+                            <div><span className="text-gray-500">Queue:</span> <span className="font-medium">{backend.queueLength}</span></div>
+                            <div><span className="text-gray-500">Wait:</span> <span className="font-medium">{backend.averageWaitTime}min</span></div>
+                            <div><span className="text-gray-500">Uptime:</span> <span className="font-medium">{backend.uptime}</span></div>
+                          </div>
+                          <div className="mt-3">
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Utilization</span>
+                              <span>{backend.currentJobs}/{backend.maxJobs}</span>
+                            </div>
+                            <Progress value={(backend.currentJobs / backend.maxJobs) * 100} className="h-2" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Quick Schedule Form */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Schedule New Reservation</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Start Time</Label>
+                          <Input type="datetime-local" />
+                        </div>
+                        <div>
+                          <Label>Duration (minutes)</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select duration" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="30">30 minutes</SelectItem>
+                              <SelectItem value="60">1 hour</SelectItem>
+                              <SelectItem value="120">2 hours</SelectItem>
+                              <SelectItem value="240">4 hours</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Purpose</Label>
+                        <Textarea placeholder="Describe your experiment or research purpose..." />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button className="flex-1">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Schedule Reservation
+                        </Button>
+                        <Button variant="outline">
+                          <Target className="h-4 w-4 mr-2" />
+                          Optimize Schedule
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Sidebar - Current Reservations & AI Suggestions */}
+              <div className="w-80 space-y-4">
+                {/* Current Reservations */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-orange-500" />
+                      Current Reservations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {mockHardwareSchedule.map((reservation) => (
+                      <div key={reservation.id} className="p-3 border rounded-lg space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-sm">{reservation.backend}</span>
+                          <Badge className={reservation.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                            {reservation.status}
+                          </Badge>
+                        </div>
+                        <div className="text-xs text-gray-500">{reservation.purpose}</div>
+                        <div className="text-xs text-gray-500">
+                          {formatDistanceToNow(reservation.startTime)} • {reservation.duration}min
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* AI Scheduling Suggestions */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-purple-500" />
+                      AI Scheduling Suggestions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="text-sm font-medium text-blue-900 dark:text-blue-100">Optimal Time Slot</div>
+                      <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                        Schedule for 2:00 AM EST for 40% faster execution
+                      </div>
+                    </div>
+                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <div className="text-sm font-medium text-green-900 dark:text-green-100">Cost Savings</div>
+                      <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+                        Use simulator for testing first - save $25/hour
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 2. Resource Optimizer Modal */}
+        <Dialog open={showResourceOptimizer} onOpenChange={setShowResourceOptimizer}>
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-yellow-500" />
+                  AI Resource Optimizer
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-1 animate-pulse"></div>
+                    AI Active
+                  </Badge>
+                  <Button size="icon" variant="ghost">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+              </DialogTitle>
+              <DialogDescription>
+                AI-powered optimization recommendations for efficient resource utilization and cost reduction
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex h-[650px] gap-4">
+              {/* Main Optimization Dashboard */}
+              <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border">
+                {/* Optimization Metrics */}
+                <div className="p-4 border-b bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/50 dark:to-orange-950/50">
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">85%</div>
+                      <div className="text-sm text-gray-500">Efficiency</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">$450</div>
+                      <div className="text-sm text-gray-500">Weekly Savings</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-600">12</div>
+                      <div className="text-sm text-gray-500">Active Jobs</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600">94%</div>
+                      <div className="text-sm text-gray-500">Success Rate</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Optimization Recommendations */}
+                <div className="flex-1 p-4 space-y-4">
+                  <h3 className="text-lg font-semibold">AI Optimization Recommendations</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Cost Optimization */}
+                    <Card className="border-green-200 dark:border-green-800">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-green-500" />
+                          Cost Optimization
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                          <div className="font-medium text-green-900 dark:text-green-100 text-sm">Switch to Simulator</div>
+                          <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+                            Use quantum simulator for development and testing
+                          </div>
+                          <div className="text-xs font-medium text-green-600 mt-2">Potential savings: $200/month</div>
+                        </div>
+                        <Button size="sm" className="w-full">Apply Recommendation</Button>
+                      </CardContent>
+                    </Card>
+
+                    {/* Performance Optimization */}
+                    <Card className="border-blue-200 dark:border-blue-800">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-blue-500" />
+                          Performance Boost
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                          <div className="font-medium text-blue-900 dark:text-blue-100 text-sm">Optimize Queue Timing</div>
+                          <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                            Schedule during off-peak hours (2-6 AM EST)
+                          </div>
+                          <div className="text-xs font-medium text-blue-600 mt-2">Time savings: 2-3 hours/day</div>
+                        </div>
+                        <Button size="sm" variant="outline" className="w-full">View Schedule</Button>
+                      </CardContent>
+                    </Card>
+
+                    {/* Efficiency Optimization */}
+                    <Card className="border-purple-200 dark:border-purple-800">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <Target className="h-4 w-4 text-purple-500" />
+                          Efficiency Boost
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                          <div className="font-medium text-purple-900 dark:text-purple-100 text-sm">Batch Experiments</div>
+                          <div className="text-xs text-purple-700 dark:text-purple-300 mt-1">
+                            Group similar VQE experiments to reduce overhead
+                          </div>
+                          <div className="text-xs font-medium text-purple-600 mt-2">Efficiency gain: 30%</div>
+                        </div>
+                        <Button size="sm" variant="outline" className="w-full">Auto-Batch Jobs</Button>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Resource Usage Analytics */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <BarChart3 className="h-4 w-4 text-orange-500" />
+                        Resource Usage Analytics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-3 gap-6">
+                        <div className="text-center">
+                          <div className="text-lg font-bold">42.5h</div>
+                          <div className="text-sm text-gray-500">Weekly Usage</div>
+                          <div className="text-xs text-green-600 mt-1">+12% from last week</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold">85%</div>
+                          <div className="text-sm text-gray-500">Cost Efficiency</div>
+                          <div className="text-xs text-yellow-600 mt-1">Can improve by 15%</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold">94.2%</div>
+                          <div className="text-sm text-gray-500">Success Rate</div>
+                          <div className="text-xs text-green-600 mt-1">Above average</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Sidebar - Real-time Metrics */}
+              <div className="w-80 space-y-4">
+                {/* Live Resource Monitor */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-green-500" />
+                      Live Resource Monitor
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>CPU Usage</span>
+                        <span>68%</span>
+                      </div>
+                      <Progress value={68} className="h-2" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Memory</span>
+                        <span>45%</span>
+                      </div>
+                      <Progress value={45} className="h-2" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Queue Load</span>
+                        <span>32%</span>
+                      </div>
+                      <Progress value={32} className="h-2" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Optimization History */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Recent Optimizations</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="text-xs space-y-1">
+                      <div className="flex justify-between">
+                        <span>Queue optimization</span>
+                        <span className="text-green-600">+15% speed</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Cost reduction</span>
+                        <span className="text-green-600">-$45/day</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Job batching</span>
+                        <span className="text-green-600">+30% efficiency</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 3. Live Circuit Editor Modal */}
+        <Dialog open={showLiveCircuitEditor} onOpenChange={setShowLiveCircuitEditor}>
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BrainCircuit className="h-5 w-5 text-blue-500" />
+                  Live Quantum Circuit Editor
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
+                    3 collaborators
+                  </Badge>
+                  <Button size="icon" variant="ghost">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost">
+                    <Save className="h-4 w-4" />
+                  </Button>
+                </div>
+              </DialogTitle>
+              <DialogDescription>
+                Real-time collaborative quantum circuit design with live simulation and shared editing
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex h-[650px] gap-4">
+              {/* Main Circuit Editor */}
+              <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border">
+                {/* Toolbar */}
+                <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline">
+                        <Play className="h-4 w-4 mr-1" />
+                        Run
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Pause className="h-4 w-4 mr-1" />
+                        Pause
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Save className="h-4 w-4 mr-1" />
+                        Save
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Download className="h-4 w-4 mr-1" />
+                        Export
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">Circuit: VQE_optimization_v2.qasm</span>
+                      <Button size="sm" variant="outline">
+                        <Eye className="h-4 w-4 mr-1" />
+                        Simulate
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Circuit Design Area */}
+                <div className="flex-1 p-4">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 h-full flex flex-col">
+                    {/* Circuit Stats */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-4 text-sm">
+                        <div><span className="text-gray-500">Qubits:</span> <span className="font-medium">8</span></div>
+                        <div><span className="text-gray-500">Gates:</span> <span className="font-medium">156</span></div>
+                        <div><span className="text-gray-500">Depth:</span> <span className="font-medium">12</span></div>
+                        <div><span className="text-gray-500">Backend:</span> <span className="font-medium">ibm_cairo</span></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm text-gray-600">Alice Chen (editing)</span>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+                        <span className="text-sm text-gray-600">Bob Wilson (viewing)</span>
+                      </div>
+                    </div>
+
+                    {/* Circuit Visualization */}
+                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                      <div className="h-full flex items-center justify-center">
+                        <div className="text-center">
+                          <CircuitBoard className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                          <div className="text-lg font-medium text-gray-600 dark:text-gray-300">Interactive Circuit Canvas</div>
+                          <div className="text-sm text-gray-500 mt-2">
+                            Drag and drop quantum gates to build your circuit
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Gate Palette */}
+                    <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                      <div className="text-sm font-medium mb-2">Quantum Gates</div>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" variant="outline" className="text-xs">H</Button>
+                        <Button size="sm" variant="outline" className="text-xs">X</Button>
+                        <Button size="sm" variant="outline" className="text-xs">Y</Button>
+                        <Button size="sm" variant="outline" className="text-xs">Z</Button>
+                        <Button size="sm" variant="outline" className="text-xs">CNOT</Button>
+                        <Button size="sm" variant="outline" className="text-xs">RZ</Button>
+                        <Button size="sm" variant="outline" className="text-xs">RY</Button>
+                        <Button size="sm" variant="outline" className="text-xs">Measure</Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar - Collaboration & Results */}
+              <div className="w-80 space-y-4">
+                {/* Active Collaborators */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Users className="h-4 w-4 text-blue-500" />
+                      Active Collaborators
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {mockLiveCircuits[0].collaborators.map((collaborator, idx) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        <div className="relative">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
+                              {collaborator.name.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full ${
+                            collaborator.status === 'editing' ? 'bg-green-500' : 'bg-blue-500'
+                          }`}></div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium">{collaborator.name}</div>
+                          <div className="text-xs text-gray-500 capitalize">{collaborator.status}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Simulation Results */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4 text-green-500" />
+                      Simulation Results
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-sm">
+                      <div className="flex justify-between mb-2">
+                        <span>Fidelity</span>
+                        <span className="font-medium">94.2%</span>
+                      </div>
+                      <Progress value={94.2} className="h-2 mb-3" />
+                      
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span>|00⟩</span>
+                          <span>487 (47.9%)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>|11⟩</span>
+                          <span>501 (49.2%)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>|01⟩</span>
+                          <span>18 (1.8%)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>|10⟩</span>
+                          <span>18 (1.8%)</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button size="sm" className="w-full">
+                      <Play className="h-4 w-4 mr-2" />
+                      Run on Hardware
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Changes */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Recent Changes</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="text-xs space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Alice added H gate to qubit 0</span>
+                        <span className="text-gray-500 ml-auto">2m ago</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span>Bob optimized circuit depth</span>
+                        <span className="text-gray-500 ml-auto">5m ago</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span>Circuit saved as v2.1</span>
+                        <span className="text-gray-500 ml-auto">8m ago</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* 4. Experiment Tracker Modal */}
+        <Dialog open={showExperimentTracker} onOpenChange={setShowExperimentTracker}>
+          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FlaskConical className="h-5 w-5 text-purple-500" />
+                  Quantum Experiment Tracker
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mr-1 animate-pulse"></div>
+                    5 active experiments
+                  </Badge>
+                  <Button size="icon" variant="ghost">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </div>
+              </DialogTitle>
+              <DialogDescription>
+                Comprehensive tracking and management of quantum research experiments with hypothesis testing
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex h-[650px] gap-4">
+              {/* Main Experiments Dashboard */}
+              <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border">
+                {/* Experiment Overview */}
+                <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">2</div>
+                      <div className="text-sm text-gray-500">Running</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">1</div>
+                      <div className="text-sm text-gray-500">Completed</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-yellow-600">1</div>
+                      <div className="text-sm text-gray-500">Paused</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gray-600">1</div>
+                      <div className="text-sm text-gray-500">Planning</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Experiments List */}
+                <div className="flex-1 p-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">Active Experiments</h3>
+                    <Button size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Experiment
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {mockExperiments.slice(0, 4).map((experiment) => (
+                      <Card key={experiment.id} className="hover:shadow-md transition-all duration-200">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <h4 className="font-semibold">{experiment.title}</h4>
+                              <p className="text-sm text-gray-600 mt-1">{experiment.description}</p>
+                            </div>
+                            <Badge className={experiment.status === 'running' ? 'bg-green-100 text-green-800' : 
+                                             experiment.status === 'completed' ? 'bg-blue-100 text-blue-800' :
+                                             experiment.status === 'paused' ? 'bg-yellow-100 text-yellow-800' : 
+                                             'bg-gray-100 text-gray-800'}>
+                              {experiment.status}
+                            </Badge>
+                          </div>
+
+                          <div className="grid grid-cols-4 gap-4 mb-3 text-sm">
+                            <div>
+                              <span className="text-gray-500">Owner:</span>
+                              <div className="font-medium">{experiment.owner}</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Progress:</span>
+                              <div className="font-medium">{experiment.progress}%</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Jobs:</span>
+                              <div className="font-medium">{experiment.jobsCompleted}/{experiment.totalJobs}</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Backend:</span>
+                              <div className="font-medium">{experiment.currentBackend || 'N/A'}</div>
+                            </div>
+                          </div>
+
+                          {experiment.progress > 0 && (
+                            <div className="mb-3">
+                              <Progress value={experiment.progress} className="h-2" />
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-wrap gap-1">
+                              {experiment.tags.map((tag, idx) => (
+                                <Badge key={idx} variant="secondary" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button size="sm" variant="outline">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              {experiment.status === 'running' && (
+                                <Button size="sm" variant="outline">
+                                  <Pause className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {experiment.status === 'paused' && (
+                                <Button size="sm" variant="outline">
+                                  <Play className="h-4 w-4" />
+                                </Button>
+                              )}
+                              <Button size="sm" variant="outline">
+                                <Edit3 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar - Experiment Details & Insights */}
+              <div className="w-80 space-y-4">
+                {/* Experiment Insights */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Lightbulb className="h-4 w-4 text-yellow-500" />
+                      AI Experiment Insights
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                        Hypothesis Validation
+                      </div>
+                      <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                        VQE experiment shows 15% improvement - hypothesis confirmed
+                      </div>
+                    </div>
+                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <div className="text-sm font-medium text-green-900 dark:text-green-100">
+                        Optimization Suggestion
+                      </div>
+                      <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+                        Increase ansatz depth to 16 layers for better convergence
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Stats */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Experiment Statistics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="text-center">
+                        <div className="font-bold text-green-600">95%</div>
+                        <div className="text-gray-500">Success Rate</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-blue-600">8.5h</div>
+                        <div className="text-gray-500">Avg Runtime</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-purple-600">24</div>
+                        <div className="text-gray-500">Total Circuits</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-orange-600">341</div>
+                        <div className="text-gray-500">Jobs Run</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Activity */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Recent Activity</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="text-xs space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>VQE experiment completed</span>
+                        <span className="text-gray-500 ml-auto">5m ago</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span>New QAOA experiment started</span>
+                        <span className="text-gray-500 ml-auto">12m ago</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span>Error mitigation paused</span>
+                        <span className="text-gray-500 ml-auto">1h ago</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
