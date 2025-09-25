@@ -25,6 +25,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { JobStatusDistribution } from "@/components/dashboard/job-status-distribution";
 import { LiveActivityFeed } from "@/components/dashboard/live-activity-feed";
 import { AIAssistant } from "@/components/ai/ai-assistant";
+import { NewsPanel } from "@/components/dashboard/news-panel";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -372,6 +373,9 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
+      {/* News Panel - floating on all dashboard views */}
+      <NewsPanel />
+      
       {/* AI Assistant - floating on all dashboard views */}
       <AIAssistant />
     </div>
