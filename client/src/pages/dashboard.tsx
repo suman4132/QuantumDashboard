@@ -357,7 +357,7 @@ export default function Dashboard() {
                 )}
                 {currentView === 'jobs' && <JobsTable searchQuery={searchQuery} />}
                 {currentView === 'sessions' && <ActiveSessions />}
-                {currentView === 'backends' && <AllBackendsView />}
+                {currentView === 'backends' && <AllBackendsView onBack={() => handleViewChange('overview')} />}
               </motion.div>
             </AnimatePresence>
           </div>

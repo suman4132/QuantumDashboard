@@ -26,11 +26,12 @@ const itemVariants = {
 };
 
 interface SidebarProps {
+  currentView?: string;
   onViewChange?: (view: string) => void;
   onOpenSessionForm?: () => void;
 }
 
-export function Sidebar({ onViewChange, onOpenSessionForm }: SidebarProps) {
+export function Sidebar({ currentView, onViewChange, onOpenSessionForm }: SidebarProps) {
   return (
     <motion.div
       className="xl:col-span-1 space-y-6"
