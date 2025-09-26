@@ -99,14 +99,14 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
     <>
       {/* Floating AI Button */}
       <motion.div
-        className={`fixed bottom-6 right-6 z-50 ${className}`}
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 ${className}`}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
           size="lg"
-          className="relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 border-0 group"
+          className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 border-0 group"
           data-testid="button-ai-assistant"
         >
           <AnimatePresence mode="wait">
@@ -129,7 +129,7 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
                 transition={{ duration: 0.2 }}
                 className="relative"
               >
-                <Bot className="h-6 w-6 text-white" />
+                <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 <motion.div
                   className="absolute -top-1 -right-1 h-3 w-3 bg-green-400 rounded-full"
                   animate={{ scale: [1, 1.2, 1] }}
@@ -179,7 +179,7 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "100%", opacity: 0 }}
               transition={{ type: "spring", damping: 20, stiffness: 200 }}
-              className="fixed right-0 top-0 h-full w-full md:w-96 bg-white dark:bg-gray-900 shadow-2xl z-50 border-l border-gray-200 dark:border-gray-700"
+              className="fixed right-0 top-0 h-full w-full sm:w-80 md:w-96 lg:w-[28rem] bg-white dark:bg-gray-900 shadow-2xl z-50 border-l border-gray-200 dark:border-gray-700"
             >
               <Card className="h-full flex flex-col border-0 rounded-none">
                 {/* Header */}
@@ -223,7 +223,7 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
                         className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                          className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2 sm:px-4 ${
                             message.isUser
                               ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                               : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -235,7 +235,7 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
                               <span className="text-xs text-gray-500 dark:text-gray-400">AI Assistant</span>
                             </div>
                           )}
-                          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                          <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words">
                             {message.content}
                           </p>
                         </div>
@@ -261,7 +261,7 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
                 </ScrollArea>
 
                 {/* Input */}
-                <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
+                <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50">
                   <div className="flex space-x-2">
                     <Input
                       ref={inputRef}
@@ -269,14 +269,14 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Ask me anything..."
-                      className="flex-1 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400"
+                      className="flex-1 text-sm border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400"
                       disabled={chatMutation.isPending}
                       data-testid="input-ai-message"
                     />
                     <Button
                       onClick={handleSendMessage}
                       disabled={!inputMessage.trim() || chatMutation.isPending}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 px-3 sm:px-4"
                       data-testid="button-send-message"
                     >
                       {chatMutation.isPending ? (
@@ -286,7 +286,7 @@ export function AIAssistant({ className = "" }: AIAssistantProps) {
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center leading-tight">
                     Press Enter to send • Ask about quantum computing, dashboard features, or anything else
                   </p>
                 </div>
