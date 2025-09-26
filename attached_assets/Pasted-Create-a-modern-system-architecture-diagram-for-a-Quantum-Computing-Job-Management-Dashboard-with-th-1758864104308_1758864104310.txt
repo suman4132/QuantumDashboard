@@ -1,0 +1,65 @@
+Create a modern system architecture diagram for a Quantum Computing Job Management Dashboard with the following structure:
+
+**Top Layer - Frontend (React Application)**
+- Landing Page with hero section and features
+- Authentication system (login/signup with protected routes)
+- Main Dashboard with job management, analytics, and real-time monitoring
+- Quantum Quest page with tutorials, challenges, and simulations
+- Teamwork collaboration page
+
+**Frontend Technology Stack**
+- React + TypeScript with Vite build system
+- TanStack Query for state management
+- shadcn/ui + Tailwind CSS for design
+- Wouter for routing
+- Framer Motion for animations
+- Next-themes for dark mode
+
+**Middle Layer - Express.js Backend Server**
+- API Routes: /api/jobs, /api/sessions, /api/analytics, /api/workspaces
+- WebSocket server for real-time collaboration
+- Request logging and error handling middleware
+- Vite integration for development mode
+
+**Services Layer (7 specialized services)**
+- AI Collaboration Service (team insights, suggestions, chat bot)
+- Smart Notification Service (contextual alerts, batch processing)  
+- Advanced Analytics Service (performance metrics, quantum statistics)
+- Gamification Service (achievements, challenges, leaderboards)
+- Real-time Collaboration Service (WebSocket management, document sync)
+- IBM Quantum Service (Qiskit Runtime API, job queue, backend list)
+- OpenAI Service (GPT-4o Mini, circuit analysis, failure analysis)
+
+**Storage Layer**
+- In-Memory Storage with IStorage interface
+- Data Maps: Jobs, Sessions, Workspaces, Analytics, Projects, Users, Notifications, Achievements
+- Drizzle Schema Layer with TypeScript types and Zod validation
+- PostgreSQL-ready structure (currently in-memory)
+
+**External Integrations**
+- IBM Quantum Platform (Qiskit Runtime API with token authentication)
+- OpenAI Platform (GPT-4o Mini for AI features)
+- WebSocket connections for real-time features
+- Browser LocalStorage for auth tokens and preferences
+
+**Data Flow Arrows showing:**
+- Frontend ↔ REST API calls via TanStack Query
+- API Routes → Services → Storage Layer
+- WebSocket real-time communication
+- External API integrations with graceful fallbacks
+
+**Visual Style:**
+- Use modern blue and purple color scheme for quantum theme
+- Show clear separation between layers with distinct sections
+- Use arrows to show data flow and connections
+- Include icons for: quantum circuits, AI, real-time, storage, external APIs
+- Make it clean, professional, and easy to follow top-to-bottom
+- Add small technology logos where appropriate (React, Express, etc.)
+
+**Key Features to Highlight:**
+- Full-stack TypeScript architecture
+- Real-time collaboration capabilities  
+- AI-powered quantum assistance
+- Comprehensive job management
+- Interactive learning platform
+- Production-ready deployment
