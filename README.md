@@ -21,10 +21,10 @@
 This project is based on peer-reviewed research:
 
 ### 📄 IEEE Paper
-**[View Full Paper on Google Drive](https://drive.google.com/file/d/1Ao3guEXLuAovfFsKDJGPCnMWcTjsJdkJ/view?usp=sharing)**
+**[View Full Paper on Google Drive](https://drive.google.com/file/d/1SlkuS55XW9mhXXcVBNievVl4q-IarzCU/view)**
 
 ### 📊 Research Poster
-**[View Conference Poster on Google Drive](https://drive.google.com/file/d/1SlkuS55XW9mhXXcVBNievVl4q-IarzCU/view)**
+**[View Conference Poster on Google Drive](https://drive.google.com/file/d/1Ao3guEXLuAovfFsKDJGPCnMWcTjsJdkJ/view?usp=sharing )**
 
 ---
 
