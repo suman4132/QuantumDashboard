@@ -1,4 +1,4 @@
-import type { 
+import type {
   CollaborationMetric, InsertCollaborationMetric,
   QuantumInsight, InsertQuantumInsight,
   Workspace, Project, Job, UserProfile, ChallengeParticipant,
@@ -32,7 +32,7 @@ export class AdvancedAnalyticsService {
     individualContributions: Array<{ userId: string; userName: string; score: number; strengths: string[] }>;
     recommendations: Array<{ type: string; title: string; description: string; priority: 'low' | 'medium' | 'high' }>;
   }> {
-    
+
     // Calculate team efficiency based on project completion rates
     const completedProjects = projects.filter(p => p.status === 'completed').length;
     const totalProjects = projects.length;
@@ -52,7 +52,7 @@ export class AdvancedAnalyticsService {
     // Calculate innovation index based on unique approaches and breakthroughs
     const uniqueBackends = new Set(projects.map(p => p.backend)).size;
     const complexProjects = projects.filter(p => p.tags?.includes('advanced') || p.tags?.includes('research')).length;
-    const innovationIndex = Math.min(100, (uniqueBackends * 15) + (complexProjects * 20) + (workspace.progress * 0.5));
+    const innovationIndex = Math.min(100, (uniqueBackends * 15) + (complexProjects * 20) + ((workspace.progress || 0) * 0.5));
 
     // Analyze collaboration trends
     const collaborationTrends = [
@@ -78,7 +78,7 @@ export class AdvancedAnalyticsService {
 
     // Generate recommendations
     const recommendations = await this.generateTeamRecommendations(
-      workspace, 
+      workspace,
       { teamEfficiency, communicationScore, innovationIndex },
       individualContributions
     );
@@ -98,15 +98,15 @@ export class AdvancedAnalyticsService {
     projects: Project[],
     sessions: LiveCollaborationSession[]
   ): Promise<Array<{ userId: string; userName: string; score: number; strengths: string[] }>> {
-    
+
     return members.map(member => {
       let score = 50; // Base score
       const strengths: string[] = [];
 
       // Analyze project ownership and collaboration
       const ownedProjects = projects.filter(p => p.ownerId === member.userId);
-      const collaboratedProjects = projects.filter(p => 
-        p.ownerId !== member.userId && 
+      const collaboratedProjects = projects.filter(p =>
+        p.ownerId !== member.userId &&
         // Simplified - would check actual collaboration records
         Math.random() > 0.5
       );
@@ -158,7 +158,7 @@ export class AdvancedAnalyticsService {
     metrics: { teamEfficiency: number; communicationScore: number; innovationIndex: number },
     contributions: Array<{ userId: string; userName: string; score: number; strengths: string[] }>
   ): Promise<Array<{ type: string; title: string; description: string; priority: 'low' | 'medium' | 'high' }>> {
-    
+
     const recommendations = [];
 
     // Efficiency recommendations
@@ -194,7 +194,7 @@ export class AdvancedAnalyticsService {
     // Individual contribution balance
     const avgContribution = contributions.reduce((sum, c) => sum + c.score, 0) / contributions.length;
     const lowContributors = contributions.filter(c => c.score < avgContribution * 0.7);
-    
+
     if (lowContributors.length > 0) {
       recommendations.push({
         type: 'team_balance',
@@ -205,7 +205,7 @@ export class AdvancedAnalyticsService {
     }
 
     // Workspace-specific recommendations based on progress
-    if (workspace.progress < 30) {
+    if ((workspace.progress || 0) < 30) {
       recommendations.push({
         type: 'progress',
         title: 'Accelerate Project Progress',
@@ -246,16 +246,16 @@ export class AdvancedAnalyticsService {
       crossPollination: Array<{ fromProject: string; toProject: string; insight: string }>;
     };
   }> {
-    
+
     // Analyze performance patterns
     const performanceInsights = await this.analyzePerformancePatterns(jobs);
-    
+
     // Analyze algorithms
     const algorithmAnalysis = await this.analyzeAlgorithmUsage(projects, jobs);
-    
+
     // Analyze hardware utilization
     const hardwareUtilization = await this.analyzeHardwareUtilization(jobs);
-    
+
     // Analyze collaboration impact on quantum work
     const collaborationImpact = await this.analyzeCollaborationImpact(projects, jobs);
 
@@ -274,12 +274,18 @@ export class AdvancedAnalyticsService {
     severity: 'info' | 'warning' | 'critical' | 'breakthrough';
     data: any;
   }>> {
-    const insights = [];
+    const insights: Array<{
+      type: 'performance' | 'optimization' | 'error_pattern' | 'breakthrough';
+      title: string;
+      description: string;
+      severity: 'info' | 'warning' | 'critical' | 'breakthrough';
+      data: any;
+    }> = [];
 
     // Analyze error patterns
     const failedJobs = jobs.filter(j => j.status === 'failed');
     const errorPatterns: Record<string, number> = {};
-    
+
     failedJobs.forEach(job => {
       if (job.error) {
         const errorType = this.categorizeError(job.error);
@@ -288,7 +294,7 @@ export class AdvancedAnalyticsService {
     });
 
     const mostCommonError = Object.entries(errorPatterns)
-      .sort(([,a], [,b]) => b - a)[0];
+      .sort(([, a], [, b]) => b - a)[0];
 
     if (mostCommonError && mostCommonError[1] > 3) {
       insights.push({
@@ -301,19 +307,19 @@ export class AdvancedAnalyticsService {
     }
 
     // Analyze performance improvements
-    const completedJobs = jobs.filter(j => j.status === 'done').sort((a, b) => 
+    const completedJobs = jobs.filter(j => j.status === 'done').sort((a, b) =>
       a.submissionTime.getTime() - b.submissionTime.getTime()
     );
 
     if (completedJobs.length >= 10) {
       const recentJobs = completedJobs.slice(-5);
       const earlierJobs = completedJobs.slice(0, 5);
-      
+
       const recentAvgDuration = recentJobs.reduce((sum, j) => sum + (j.duration || 0), 0) / recentJobs.length;
       const earlierAvgDuration = earlierJobs.reduce((sum, j) => sum + (j.duration || 0), 0) / earlierJobs.length;
-      
+
       const improvement = ((earlierAvgDuration - recentAvgDuration) / earlierAvgDuration) * 100;
-      
+
       if (improvement > 20) {
         insights.push({
           type: 'performance',
@@ -358,10 +364,10 @@ export class AdvancedAnalyticsService {
     // Simplified analysis - would be more sophisticated in real implementation
     const avgQubits = jobs.reduce((sum, j) => sum + (j.qubits || 0), 0) / jobs.length;
     const recentAvgQubits = jobs.slice(-5).reduce((sum, j) => sum + (j.qubits || 0), 0) / 5;
-    
+
     return {
-      trend: recentAvgQubits > avgQubits * 1.2 ? 'increasing' : 
-             recentAvgQubits < avgQubits * 0.8 ? 'decreasing' : 'stable',
+      trend: recentAvgQubits > avgQubits * 1.2 ? 'increasing' :
+        recentAvgQubits < avgQubits * 0.8 ? 'decreasing' : 'stable',
       efficiency: 'maintained', // Simplified
       avgDepth: avgQubits * 2, // Simplified estimation
       avgFidelity: 0.85, // Simplified estimation
@@ -373,16 +379,16 @@ export class AdvancedAnalyticsService {
     performanceComparisons: Array<{ algorithm: string; avgRuntime: number; fidelity: number }>;
     optimizationOpportunities: Array<{ area: string; potential: string; effort: 'low' | 'medium' | 'high' }>;
   }> {
-    
+
     // Extract algorithm types from job names and project descriptions
     const algorithmUsage: Record<string, { count: number; successful: number; totalRuntime: number }> = {};
-    
+
     jobs.forEach(job => {
       const algorithm = this.extractAlgorithmType(job.name || 'Unknown');
       if (!algorithmUsage[algorithm]) {
         algorithmUsage[algorithm] = { count: 0, successful: 0, totalRuntime: 0 };
       }
-      
+
       algorithmUsage[algorithm].count++;
       if (job.status === 'done') {
         algorithmUsage[algorithm].successful++;
@@ -466,15 +472,15 @@ export class AdvancedAnalyticsService {
     resourceOptimization: Array<{ recommendation: string; impact: string }>;
     costAnalysis: { totalJobs: number; estimatedCost: number; optimizationPotential: number };
   }> {
-    
+
     // Analyze backend usage patterns
     const backendUsage: Record<string, { jobs: number; successfulJobs: number; totalTime: number }> = {};
-    
+
     jobs.forEach(job => {
       if (!backendUsage[job.backend]) {
         backendUsage[job.backend] = { jobs: 0, successfulJobs: 0, totalTime: 0 };
       }
-      
+
       backendUsage[job.backend].jobs++;
       if (job.status === 'done') {
         backendUsage[job.backend].successfulJobs++;
@@ -492,7 +498,7 @@ export class AdvancedAnalyticsService {
 
     // Generate optimization recommendations
     const resourceOptimization = [];
-    
+
     const lowEfficiencyBackends = backendUsageArray.filter(b => b.efficiency < 70);
     if (lowEfficiencyBackends.length > 0) {
       resourceOptimization.push({
@@ -530,10 +536,10 @@ export class AdvancedAnalyticsService {
     knowledgeSharingIndex: number;
     crossPollination: Array<{ fromProject: string; toProject: string; insight: string }>;
   }> {
-    
+
     // Calculate team algorithm development score
-    const collaborativeProjects = projects.filter(p => 
-      p.tags?.includes('collaborative') || 
+    const collaborativeProjects = projects.filter(p =>
+      p.tags?.includes('collaborative') ||
       // Simplified check for multiple contributors
       Math.random() > 0.6
     );
@@ -546,7 +552,7 @@ export class AdvancedAnalyticsService {
       createdAt: p.createdAt,
     })).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
-    const complexityTrend = projectComplexity.length > 1 ? 
+    const complexityTrend = projectComplexity.length > 1 ?
       projectComplexity[projectComplexity.length - 1].complexity - projectComplexity[0].complexity : 0;
     const knowledgeSharingIndex = Math.max(0, Math.min(100, complexityTrend * 10));
 
@@ -556,7 +562,7 @@ export class AdvancedAnalyticsService {
       for (let j = i + 1; j < projects.length; j++) {
         const project1 = projects[i];
         const project2 = projects[j];
-        
+
         // Check for potential knowledge transfer
         const sharedTags = project1.tags?.filter(tag => project2.tags?.includes(tag)) || [];
         if (sharedTags.length > 0 && Math.random() > 0.7) {
@@ -600,7 +606,7 @@ export class AdvancedAnalyticsService {
       recommendedReservations: Array<{ backend: string; timeSlot: string; priority: number }>;
     };
   }> {
-    
+
     const { projects, jobs, collaborationMetrics } = historicalData;
 
     // Predict project success
@@ -609,10 +615,10 @@ export class AdvancedAnalyticsService {
     const successRate = projects.length > 0 ? completedProjects.length / projects.length : 0;
 
     const projectSuccessPrediction = {
-      probability: Math.min(95, successRate * 100 + workspace.progress * 0.3),
+      probability: Math.min(95, successRate * 100 + (workspace.progress || 0) * 0.3),
       factors: [
         { factor: 'Historical Success Rate', impact: 'positive' as const, weight: successRate },
-        { factor: 'Current Progress', impact: 'positive' as const, weight: workspace.progress / 100 },
+        { factor: 'Current Progress', impact: 'positive' as const, weight: (workspace.progress || 0) / 100 },
         { factor: 'Team Collaboration', impact: 'positive' as const, weight: 0.8 },
       ],
       recommendations: [
@@ -629,11 +635,11 @@ export class AdvancedAnalyticsService {
         return sum + duration;
       }, 0) / completedProjects.length : 0;
 
-    const remainingWork = 100 - workspace.progress;
+    const remainingWork = 100 - (workspace.progress || 0);
     const projectedCompletion = avgProjectDuration * (remainingWork / 100);
 
     const teamPerformanceProjection = {
-      projectedEfficiency: Math.min(100, (workspace.progress / Math.max(1, avgProjectDuration / (1000 * 60 * 60 * 24))) * 10),
+      projectedEfficiency: Math.min(100, ((workspace.progress || 0) / Math.max(1, avgProjectDuration / (1000 * 60 * 60 * 24))) * 10),
       timeToCompletion: this.formatDuration(projectedCompletion),
       riskFactors: [
         {
@@ -672,7 +678,7 @@ export class AdvancedAnalyticsService {
   private formatDuration(milliseconds: number): string {
     const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
     const hours = Math.floor((milliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    
+
     if (days > 0) {
       return `${days} days, ${hours} hours`;
     } else if (hours > 0) {

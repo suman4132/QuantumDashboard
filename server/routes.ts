@@ -1,10 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { 
-  insertJobSchema, insertSessionSchema, insertWorkspaceSchema, 
+import {
+  insertJobSchema, insertSessionSchema, insertWorkspaceSchema,
   insertWorkspaceMemberSchema, insertProjectSchema, insertProjectCollaboratorSchema,
-  JobStatus, WorkspaceStatus, ProjectStatus 
+  JobStatus, WorkspaceStatus, ProjectStatus
 } from "@shared/schema";
 import { z } from "zod";
 import { ibmQuantumService } from "./ibm-quantum";
@@ -18,7 +18,7 @@ import { generateToken, authenticateToken, type AuthRequest } from "./middleware
 // Enhanced quantum simulation for educational purposes
 function generateQuantumResults(jobData: any) {
   const { levelId, circuitCode, backend } = jobData;
-  
+
   // Simulate different quantum states based on circuit type
   if (circuitCode.includes('Bell') || (circuitCode.includes('h(0)') && circuitCode.includes('cx(0'))) {
     // Bell state: should show |00⟩ and |11⟩ with roughly equal probability
@@ -53,7 +53,7 @@ function generateQuantumResults(jobData: any) {
       educational_note: "X gate successfully flipped the qubit state!"
     };
   }
-  
+
   // Default: computational basis state
   return {
     counts: {
@@ -71,7 +71,7 @@ function generateQuantumResults(jobData: any) {
 function generateDefaultCounts(jobId: string) {
   // Seed random with jobId for consistency
   const seed = jobId.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-  
+
   if (seed % 3 === 0) {
     return { '00': 487, '11': 501, '01': 18, '10': 18 }; // Bell state
   } else if (seed % 3 === 1) {
@@ -88,12 +88,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ==================== AUTHENTICATION ROUTES ====================
-  
+
   // User Signup
   app.post("/api/auth/signup", async (req, res) => {
     // Check if MongoDB is connected
     if (!mongoose.connection.readyState || mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ 
+      return res.status(503).json({
         error: "Database not available. Please check MongoDB connection.",
         details: "MongoDB is required for user authentication. Please ensure MongoDB is running and MONGODB_URI is set correctly."
       });
@@ -162,12 +162,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req, res) => {
     // Check if MongoDB is connected
     if (!mongoose.connection.readyState || mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ 
+      return res.status(503).json({
         error: "Database not available. Please check MongoDB connection.",
         details: "MongoDB is required for user authentication. Please ensure MongoDB is running and MONGODB_URI is set correctly."
       });
     }
-    
+
     try {
       const { email, password } = req.body;
 
@@ -223,15 +223,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/me", authenticateToken, async (req: AuthRequest, res) => {
     // Check if MongoDB is connected
     if (!mongoose.connection.readyState || mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ 
+      return res.status(503).json({
         error: "Database not available. Please check MongoDB connection.",
         details: "MongoDB is required for user authentication. Please ensure MongoDB is running and MONGODB_URI is set correctly."
       });
     }
-    
+
     try {
       const user = await User.findById(req.user!.id).select("-password");
-      
+
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -458,7 +458,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!ibmQuantumService.isConfigured()) {
         console.log('IBM Quantum API not configured, using simulated data');
-        return res.json({ 
+        return res.json({
           message: 'Using simulated data for demonstration',
           configured: false
         });
@@ -466,7 +466,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // This would trigger a manual sync in a real implementation
       console.log('Manual IBM Quantum sync requested');
-      res.json({ 
+      res.json({
         message: 'Sync initiated successfully',
         configured: true
       });
@@ -481,7 +481,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/ibm-quantum/live", async (req, res) => {
     try {
       if (!ibmQuantumService.isConfigured()) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: "IBM Quantum API not configured",
           details: "Please add IBM_QUANTUM_API_TOKEN to your .env file"
         });
@@ -514,11 +514,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           runningJobs: jobs.filter(j => j.status === 'running').length,
           queuedJobs: jobs.filter(j => j.status === 'queued').length,
           availableBackends: backends.filter(b => b.status === 'online').length
-        }
+        },
+        isSimulated: jobs.length > 0 && jobs[0].id.startsWith('ibm_sample_')
       });
     } catch (error) {
       console.error("Error fetching live IBM Quantum data:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to fetch live data from IBM Quantum",
         details: error instanceof Error ? error.message : "Unknown error"
       });
@@ -561,7 +562,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/workspaces", async (req, res) => {
     try {
       const workspaces = await storage.getWorkspaces();
-      res.json(workspaces);
+      // Enrich with member data
+      const enrichedWorkspaces = await Promise.all(workspaces.map(async (ws) => {
+        const members = await storage.getWorkspaceMembers(ws.id);
+        return {
+          ...ws,
+          members: members.map(m => m.userName),
+          memberDetails: members, // Full details if needed
+          _count: {
+            members: members.length
+          }
+        };
+      }));
+      res.json(enrichedWorkspaces);
     } catch (error) {
       console.error("Error fetching workspaces:", error);
       res.status(500).json({ error: "Failed to fetch workspaces" });
@@ -848,7 +861,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/quantum/submit-job", async (req, res) => {
     try {
       const validatedData = quantumJobSubmissionSchema.parse(req.body);
-      
+
       // Create a quantum job entry
       const quantumJob = {
         id: `quest_${validatedData.levelId}_${Date.now()}`,
@@ -871,7 +884,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Add to job storage
       const job = await storage.createJob(quantumJob);
 
-      
+
       // Simulate realistic quantum job execution
       setTimeout(async () => {
         try {
@@ -907,7 +920,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!job) {
         return res.status(404).json({ error: "Job not found" });
       }
-      
+
       // Add quantum-specific fields for better educational experience
       const jobResults = job.results as any || {};
       const quantumJob = {
@@ -921,7 +934,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         qubits: job.qubits || 2,
         shots: job.shots || 1024
       };
-      
+
       res.json(quantumJob);
     } catch (error) {
       console.error(`Error fetching quantum job ${req.params.jobId}:`, error);
@@ -930,7 +943,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ==================== AI ASSISTANT API ROUTES ====================
-  
+
   // Generate job suggestions
   app.post("/api/ai/job-suggestions", async (req, res) => {
     try {
@@ -955,7 +968,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!job) {
         return res.status(404).json({ error: "Job not found" });
       }
-      
+
       if (job.status !== 'failed') {
         return res.status(400).json({ error: "Job has not failed" });
       }
@@ -1021,7 +1034,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("No message provided");
         return res.status(400).json({ error: "Message is required" });
       }
-      
+
       console.log("Calling OpenAI service with message:", message);
       const response = await openaiService.chat(message);
       console.log("OpenAI service responded:", response);
@@ -1037,10 +1050,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const isConfigured = openaiService.isServiceConfigured();
       const apiKey = process.env.OPENAI_API_KEY;
-      
+
       let statusMessage = "⚠️  OpenAI API not configured";
-      let setupInstructions = [];
-      
+      let setupInstructions: string[] = [];
+
       if (!apiKey) {
         statusMessage = "⚠️  OPENAI_API_KEY not found in environment variables";
         setupInstructions = [
@@ -1065,7 +1078,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           "3. Check network connectivity"
         ];
       }
-      
+
       res.json({
         configured: isConfigured,
         status: statusMessage,
@@ -1307,9 +1320,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin - User Management
   app.get("/api/admin/users", async (req, res) => {
     try {
-      const filters = req.query;
-      const users = await storage.getUsers(filters);
-      res.json(users);
+      const { search } = req.query;
+      let query: any = {};
+
+      if (search) {
+        const searchRegex = new RegExp(search as string, 'i');
+        query = {
+          $or: [
+            { name: searchRegex },
+            { email: searchRegex }
+          ]
+        };
+      }
+
+      const users = await User.find(query).sort({ createdAt: -1 });
+
+      // Transform _id to id for frontend compatibility
+      const transformedUsers = users.map(user => ({
+        ...user.toJSON(),
+        id: user._id.toString()
+      }));
+
+      res.json(transformedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
       res.status(500).json({ error: "Failed to fetch users" });
@@ -1318,8 +1350,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/users/stats", async (_req, res) => {
     try {
-      const stats = await storage.getUserStats();
-      res.json(stats);
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const [totalUsers, premiumUsers, standardUsers, activeUsers, newUsers] = await Promise.all([
+        User.countDocuments(),
+        User.countDocuments({ plan: 'premium' }),
+        User.countDocuments({ plan: 'standard' }),
+        User.countDocuments({ status: 'active' }),
+        User.countDocuments({ createdAt: { $gte: sevenDaysAgo } })
+      ]);
+
+      res.json({
+        totalUsers,
+        premiumUsers,
+        standardUsers,
+        activeUsers,
+        newUsersLast7Days: newUsers
+      });
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ error: "Failed to fetch user stats" });
@@ -1328,9 +1376,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/users/:id", async (req, res) => {
     try {
-      const user = await storage.getUserById(req.params.id);
+      const user = await User.findById(req.params.id);
       if (!user) return res.status(404).json({ error: "User not found" });
-      res.json(user);
+      res.json({ ...user.toJSON(), id: user._id.toString() });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ error: "Failed to fetch user" });
@@ -1339,19 +1387,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/users", async (req, res) => {
     try {
-      const user = await storage.createUser(req.body);
-      res.json(user);
-    } catch (error) {
+      const { name, email, plan, status, password } = req.body;
+
+      // Default password if not provided (for admin created users)
+      const passwordToHash = password || "quantum123";
+      const hashedPassword = await bcrypt.hash(passwordToHash, 10);
+
+      const user = new User({
+        name,
+        email,
+        plan,
+        status,
+        password: hashedPassword,
+        signupDate: new Date()
+      });
+
+      await user.save();
+      res.status(201).json({ ...user.toJSON(), id: user._id.toString() });
+    } catch (error: any) {
       console.error("Error creating user:", error);
+      if (error.code === 11000) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
       res.status(500).json({ error: "Failed to create user" });
     }
   });
 
   app.patch("/api/admin/users/:id", async (req, res) => {
     try {
-      const user = await storage.updateUser(req.params.id, req.body);
+      const updates = { ...req.body };
+
+      // If updating password, hash it
+      if (updates.password) {
+        updates.password = await bcrypt.hash(updates.password, 10);
+      }
+
+      const user = await User.findByIdAndUpdate(
+        req.params.id,
+        updates,
+        { new: true, runValidators: true }
+      );
+
       if (!user) return res.status(404).json({ error: "User not found" });
-      res.json(user);
+      res.json({ ...user.toJSON(), id: user._id.toString() });
     } catch (error) {
       console.error("Error updating user:", error);
       res.status(500).json({ error: "Failed to update user" });
@@ -1360,8 +1438,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/admin/users/:id", async (req, res) => {
     try {
-      const success = await storage.deleteUser(req.params.id);
-      if (!success) return res.status(404).json({ error: "User not found" });
+      const user = await User.findByIdAndDelete(req.params.id);
+      if (!user) return res.status(404).json({ error: "User not found" });
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -1390,6 +1468,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching leaderboard:", error);
       res.status(500).json({ error: "Failed to fetch leaderboard" });
+    }
+  });
+
+  app.delete("/api/admin/game-scores/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteGameScore(req.params.id);
+      if (!success) {
+        return res.status(404).json({ error: "Score not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting game score:", error);
+      res.status(500).json({ error: "Failed to delete game score" });
     }
   });
 

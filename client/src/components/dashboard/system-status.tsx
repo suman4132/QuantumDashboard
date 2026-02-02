@@ -36,7 +36,7 @@ const MetricCard = ({ icon: Icon, label, value, unit, progress, color = "blue" }
   return (
     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
       <div className="flex items-center space-x-3">
-        <Icon className={`w-4 h-4 ${colorMap[color]}`} />
+        <Icon className={`w-4 h-4 ${colorMap[color as keyof typeof colorMap]}`} />
         <span className="text-sm text-gray-600 dark:text-gray-400">{label}</span>
       </div>
       <div className="text-right">

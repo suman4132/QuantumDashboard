@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import type { 
+import type {
   Workspace, Project, WorkspaceMember, ProjectCollaborator, Job, Backend,
   AiRecommendation, InsertAiRecommendation, UserProfile, Challenge,
   Experiment, CollaborationMetric, QuantumInsight
@@ -20,9 +20,9 @@ export class AICollaborationService {
         this.isConfigured = false;
         return;
       }
-      
+
       try {
-        this.client = new OpenAI({ 
+        this.client = new OpenAI({
           apiKey,
           timeout: 30000, // 30 second timeout
         });
@@ -96,15 +96,15 @@ Return as a JSON object with a "recommendations" array containing items with thi
           const parsed = JSON.parse(content);
           const recommendations = parsed.recommendations || (Array.isArray(parsed) ? parsed : []);
           return recommendations.map((rec: any) => ({
-          userId: user.userId,
-          type: rec.type,
-          title: rec.title,
-          description: rec.description,
-          confidence: rec.confidence,
-          data: rec.data,
-          status: 'pending',
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-        }));
+            userId: user.userId,
+            type: rec.type,
+            title: rec.title,
+            description: rec.description,
+            confidence: rec.confidence,
+            data: rec.data,
+            status: 'pending',
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+          }));
         } catch (parseError) {
           console.warn('Failed to parse AI team matching response, using fallback');
         }
@@ -186,15 +186,18 @@ Return as a JSON object with a "suggestions" array containing items with this fo
           const parsed = JSON.parse(content);
           const suggestions = parsed.suggestions || (Array.isArray(parsed) ? parsed : []);
           return suggestions.map((sug: any) => ({
-          workspaceId: workspace.id,
-          type: sug.type,
-          title: sug.title,
-          description: sug.description,
-          confidence: sug.confidence,
-          data: sug.data,
-          status: 'pending',
-          expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
-        }));
+            workspaceId: workspace.id,
+            type: sug.type,
+            title: sug.title,
+            description: sug.description,
+            confidence: sug.confidence,
+            data: sug.data,
+            status: 'pending',
+            expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
+          }));
+        } catch (parseError) {
+          console.warn('Failed to parse AI suggestions response, using fallback');
+        }
       }
     } catch (error: any) {
       console.error('AI project suggestions error:', error);
@@ -265,14 +268,17 @@ Return as a JSON object with an "optimizations" array containing items with this
           const parsed = JSON.parse(content);
           const optimizations = parsed.optimizations || (Array.isArray(parsed) ? parsed : []);
           return optimizations.map((opt: any) => ({
-          type: opt.type,
-          title: opt.title,
-          description: opt.description,
-          confidence: opt.confidence,
-          data: opt.data,
-          status: 'pending',
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-        }));
+            type: opt.type,
+            title: opt.title,
+            description: opt.description,
+            confidence: opt.confidence,
+            data: opt.data,
+            status: 'pending',
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+          }));
+        } catch (parseError) {
+          console.warn('Failed to parse AI optimization response, using fallback');
+        }
       }
     } catch (error: any) {
       console.error('AI resource optimization error:', error);

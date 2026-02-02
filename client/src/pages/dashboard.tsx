@@ -106,10 +106,11 @@ export default function Dashboard() {
     if (refreshInterval === 0) return;
 
     const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/jobs"] });
-      queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/analytics/stats"] });
-      queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/backends"] });
-      queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/ibm-quantum/live"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/analytics/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/backends"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/sessions"] });
     }, refreshInterval * 1000);
 
     return () => clearInterval(interval);
@@ -124,11 +125,16 @@ export default function Dashboard() {
   }, []);
 
   const handleManualRefresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/jobs"] });
-    queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/analytics/stats"] });
-    queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/backends"] });
-    queryClient.invalidateQueries({ queryKey: ["https://runtime.quantum-computing.ibm.com/sessions"] });
-  }, []);
+    queryClient.invalidateQueries({ queryKey: ["/api/ibm-quantum/live"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/analytics/stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/backends"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/sessions"] });
+    toast({
+      title: "Refreshed",
+      description: "Dashboard data updated successfully",
+    });
+  }, [toast]);
 
   const handleViewChange = (view: string) => {
     setSearchParams({ view: view });

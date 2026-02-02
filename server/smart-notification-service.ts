@@ -1,5 +1,5 @@
-import type { 
-  Notification, InsertNotification, UserProfile, Job, Project, 
+import type {
+  Notification, InsertNotification, UserProfile, Job, Project,
   Workspace, Achievement, Challenge, ChallengeParticipant,
   LiveCollaborationSession, ChatMessage
 } from '@shared/schema';
@@ -80,7 +80,7 @@ export class SmartNotificationService {
     const notifications: Notification[] = [];
     const job = context.data as Job;
 
-    if (job.status === 'done') {
+    if (job.status === 'done' && job.userId) {
       // Success notification for job owner
       notifications.push({
         id: randomUUID(),
@@ -100,6 +100,10 @@ export class SmartNotificationService {
         scheduledFor: null,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         createdAt: new Date(),
+        category: 'job',
+        actionUrl: null,
+        actionLabel: null,
+        readAt: null,
       });
 
       // Notify collaborators if it's a team project
@@ -125,14 +129,18 @@ export class SmartNotificationService {
               scheduledFor: null,
               expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
               createdAt: new Date(),
+              category: 'job',
+              actionUrl: null,
+              actionLabel: null,
+              readAt: null,
             });
           }
         }
       }
-    } else if (job.status === 'failed') {
+    } else if (job.status === 'failed' && job.userId) {
       // Error notification with smart troubleshooting
       const troubleshootingTips = await this.generateTroubleshootingTips(job.error || 'Unknown error');
-      
+
       notifications.push({
         id: randomUUID(),
         userId: job.userId,
@@ -151,6 +159,10 @@ export class SmartNotificationService {
         scheduledFor: null,
         expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
         createdAt: new Date(),
+        category: 'job',
+        actionUrl: null,
+        actionLabel: null,
+        readAt: null,
       });
     }
 
@@ -180,6 +192,10 @@ export class SmartNotificationService {
       scheduledFor: null,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       createdAt: new Date(),
+      category: 'collaboration',
+      actionUrl: null,
+      actionLabel: null,
+      readAt: null,
     });
 
     return notifications;
@@ -211,6 +227,10 @@ export class SmartNotificationService {
       scheduledFor: null,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
       createdAt: new Date(),
+      category: 'gamification', // Achievement is gamification
+      actionUrl: null,
+      actionLabel: null,
+      readAt: null,
     });
 
     // Notify team members for significant achievements
@@ -238,6 +258,10 @@ export class SmartNotificationService {
               scheduledFor: null,
               expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
               createdAt: new Date(),
+              category: 'gamification',
+              actionUrl: null,
+              actionLabel: null,
+              readAt: null,
             });
           }
         }
@@ -273,6 +297,10 @@ export class SmartNotificationService {
       scheduledFor: null,
       expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
       createdAt: new Date(),
+      category: 'project',
+      actionUrl: null,
+      actionLabel: null,
+      readAt: null,
     });
 
     // Notify team members
@@ -299,6 +327,10 @@ export class SmartNotificationService {
             scheduledFor: null,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
             createdAt: new Date(),
+            category: 'project',
+            actionUrl: null,
+            actionLabel: null,
+            readAt: null,
           });
         }
       }
@@ -355,6 +387,10 @@ export class SmartNotificationService {
         scheduledFor: null,
         expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
         createdAt: new Date(),
+        category: 'insight',
+        actionUrl: null,
+        actionLabel: null,
+        readAt: null,
       });
     }
 
@@ -383,6 +419,10 @@ export class SmartNotificationService {
         scheduledFor: null,
         expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours
         createdAt: new Date(),
+        category: 'hardware',
+        actionUrl: null,
+        actionLabel: null,
+        readAt: null,
       });
     }
 
@@ -412,6 +452,10 @@ export class SmartNotificationService {
         scheduledFor: null,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         createdAt: new Date(),
+        category: 'mentorship',
+        actionUrl: null,
+        actionLabel: null,
+        readAt: null,
       });
     } else if (type === 'accepted') {
       // Mentorship accepted notification
@@ -432,6 +476,10 @@ export class SmartNotificationService {
         scheduledFor: null,
         expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
         createdAt: new Date(),
+        category: 'mentorship',
+        actionUrl: null,
+        actionLabel: null,
+        readAt: null,
       });
     }
 
@@ -467,6 +515,10 @@ export class SmartNotificationService {
             scheduledFor: null,
             expiresAt: challenge.endDate,
             createdAt: new Date(),
+            category: 'challenge',
+            actionUrl: null,
+            actionLabel: null,
+            readAt: null,
           });
         }
         break;
@@ -489,6 +541,10 @@ export class SmartNotificationService {
           scheduledFor: null,
           expiresAt: challenge.endDate,
           createdAt: new Date(),
+          category: 'challenge',
+          actionUrl: null,
+          actionLabel: null,
+          readAt: null,
         });
         break;
 
@@ -510,6 +566,10 @@ export class SmartNotificationService {
           scheduledFor: null,
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
           createdAt: new Date(),
+          category: 'challenge',
+          actionUrl: null,
+          actionLabel: null,
+          readAt: null,
         });
         break;
     }
@@ -520,11 +580,11 @@ export class SmartNotificationService {
   // Intelligent Batching and Scheduling
   private async processBatchedNotifications(): Promise<void> {
     const now = new Date();
-    
+
     // Group notifications by user and type for batching
     const batchGroups: Record<string, Notification[]> = {};
-    
-    for (const notification of this.notifications.values()) {
+
+    for (const notification of Array.from(this.notifications.values())) {
       if (notification.scheduledFor && notification.scheduledFor <= now && !notification.isRead) {
         const key = `${notification.userId}_${notification.type}`;
         if (!batchGroups[key]) {
@@ -547,7 +607,7 @@ export class SmartNotificationService {
   private async createBatchedNotification(notifications: Notification[]): Promise<void> {
     const userId = notifications[0].userId;
     const type = notifications[0].type;
-    
+
     const batchedNotification: Notification = {
       id: randomUUID(),
       userId,
@@ -565,13 +625,17 @@ export class SmartNotificationService {
       scheduledFor: null,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       createdAt: new Date(),
+      category: 'system',
+      actionUrl: null,
+      actionLabel: null,
+      readAt: null,
     };
 
     await this.storeAndRouteNotification(batchedNotification);
 
     // Mark original notifications as batched
     for (const notification of notifications) {
-      notification.data = { ...notification.data, batched: true };
+      notification.data = { ...(notification.data as object), batched: true };
     }
   }
 
@@ -667,7 +731,7 @@ export class SmartNotificationService {
 
     // Check user preferences and route accordingly
     const preferences = this.getUserNotificationPreferences(notification.userId);
-    
+
     if (this.shouldSendImmediately(notification, preferences)) {
       await this.sendSingleNotification(notification);
     } else {
@@ -687,16 +751,16 @@ export class SmartNotificationService {
   }
 
   private shouldSendImmediately(notification: Notification, preferences: NotificationPreferences): boolean {
-    return notification.priority === 'critical' || 
-           notification.priority === 'high' ||
-           notification.type === 'achievement' ||
-           !preferences.batchingEnabled;
+    return notification.priority === 'critical' ||
+      notification.priority === 'high' ||
+      notification.type === 'achievement' ||
+      !preferences.batchingEnabled;
   }
 
   private calculateScheduledTime(notification: Notification, preferences: NotificationPreferences): Date {
     const now = new Date();
     const scheduledTime = new Date(now.getTime() + preferences.batchingInterval * 60 * 1000);
-    
+
     // Respect quiet hours
     const hour = scheduledTime.getHours();
     if (hour >= preferences.quietHours.start || hour <= preferences.quietHours.end) {

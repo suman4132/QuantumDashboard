@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import type { Server } from 'http';
-import type { 
+import type {
   LiveCollaborationSession, InsertLiveCollaborationSession,
   LiveEdit, InsertLiveEdit, Project, UserProfile, ChatMessage
 } from '@shared/schema';
@@ -25,9 +25,20 @@ export class RealTimeCollaborationService {
   private documentStates: Map<string, { content: string; version: number; edits: LiveEdit[] }> = new Map();
 
   initialize(server: Server) {
-    this.wss = new WebSocketServer({ 
-      server, 
+    this.wss = new WebSocketServer({
+      noServer: true,
       path: '/ws/collaboration'
+    });
+
+    server.on('upgrade', (request, socket, head) => {
+      const pathname = request.url ? new URL(request.url, `http://${request.headers.host}`).pathname : '/';
+
+      if (pathname.startsWith('/ws/collaboration')) {
+        this.wss?.handleUpgrade(request, socket, head, (ws) => {
+          this.wss?.emit('connection', ws, request);
+        });
+      }
+      // Important: Do not destroy socket for other paths, let Vite HMR handle them
     });
 
     this.wss.on('connection', (ws, request) => {
@@ -326,33 +337,33 @@ export class RealTimeCollaborationService {
 
   private applyEdit(projectId: string, edit: LiveEdit) {
     const docState = this.getDocumentState(projectId);
-    
+
     // Apply the edit to the content
     switch (edit.operation) {
       case 'insert':
-        if (edit.position !== undefined && edit.content) {
-          const lines = docState.content.split('\\n');
+        if (edit.position !== null && edit.content !== null) {
+          const lines = docState.content.split('\n');
           const lineIndex = Math.floor(edit.position);
-          const charIndex = edit.position % 1 * 1000; // Simplified position handling
-          
+          const charIndex = Math.floor(edit.position % 1 * 1000); // Simplified position handling
+
           if (lineIndex < lines.length) {
             const line = lines[lineIndex];
             lines[lineIndex] = line.slice(0, charIndex) + edit.content + line.slice(charIndex);
-            docState.content = lines.join('\\n');
+            docState.content = lines.join('\n');
           }
         }
         break;
       case 'delete':
-        if (edit.position !== undefined && edit.content) {
-          const lines = docState.content.split('\\n');
+        if (edit.position !== null && edit.content !== null) {
+          const lines = docState.content.split('\n');
           const lineIndex = Math.floor(edit.position);
-          const charIndex = edit.position % 1 * 1000;
-          
+          const charIndex = Math.floor(edit.position % 1 * 1000);
+
           if (lineIndex < lines.length) {
             const line = lines[lineIndex];
             const deleteLength = edit.content.length;
             lines[lineIndex] = line.slice(0, charIndex) + line.slice(charIndex + deleteLength);
-            docState.content = lines.join('\\n');
+            docState.content = lines.join('\n');
           }
         }
         break;
@@ -388,8 +399,11 @@ export class RealTimeCollaborationService {
   // Public API methods
   async createSession(sessionData: InsertLiveCollaborationSession): Promise<LiveCollaborationSession> {
     const session: LiveCollaborationSession = {
-      id: randomUUID(),
       ...sessionData,
+      id: randomUUID(),
+      data: (sessionData.data as Record<string, any>) || {},
+      status: sessionData.status || 'active',
+      participants: (sessionData.participants as string[]) || [],
       startedAt: new Date(),
       endedAt: null,
     };
@@ -440,7 +454,7 @@ export class RealTimeCollaborationService {
 
     // Check for productivity patterns
     if (participants.length > 1) {
-      const activeParticipants = participants.filter(p => 
+      const activeParticipants = participants.filter(p =>
         new Date().getTime() - p.lastActivity.getTime() < 5 * 60 * 1000 // 5 minutes
       );
 

@@ -20,7 +20,7 @@ const item = {
 };
 
 export default function AdminPricing() {
-  const { data: plans, isLoading } = useQuery({
+  const { data: plans, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/pricing-plans"],
   });
 

@@ -24,7 +24,7 @@ export function useAuth() {
     // Check if user is authenticated on component mount
     const token = localStorage.getItem('auth-token');
     const userData = localStorage.getItem('user-data');
-    
+
     if (token && userData) {
       // Verify token is still valid by calling /api/auth/me
       verifyToken(token)
@@ -61,6 +61,10 @@ export function useAuth() {
 
       if (response.ok) {
         const data = await response.json();
+        // HOTFIX: Hardcoded Admin Permission
+        if (data.user.email === 'sumankumarsharma@gmail.com') {
+          data.user.role = 'admin';
+        }
         return data.user;
       }
       return null;
@@ -87,6 +91,11 @@ export function useAuth() {
       }
 
       if (data.success && data.user && data.token) {
+        // HOTFIX: Hardcoded Admin Permission
+        if (data.user.email === 'sumankumarsharma@gmail.com') {
+          (data.user as any).role = 'admin';
+        }
+
         localStorage.setItem('auth-token', data.token);
         localStorage.setItem('user-data', JSON.stringify(data.user));
         setIsAuthenticated(true);
@@ -124,6 +133,11 @@ export function useAuth() {
       }
 
       if (data.success && data.user && data.token) {
+        // HOTFIX: Hardcoded Admin Permission
+        if (data.user.email === 'sumankumarsharma@gmail.com') {
+          (data.user as any).role = 'admin';
+        }
+
         localStorage.setItem('auth-token', data.token);
         localStorage.setItem('user-data', JSON.stringify(data.user));
         setIsAuthenticated(true);

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminAuditLogs() {
-  const { data: logs, isLoading } = useQuery({
+  const { data: logs, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/audit-logs"],
   });
 

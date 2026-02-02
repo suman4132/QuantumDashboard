@@ -412,6 +412,13 @@ export default function Landing() {
                 </Button>
               ) : (
                 <>
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-400 hover:text-white mr-2" 
+                    onClick={() => navigate('/admin/login')}
+                  >
+                    Admin Login
+                  </Button>
                   <Button variant="ghost" onClick={handleLogin}>Login</Button>
                   <Button onClick={handleSignUp} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                     Sign Up
@@ -453,6 +460,13 @@ export default function Landing() {
                   </Button>
                 ) : (
                   <>
+                    <Button 
+                      onClick={() => navigate('/login')} 
+                      variant="ghost" 
+                      className="w-full text-gray-400 hover:text-white"
+                    >
+                      Admin Login
+                    </Button>
                     <Button onClick={handleLogin} variant="ghost" className="w-full">Login</Button>
                     <Button onClick={handleSignUp} className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
                       Sign Up

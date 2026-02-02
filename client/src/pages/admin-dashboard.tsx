@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, DollarSign, FileText, 
   Newspaper, Trophy, History, Moon, Sun, Search,
   BarChart3, Settings, Menu, X, Clock, MapPin, RefreshCw,
-  ChevronRight, Bell, LogOut, Home, User, Mail, Shield
+  ChevronRight, Bell, LogOut, Home, User, Mail, Shield, Server
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,8 @@ import AdminNews from "@/components/admin/admin-news";
 import AdminGameScores from "@/components/admin/admin-game-scores";
 import AdminAuditLogs from "@/components/admin/admin-audit-logs";
 import AdminSettings from "@/components/admin/admin-settings";
+import AdminResources from "@/components/admin/admin-resources";
+
 
 interface NavItem {
   label: string;
@@ -40,8 +42,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Analytics", icon: LayoutDashboard, path: "/admin", color: "from-blue-500 to-cyan-500" },
+  { label: "Resource List", icon: Server, path: "/admin/resources", color: "from-indigo-500 to-violet-500" },
+  { label: "Registered user", icon: Shield, path: "/admin/users", color: "from-violet-500 to-purple-500" },
   { label: "Pricing Plans", icon: DollarSign, path: "/admin/pricing", color: "from-emerald-500 to-teal-500" },
-  { label: "Users", icon: Users, path: "/admin/users", color: "from-violet-500 to-purple-500" },
   { label: "Content", icon: FileText, path: "/admin/content", color: "from-amber-500 to-orange-500" },
   { label: "News", icon: Newspaper, path: "/admin/news", color: "from-pink-500 to-rose-500" },
   { label: "Game Scores", icon: Trophy, path: "/admin/game-scores", color: "from-yellow-500 to-amber-500" },
@@ -55,7 +58,7 @@ export default function AdminDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [userLocation, setUserLocation] = useState<{ city: string; country: string; timezone: string } | null>(null);
   const { theme, setTheme } = useTheme();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -393,11 +396,13 @@ export default function AdminDashboard() {
                     data-testid="button-admin-profile"
                   >
                     <div className="text-right hidden sm:block">
-                      <p className="text-sm font-semibold" data-testid="text-admin-name">Admin User</p>
+                      <p className="text-sm font-semibold" data-testid="text-admin-name">{user?.name || 'Admin User'}</p>
                       <p className="text-xs text-muted-foreground" data-testid="text-admin-role">Super Admin</p>
                     </div>
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
-                      <span className="text-sm font-bold text-primary-foreground">AU</span>
+                      <span className="text-sm font-bold text-primary-foreground">
+                        {user?.name?.charAt(0).toUpperCase() || 'A'}
+                      </span>
                     </div>
                   </motion.button>
                 </DropdownMenuTrigger>
@@ -405,11 +410,15 @@ export default function AdminDashboard() {
                   <DropdownMenuLabel className="pb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg">
-                        <span className="text-lg font-bold text-primary-foreground">AU</span>
+                        <span className="text-lg font-bold text-primary-foreground">
+                          {user?.name?.charAt(0).toUpperCase() || 'A'}
+                        </span>
                       </div>
                       <div>
-                        <p className="text-sm font-semibold">Admin User</p>
-                        <p className="text-xs text-muted-foreground">admin@quantumcloud.com</p>
+                        <p className="text-sm font-semibold">{user?.name || 'Admin User'}</p>
+                        <p className="text-xs text-muted-foreground w-40 truncate" title={user?.email}>
+                          {user?.email || 'admin@quantumcloud.com'}
+                        </p>
                       </div>
                     </div>
                   </DropdownMenuLabel>
@@ -452,6 +461,7 @@ export default function AdminDashboard() {
           >
             <Routes>
               <Route index element={<AdminAnalytics />} />
+              <Route path="resources" element={<AdminResources />} />
               <Route path="pricing" element={<AdminPricing />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="content" element={<AdminContent />} />

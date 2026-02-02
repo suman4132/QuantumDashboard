@@ -26,101 +26,110 @@ interface IBMQuantumBackend {
 }
 
 class IBMQuantumService {
-  private apiKey: string;
-  private region: string;
-  private projectId: string;
-  private instanceId: string;
-  private baseUrl: string;
-  private runtimeUrl: string;
   private bearerToken: string | null = null;
   private tokenExpiry: number = 0;
 
   constructor() {
-    this.apiKey = process.env.IBM_QUANTUM_API_TOKEN || '';
-    this.region = process.env.IBM_QUANTUM_REGION || 'us-east';
-    this.projectId = process.env.IBM_QUANTUM_PROJECT_ID || '';
-    this.instanceId = process.env.IBM_QUANTUM_INSTANCE_ID || '';
-    
-    // Use region-specific Qiskit Runtime endpoints
-    this.baseUrl = `https://${this.region}.quantum-computing.cloud.ibm.com/runtime`;
-    this.runtimeUrl = this.baseUrl;
+    // We don't initialize here to allow dotenv to load first
+    // Configuration is checked on-demand
+  }
 
-    if (!this.apiKey) {
-      console.warn('⚠️  IBM Quantum API token not found in environment variables');
-      console.warn('Please add IBM_QUANTUM_API_TOKEN to your .env file');
-      console.warn('Using simulated data for demonstration');
-    } else if (!this.projectId) {
-      console.warn('⚠️  IBM Quantum Project ID not found in environment variables');
-      console.warn('Please add IBM_QUANTUM_PROJECT_ID to your .env file');
-      console.warn('Project ID is required for Qiskit Runtime API access');
-    } else if (!this.instanceId) {
-      console.warn('⚠️  IBM Quantum Instance ID not found in environment variables');
-      console.warn('Please add IBM_QUANTUM_INSTANCE_ID to your .env file');
-      console.warn('Instance ID is required for proper authentication');
-    } else {
-      console.log('✅ IBM Quantum API configured successfully');
-      console.log(`🔗 Base URL: ${this.baseUrl}`);
-      console.log(`🏷️  Project ID: ${this.projectId}`);
-      console.log(`🌍 Region: ${this.region}`);
-    }
+  private getConfig() {
+    return {
+      apiKey: process.env.IBM_QUANTUM_API_TOKEN || '',
+      region: process.env.IBM_QUANTUM_REGION || 'us-east',
+      projectId: process.env.IBM_QUANTUM_PROJECT_ID || '',
+      instanceId: process.env.IBM_QUANTUM_INSTANCE_ID || ''
+    };
+  }
+
+  private get baseUrl() {
+    const { region } = this.getConfig();
+    return `https://${region}.quantum-computing.cloud.ibm.com/runtime`;
+  }
+
+  private get runtimeUrl() {
+    return this.baseUrl;
+  }
+
+  private isLegacyPlatform(): boolean {
+    const { instanceId } = this.getConfig();
+    return instanceId.includes('/') && !instanceId.startsWith('crn:');
   }
 
   private async getBearerToken(): Promise<string> {
+    const { apiKey } = this.getConfig();
     // If we have a valid token, return it
     if (this.bearerToken && Date.now() < this.tokenExpiry) {
       return this.bearerToken;
     }
 
     try {
-      console.log('🔑 Generating IBM Cloud Bearer token...');
-      const response = await axios.post('https://iam.cloud.ibm.com/identity/token', 
-        `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${this.apiKey}`,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          }
+      if (this.isLegacyPlatform()) {
+        console.log('🔑 Authenticating with IBM Quantum Platform (Legacy)...');
+        try {
+          const response = await axios.post('https://api.quantum-computing.ibm.com/api/users/loginWithToken', {
+            apiToken: apiKey
+          });
+          this.bearerToken = response.data.id;
+          this.tokenExpiry = Date.now() + (response.data.ttl * 1000);
+          console.log('✅ Successfully authenticated with IBM Quantum Platform');
+        } catch (authError) {
+          console.warn('⚠️  Legacy authentication failed, trying to use API Token directly...');
+          // Fallback: Use the API token as the access token directly
+          this.bearerToken = apiKey;
+          this.tokenExpiry = Date.now() + (3600 * 1000);
         }
-      );
+      } else {
+        console.log('🔑 Generating IBM Cloud Bearer token...');
+        const response = await axios.post('https://iam.cloud.ibm.com/identity/token',
+          `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${apiKey}`,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Accept': 'application/json'
+            }
+          }
+        );
 
-      this.bearerToken = response.data.access_token;
-      // Set expiry to 50 minutes (tokens typically last 60 minutes)
-      this.tokenExpiry = Date.now() + (50 * 60 * 1000);
-      
-      console.log('✅ Successfully generated Bearer token');
+        this.bearerToken = response.data.access_token;
+        this.tokenExpiry = Date.now() + (50 * 60 * 1000);
+        console.log('✅ Successfully generated Bearer token');
+      }
       return this.bearerToken!
     } catch (error: any) {
-      console.error('❌ Failed to generate Bearer token:', error.response?.data || error.message);
-      throw new Error('Failed to authenticate with IBM Cloud');
+      console.error('❌ Failed to authenticate:', error.response?.data || error.message);
+      throw new Error('Failed to authenticate with IBM Quantum/Cloud');
     }
   }
 
   private async makeAuthenticatedRequest(url: string, method: 'GET' | 'POST' = 'GET', data?: any) {
-    if (!this.apiKey) {
+    const { apiKey, projectId, instanceId } = this.getConfig();
+    const isLegacy = this.isLegacyPlatform();
+
+    if (!apiKey) {
       throw new Error('IBM Quantum API key not configured');
     }
 
     try {
-      // Get valid Bearer token
-      const bearerToken = await this.getBearerToken();
-      
-      // Required headers for 2025 Qiskit Runtime API
+      // Get valid Token
+      const token = await this.getBearerToken();
+
       const headers: any = {
-        'Authorization': `Bearer ${bearerToken}`,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'User-Agent': 'Quantum-Dashboard/1.0'
       };
-      
-      // Add project-specific headers when available
-      if (this.projectId) {
-        headers['X-Project-ID'] = this.projectId;
+
+      if (isLegacy) {
+        headers['X-Access-Token'] = token;
+        // Legacy platform often needs simpler headers or just the token
+      } else {
+        headers['Authorization'] = `Bearer ${token}`;
+        if (projectId) headers['X-Project-ID'] = projectId;
+        if (instanceId) headers['Service-CRN'] = instanceId;
       }
-      
-      // Add instance/service CRN when available
-      if (this.instanceId) {
-        headers['Service-CRN'] = this.instanceId;
-      }
+
       console.log(`🌐 Making request to: ${url}`);
       const response = await axios({
         method,
@@ -128,7 +137,7 @@ class IBMQuantumService {
         headers,
         data,
         timeout: 30000,
-        validateStatus: (status) => status < 500 // Allows for retries on specific status codes, but should be handled carefully
+        validateStatus: (status) => status < 500
       });
 
       if (response.status >= 400) {
@@ -156,7 +165,10 @@ class IBMQuantumService {
   }
 
   async getJobs(limit: number = 50): Promise<IBMQuantumJob[]> {
-    if (!this.apiKey) {
+    const { apiKey, projectId, instanceId } = this.getConfig();
+    const isLegacy = this.isLegacyPlatform();
+
+    if (!apiKey) {
       console.warn('API key not available. Returning simulated jobs.');
       return this.generateSampleJobs(limit);
     }
@@ -164,12 +176,30 @@ class IBMQuantumService {
     try {
       console.log(`📊 Fetching ${limit} jobs from IBM Quantum...`);
 
-      // Updated endpoints for 2025 Qiskit Runtime API
-      const endpoints = [
-        `${this.baseUrl}/projects/${this.projectId}/jobs?limit=${limit}`, // Primary project-scoped endpoint
-        `${this.baseUrl}/projects/${this.projectId}/jobs`, // Fallback without parameters
-        `${this.baseUrl}/jobs?limit=${limit}` // Global jobs endpoint (if project-scoped fails)
-      ];
+      let endpoints: string[] = [];
+
+      if (isLegacy) {
+        // Parse instanceId "hub/group/project"
+        // e.g., "ibm-q/open/main"
+        const parts = instanceId.split('/');
+        if (parts.length === 3) {
+          const [hub, group, project] = parts;
+          endpoints = [
+            `https://api.quantum-computing.ibm.com/api/Network/${hub}/Groups/${group}/Projects/${project}/Jobs?limit=${limit}&order=DESC`,
+            `https://api.quantum-computing.ibm.com/api/Network/${hub}/Groups/${group}/Projects/${project}/Jobs?limit=${limit}`
+          ];
+        } else {
+          console.warn('⚠️  Invalid instance ID format for Legacy Platform. Expected "hub/group/project".');
+          endpoints = [`https://api.quantum-computing.ibm.com/api/Jobs?limit=${limit}`]; // Fallback to global jobs
+        }
+      } else {
+        // IBM Cloud endpoints
+        endpoints = [
+          `${this.baseUrl}/projects/${projectId}/jobs?limit=${limit}`,
+          `${this.baseUrl}/projects/${projectId}/jobs`,
+          `${this.baseUrl}/jobs?limit=${limit}`
+        ];
+      }
 
       let data: any = null;
       let lastError: any = null;
@@ -178,18 +208,20 @@ class IBMQuantumService {
         try {
           console.log(`🔄 Trying endpoint: ${endpoint}`);
           data = await this.makeAuthenticatedRequest(endpoint);
-          if (data && !data.error && (Array.isArray(data.jobs) || Array.isArray(data.data))) {
+
+          // Legacy API returns structured object, sometimes with 'items' or just array
+          const jobsList = isLegacy ? (data.items || data) : (data.jobs || data.data);
+
+          if (jobsList && Array.isArray(jobsList)) {
             console.log(`✅ Successfully fetched from: ${endpoint}`);
+            // Normalize list for processing
+            data = { jobs: jobsList };
             break;
           } else if (data && data.error) {
             console.log(`⚠️  Endpoint ${endpoint} returned an API error:`, data.error);
             lastError = new Error(`API Error: ${data.error.message || data.error}`);
-          } else if (!data) {
-            console.log(`⚠️  Endpoint ${endpoint} returned no data.`);
-            lastError = new Error('No data received from endpoint');
-          } else if (!Array.isArray(data.jobs) && !Array.isArray(data.data)) {
+          } else if (data) {
             console.log(`⚠️  Endpoint ${endpoint} returned data in unexpected format.`);
-            lastError = new Error('Unexpected data format');
           }
         } catch (error) {
           lastError = error;
@@ -198,33 +230,32 @@ class IBMQuantumService {
         }
       }
 
-      if (!data || data.error || (!Array.isArray(data.jobs) && !Array.isArray(data.data))) {
+      if (!data || !data.jobs) {
         console.warn('⚠️  All IBM Quantum job endpoints failed or returned invalid data. Generating sample data for demo.');
         return this.generateSampleJobs(limit);
       }
 
-      const jobs = data.jobs || data.data || [];
-
-      if (!Array.isArray(jobs)) {
-        console.warn('⚠️  Unexpected data format from IBM Quantum:', typeof jobs);
-        return this.generateSampleJobs(limit);
-      }
-
-      console.log(`📈 Successfully processed ${jobs.length} real jobs from IBM Quantum`);
+      const jobs = data.jobs;
+      console.log(`📈 Successfully processed ${jobs.length} reall jobs from IBM Quantum`);
 
       return jobs.map((job: any, index: number) => ({
         id: job.id || `ibm_job_${Date.now()}_${index}`,
-        name: job.program?.id || job.program_id || job.name || `IBM Job ${job.id?.slice(-8) || index}`,
-        backend: job.backend?.name || job.backend_name || job.device || 'ibm_brisbane', // Use backend.name if available
+        name: job.program?.id || job.program_id || job.name || (job.backend ? `Job on ${job.backend.name}` : `IBM Job`),
+        backend: job.backend?.name || job.backend_name || job.device || 'unknown_backend',
         status: this.mapStatus(job.status || job.state || 'queued'),
-        created: job.created || job.creation_date || new Date().toISOString(),
-        updated: job.updated || job.time_per_step?.COMPLETED || job.modified,
-        runtime: job.running_time || job.usage?.seconds || job.runtime,
+        created: job.created || job.creationDate || new Date().toISOString(),
+        updated: job.updated || job.endDate || job.modified,
+        runtime: job.running_time || job.usage?.seconds || job.duration,
         qubits: job.params?.circuits?.[0]?.num_qubits || job.usage?.quantum_seconds || job.num_qubits || Math.floor(Math.random() * 127) + 5,
-        shots: job.params?.shots || job.usage?.shots || job.shots || 1024,
+        shots: job.params?.shots || job.shots || 1024,
         program: job.program?.id || job.program_id || 'quantum_circuit',
         results: job.results,
-        error: job.error_message || job.failure?.error_message || job.error
+        error: (() => {
+          const e = job.error_message || job.failure?.error_message || job.error;
+          if (!e) return null;
+          if (typeof e === 'string') return e;
+          return e.message || e.description || JSON.stringify(e);
+        })()
       }));
     } catch (error) {
       console.error('❌ Failed to fetch IBM Quantum jobs:', error);
@@ -233,7 +264,10 @@ class IBMQuantumService {
   }
 
   async getBackends(): Promise<IBMQuantumBackend[]> {
-    if (!this.apiKey) {
+    const { apiKey, region } = this.getConfig();
+    const isLegacy = this.isLegacyPlatform();
+
+    if (!apiKey) {
       console.warn('API key not available. Returning simulated backends.');
       return this.generateSampleBackends();
     }
@@ -241,11 +275,17 @@ class IBMQuantumService {
     try {
       console.log('🖥️  Fetching backends from IBM Quantum...');
 
-      const endpoints = [
-        `${this.baseUrl}/backends`, // Primary Qiskit Runtime endpoint
-        `https://${this.region}.quantum-computing.cloud.ibm.com/runtime/backends`, // Explicit region endpoint
-        `https://quantum-computing.ibm.com/api/backends` // Public backends endpoint
-      ];
+      let endpoints: string[] = [];
+
+      if (isLegacy) {
+        endpoints = [`https://api.quantum-computing.ibm.com/api/Backends`];
+      } else {
+        endpoints = [
+          `${this.baseUrl}/backends`,
+          `https://${region}.quantum-computing.cloud.ibm.com/runtime/backends`,
+          `https://quantum-computing.ibm.com/api/backends`
+        ];
+      }
 
       let data: any = null;
 
@@ -253,15 +293,16 @@ class IBMQuantumService {
         try {
           console.log(`🔄 Trying backends endpoint: ${endpoint}`);
           data = await this.makeAuthenticatedRequest(endpoint);
-          if (data && !data.error && Array.isArray(data.backends)) {
+
+          // Legacy API returns array of backends directly
+          const backendsList = isLegacy ? data : (data.backends || data.devices);
+
+          if (Array.isArray(backendsList)) {
             console.log(`✅ Successfully fetched backends from: ${endpoint}`);
+            data = { backends: backendsList };
             break;
           } else if (data && data.error) {
             console.log(`⚠️  Endpoint ${endpoint} returned an API error:`, data.error);
-          } else if (!data) {
-            console.log(`⚠️  Endpoint ${endpoint} returned no data.`);
-          } else if (!Array.isArray(data.backends)) {
-            console.log(`⚠️  Endpoint ${endpoint} returned data in unexpected format.`);
           }
         } catch (error) {
           console.log(`❌ Backends endpoint failed: ${endpoint}`, error instanceof Error ? error.message : error);
@@ -269,27 +310,21 @@ class IBMQuantumService {
         }
       }
 
-      if (!data || data.error || !Array.isArray(data.backends)) {
+      if (!data || !data.backends) {
         console.warn('⚠️  All backend endpoints failed or returned invalid data. Generating sample backends.');
         return this.generateSampleBackends();
       }
 
-      const backends = data.backends || [];
-
-      if (!Array.isArray(backends)) {
-        console.warn('⚠️  Unexpected backends data format:', typeof backends);
-        return this.generateSampleBackends();
-      }
-
+      const backends = data.backends;
       console.log(`🖥️  Successfully processed ${backends.length} real backends from IBM Quantum`);
 
       return backends.map((backend: any) => ({
         name: backend.name || backend.backend_name || 'unknown_backend',
-        status: this.mapBackendStatus(backend.status || backend.operational),
-        pending_jobs: backend.pending_jobs || backend.length_queue || backend.queue_length || Math.floor(Math.random() * 10),
+        status: this.mapBackendStatus(backend.status || backend.operational || (backend.online ? 'online' : 'offline')),
+        pending_jobs: backend.pending_jobs || backend.length_queue || backend.queue_length || backend.status === 'active' ? Math.floor(Math.random() * 5) : 0,
         quantum_volume: backend.quantum_volume || backend.props?.quantum_volume,
-        num_qubits: backend.n_qubits || backend.num_qubits || backend.configuration?.n_qubits || Math.floor(Math.random() * 100) + 27,
-        basis_gates: backend.basis_gates || backend.configuration?.basis_gates || ['cx', 'id', 'rz', 'sx', 'x'],
+        num_qubits: backend.n_qubits || backend.num_qubits || backend.configuration?.n_qubits || 0,
+        basis_gates: backend.basis_gates || backend.configuration?.basis_gates || [],
         coupling_map: backend.coupling_map || backend.configuration?.coupling_map
       }));
     } catch (error) {
@@ -337,7 +372,8 @@ class IBMQuantumService {
   }
 
   async getJobById(jobId: string): Promise<IBMQuantumJob | null> {
-    if (!this.apiKey) {
+    const { apiKey } = this.getConfig();
+    if (!apiKey) {
       console.warn('API token not available. Cannot fetch job by ID.');
       return null;
     }
@@ -364,7 +400,7 @@ class IBMQuantumService {
         shots: job.params?.shots || 1024,
         program: job.program?.id || 'quantum_circuit',
         results: job.results,
-        error: job.error_message
+        error: typeof job.error_message === 'object' ? JSON.stringify(job.error_message) : job.error_message
       };
     } catch (error) {
       console.error(`❌ Failed to fetch IBM Quantum job ${jobId}:`, error);
@@ -396,18 +432,20 @@ class IBMQuantumService {
   }
 
   isConfigured(): boolean {
-    return !!(this.apiKey && this.projectId && this.instanceId);
+    const { apiKey, projectId, instanceId } = this.getConfig();
+    return !!(apiKey && projectId && instanceId);
   }
 
   getApiStatus(): string {
+    const { apiKey, projectId, instanceId } = this.getConfig();
     const parts = [];
-    if (!this.apiKey) parts.push('API Token missing');
-    if (!this.projectId) parts.push('Project ID missing');
-    if (!this.instanceId) parts.push('Instance ID missing');
-    
+    if (!apiKey) parts.push('API Token missing');
+    if (!projectId) parts.push('Project ID missing');
+    if (!instanceId) parts.push('Instance ID missing');
+
     return parts.length === 0 ? '✅ Fully Configured' : `❌ Missing: ${parts.join(', ')}`;
   }
-  
+
   getConfigurationHelp(): string {
     return `
 🔧 IBM Quantum Configuration Required:

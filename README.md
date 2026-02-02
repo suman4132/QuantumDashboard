@@ -1,209 +1,144 @@
-# QuantumCloud - Quantum Computing Platform
 
-<div align="center">
+# ⚛️ QuantumCloud - Advanced Quantum Computing & Collaboration Platform
 
-![QuantumCloud](https://img.shields.io/badge/QuantumCloud-Platform-blue)
-![React](https://img.shields.io/badge/React-18.3-61dafb?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?logo=typescript)
-![Express](https://img.shields.io/badge/Express-4.21-000000?logo=express)
-![License](https://img.shields.io/badge/License-MIT-green)
+**QuantumCloud** is a next-generation web platform designed to democratize access to quantum computing. It combines powerful simulation tools, real-time collaboration features, educational gamification, and enterprise-grade administration into a single, cohesive ecosystem.
 
-**Experience the Future of Quantum Computing in the Cloud**
+![QuantumCloud Banner](https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2000)
 
-[Get Started](#getting-started) • [Features](#features) • [Documentation](#documentation) • [Research](#research-publications)
+## 🚀 Key Features
 
-</div>
+### 🖥️ Dashboard & Analytics
+-   **User Dashboard**: Central hub for managing quantum jobs, viewing recent activity, and accessing tools.
+-   **Admin Command Center**: specialized portal for system oversight.
+    -   **Deep Analytics**: Visual metrics for user engagement, job success rates, and system health.
+    -   **Resource Management**: Monitor quantum backend availability (IBM Quantum integration).
+    -   **User Management**: Role-based access control and user administration.
+    -   **Content & News**: CMS for platform updates and educational content.
+    -   **Audit Logs**: Comprehensive security and action logging.
+
+### 🤝 TeamCollaboration Suite
+A fully integrated collaborative environment for research teams:
+-   **Real-Time Workspaces**: Create public or private workspaces for projects.
+-   **Live Interaction**:
+    -   **Research Chat**: Persistent chat channels with file sharing.
+    -   **Voice Chat**: Integrated voice communication channels.
+    -   **Whiteboard**: Interactive canvas for diagramming circuits and algorithms.
+    -   **Screen Sharing**: Seamless presentation capabilities.
+-   **AI Copilot**:
+    -   **Smart Suggestions**: AI-driven tips for circuit optimization.
+    -   **Code Review**: Automated analysis of quantum circuits and code.
+
+### 🎮 Quantum Quest (Gamification)
+An interactive educational platform to master quantum concepts:
+-   **Structured Learning Paths**: Levels ranging from *Quantum Fundamentals* to *Advanced Research*.
+-   **Interactive Challenges**: Hands-on puzzles for Gates, Algorithms (Grover, Shor), and Error Correction.
+-   **Progression System**: Points, Streaks, and Dynamic User Rankings.
+-   **Achievement System**: Unlockable badges (Common to Legendary rarities).
+-   **Global Leaderboard**: Compete with other quantum researchers worldwide.
+
+### ⚙️ Technology Stack
+
+**Frontend**
+-   **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+-   **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
+-   **Animations**: [Framer Motion](https://www.framer.com/motion/)
+-   **Charts**: [Recharts](https://recharts.org/)
+-   **Icons**: [Lucide React](https://lucide.dev/)
+
+**Backend**
+-   **Runtime**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
+-   **Database**: [MongoDB](https://www.mongodb.com/) (Mongoose ODM)
+-   **Real-Time**: WebSockets (for collaboration features)
+
+**Integrations**
+-   **IBM Quantum**: Integration with Qiskit Runtime for real hardware execution.
+-   **OpenAI**: Powering the AI Copilot and Smart Suggestions.
 
 ---
 
-## 🎓 Research Publications
-
-This project is based on peer-reviewed research:
-
-### 📄 IEEE Paper
-**[View Full Paper on Google Drive](https://drive.google.com/file/d/1SlkuS55XW9mhXXcVBNievVl4q-IarzCU/view)**
-
-### 📊 Research Poster
-**[View Conference Poster on Google Drive](https://drive.google.com/file/d/1Ao3guEXLuAovfFsKDJGPCnMWcTjsJdkJ/view?usp=sharing )**
-
----
-
-## 🚀 Overview
-
-QuantumCloud is a full-stack web application that provides a cloud-based quantum computing platform. Run, learn, and innovate with powerful quantum systems accessible from anywhere. The platform combines educational features, quantum circuit simulation, job management, and real-time collaboration capabilities.
-
-## ✨ Features
-
-### 🎯 Core Capabilities
-- **Quantum Job Management** - Submit, monitor, and manage quantum computing jobs
-- **Interactive Dashboard** - Real-time job status, analytics, and system monitoring
-- **IBM Quantum Integration** - Connect to real quantum hardware
-- **Circuit Simulator** - Interactive quantum gate simulator with visual feedback
-- **Bloch Sphere Visualization** - 3D quantum state representation
-
-### 📚 Educational Features
-- **Quantum Quest** - Gamified learning with challenges and tutorials
-- **Interactive Quizzes** - Test your quantum computing knowledge
-- **Gate Simulator** - Hands-on experience with quantum gates
-- **Algorithm Timeline** - Learn the history of quantum algorithms
-- **Tutorial System** - Step-by-step quantum computing guides
-
-### 👥 Collaboration
-- **Real-time Workspaces** - Team collaboration with WebSocket support
-- **Project Management** - Organize quantum experiments
-- **Shared Resources** - Collaborate on quantum circuits
-
-### 🤖 AI-Powered
-- **AI Assistant** - OpenAI-powered job help and debugging
-- **Failure Analysis** - Intelligent error diagnosis
-- **Code Suggestions** - Smart quantum circuit recommendations
-
-### 🔧 Admin Dashboard
-- User management and analytics
-- Pricing plan configuration
-- Content management system
-- Audit logs and monitoring
-- Game scores and leaderboards
-
-## 🛠️ Technology Stack
-
-### Frontend
-- **React 18.3** - Modern UI library
-- **Vite 5.4** - Lightning-fast build tool
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-- **Radix UI** - Accessible component primitives
-- **Three.js** - 3D quantum visualizations
-- **Framer Motion** - Smooth animations
-- **TanStack Query** - Data fetching and caching
-
-### Backend
-- **Express.js** - Web server framework
-- **Node.js** - JavaScript runtime
-- **WebSocket (ws)** - Real-time communication
-- **Drizzle ORM** - Type-safe database queries
-- **Passport.js** - Authentication
-
-### Integrations
-- **IBM Quantum API** - Real quantum hardware access
-- **OpenAI API** - AI-powered features
-- **PostgreSQL** - Database support 
-
-## 📦 Getting Started
+## 🛠️ Installation & Setup
 
 ### Prerequisites
-- Node.js 20+ installed
-- npm or yarn package manager
+-   Node.js (v18+)
+-   MongoDB (Local or Atlas)
+-   IBM Quantum API Token (Optional, for real hardware)
+-   OpenAI API Key (Optional, for AI features)
 
-### Installation
-
-1. **Clone the repository**
+### 1. Clone the Repository
 ```bash
-git clone <your-repo-url>
-cd quantum-cloud
+git clone https://github.com/your-username/quantum-dashboard.git
+cd quantum-dashboard
 ```
 
-2. **Install dependencies**
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-3. **Set up environment variables (optional)**
-```bash
-# Create .env file
-touch .env
+### 3. Environment Configuration
+Create a `.env` file in the root directory:
+```env
+# Server Configuration
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/quantum-dashboard
 
-# Add your API keys
-IBM_QUANTUM_API_TOKEN=your_ibm_token_here
-OPENAI_API_KEY=your_openai_key_here
+# Security
+JWT_SECRET=your_super_secret_jwt_key
+
+# Integrations (Optional)
+IBM_QUANTUM_API_TOKEN=your_ibm_token
+OPENAI_API_KEY=your_openai_key
 ```
 
-4. **Start the development server**
+### 4. Run the Application
+Start both the client and server concurrently:
 ```bash
 npm run dev
 ```
-
-5. **Open your browser**
-```
-Navigate to http://localhost:5000
-```
-
-The application will run with simulated data if API keys are not provided.
-
-## 🏗️ Project Structure
-
-```
-quantum-cloud/
-├── client/                 # Frontend React application
-│   ├── src/
-│   │   ├── components/    # React components
-│   │   │   ├── admin/     # Admin dashboard
-│   │   │   ├── ai/        # AI features
-│   │   │   ├── dashboard/ # Main dashboard
-│   │   │   ├── quantum/   # Quantum simulators
-│   │   │   ├── quiz/      # Quiz system
-│   │   │   └── ui/        # UI components
-│   │   ├── pages/         # Page components
-│   │   ├── hooks/         # Custom hooks
-│   │   ├── lib/           # Utilities
-│   │   └── data/          # Static data
-│   └── index.html
-├── server/                # Backend Express application
-│   ├── index.ts          # Server entry point
-│   ├── routes.ts         # API routes
-│   ├── ibm-quantum.ts    # IBM Quantum integration
-│   └── openai-service.ts # OpenAI integration
-├── shared/               # Shared types/schemas
-│   └── schema.ts
-└── package.json
-```
-
-## 🎮 Available Scripts
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run check        # Type check with TypeScript
-npm run db:push      # Push database schema (if using DB)
-```
-
-## 🔐 Environment Variables
-
-| Variable | Description | 
-|----------|-------------|
-| `IBM_QUANTUM_API_TOKEN` | IBM Quantum Platform API token | 
-| `OPENAI_API_KEY` | OpenAI API key for AI features |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `PORT` | Server port (default: 5000) |
-| `NODE_ENV` | Environment mode | 
-
-
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License — © 2025 SingularSolution. See the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- IBM Quantum for quantum computing API
-- OpenAI for AI capabilities
-- The quantum computing community for inspiration
-
-## 📧 Contact
-
-For questions or feedback about the research, please refer to the contact information in the [IEEE paper](https://drive.google.com/file/d/1Ao3guEXLuAovfFsKDJGPCnMWcTjsJdkJ/view?usp=sharing).
+The application will be available at `http://localhost:5000`.
 
 ---
 
-<div align="center">
+## 🔐 Authentication & Roles
 
-**Made with ❤️ for the Singular Solution**
+### User Portal
+-   **Sign Up/Login**: Standard email/password authentication.
+-   **Access**: Full access to Dashboard, Teamwork, and Quantum Quest.
 
-⭐ Star this repo if you find it useful!
+### Admin Portal
+-   **Exclusive Access**: Restricted to users with the `admin` role.
+-   **Login URL**: `/admin/login`
+-   **Features**:
+    -   **Superuser Access**: Hardcoded bypass for root administrators (e.g., `sumankumarsharma@gmail.com`).
+    -   **Secure Registration**: Requires a Root Authorization Key (`QUANTUM_ADMIN_2026`) to create new admin accounts.
 
-</div>
+---
+
+## 📂 Project Structure
+
+```
+QuantumCloud/
+├── client/
+│   ├── src/
+│   │   ├── components/     # Reusable UI components (Admin, Teamwork, Quest)
+│   │   ├── hooks/          # Custom React hooks (useAuth, useTeamwork)
+│   │   ├── pages/          # Main application views
+│   │   │   ├── admin-dashboard.tsx
+│   │   │   ├── teamwork.tsx
+│   │   │   ├── quantum-quest.tsx
+│   │   │   └── ...
+│   │   └── lib/            # Utilities
+├── server/
+│   ├── routes.ts           # API Routes definition
+│   ├── models/             # Mongoose schemas (User, Workspace, Job)
+│   ├── services/           # Business logic (IBM, OpenAI, Collaboration)
+│   └── storage.ts          # Data access layer
+└── ...
+```
+
+## 📜 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+*Built with ❤️ for the Quantum Computing Community.*

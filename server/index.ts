@@ -35,6 +35,7 @@ console.log("[Server] GEMINI_API_KEY preview:", process.env.GEMINI_API_KEY ? pro
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { realTimeCollaborationService } from "./real-time-collaboration-service";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -92,6 +93,9 @@ app.use((req, res, next) => {
 
   // Cross-platform fix: Windows uses "localhost", others use "0.0.0.0"
   const host = process.platform === "win32" ? "localhost" : "0.0.0.0";
+
+  // Initialize Real-time Collaboration Service
+  realTimeCollaborationService.initialize(server);
 
   server.listen(
     { port, host },

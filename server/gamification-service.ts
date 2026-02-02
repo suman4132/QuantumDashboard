@@ -1,4 +1,4 @@
-import type { 
+import type {
   Achievement, InsertAchievement, UserAchievement, InsertUserAchievement,
   Challenge, InsertChallenge, ChallengeParticipant, InsertChallengeParticipant,
   UserProfile, Project, Job, Workspace, CollaborationMetric
@@ -226,7 +226,7 @@ export class GamificationService {
     const userAchievements = this.getUserAchievements(userId);
     const earnedAchievementIds = new Set(userAchievements.map(ua => ua.achievementId));
 
-    for (const achievement of this.achievements.values()) {
+    for (const achievement of Array.from(this.achievements.values())) {
       if (earnedAchievementIds.has(achievement.id)) {
         continue; // Already earned
       }
@@ -314,7 +314,7 @@ export class GamificationService {
       throw new Error('Challenge not found');
     }
 
-    if (challenge.currentParticipants >= challenge.maxParticipants) {
+    if ((challenge.currentParticipants || 0) >= (challenge.maxParticipants || Infinity)) {
       throw new Error('Challenge is full');
     }
 
@@ -332,7 +332,7 @@ export class GamificationService {
     };
 
     this.challengeParticipants.set(participant.id, participant);
-    challenge.currentParticipants++;
+    challenge.currentParticipants = (challenge.currentParticipants || 0) + 1;
 
     return participant;
   }
@@ -353,7 +353,7 @@ export class GamificationService {
       participant.score = score;
     }
     if (data) {
-      participant.data = { ...participant.data, ...data };
+      participant.data = { ...(participant.data as object), ...data };
     }
 
     if (participant.progress >= 100 && participant.status === 'in_progress') {
@@ -383,7 +383,7 @@ export class GamificationService {
     const userSkills = user.skills || [];
     const userExperience = user.experience || 'beginner';
 
-    for (const challenge of this.challenges.values()) {
+    for (const challenge of Array.from(this.challenges.values())) {
       if (challenge.status !== 'active') continue;
 
       let confidence = 50;
@@ -392,7 +392,7 @@ export class GamificationService {
 
       // Analyze skill match
       const challengeSkills = (challenge.requirements as any).skills || [];
-      const skillMatch = challengeSkills.filter((skill: string) => 
+      const skillMatch = challengeSkills.filter((skill: string) =>
         userSkills.some(userSkill => userSkill.toLowerCase().includes(skill.toLowerCase()))
       ).length;
 
@@ -404,7 +404,7 @@ export class GamificationService {
       // Analyze difficulty vs experience
       const difficultyMap = { beginner: 1, intermediate: 2, advanced: 3, expert: 4 };
       const experienceMap = { beginner: 1, intermediate: 2, advanced: 3, expert: 4 };
-      
+
       const challengeDifficulty = difficultyMap[challenge.difficulty as keyof typeof difficultyMap] || 2;
       const userExperienceLevel = experienceMap[userExperience as keyof typeof experienceMap] || 1;
 
@@ -466,10 +466,10 @@ export class GamificationService {
     // Generate multiple team combinations
     for (let size = teamSize[0]; size <= teamSize[1]; size++) {
       const combinations = this.generateTeamCombinations(availableUsers, size);
-      
+
       for (const team of combinations.slice(0, 10)) { // Limit to prevent performance issues
         const analysis = this.analyzeTeamSynergy(team, requiredSkills);
-        
+
         if (analysis.synergy >= 60) { // Only suggest teams with good synergy
           teamSuggestions.push(analysis);
         }
@@ -486,11 +486,11 @@ export class GamificationService {
     if (size > users.length) return [];
 
     const combinations: UserProfile[][] = [];
-    
+
     for (let i = 0; i < users.length - size + 1; i++) {
       const remaining = users.slice(i + 1);
       const smallerCombinations = this.generateTeamCombinations(remaining, size - 1);
-      
+
       for (const combination of smallerCombinations) {
         combinations.push([users[i], ...combination]);
       }
@@ -511,8 +511,8 @@ export class GamificationService {
 
     // Analyze skill coverage
     const teamSkills = team.flatMap(member => member.skills || []);
-    const uniqueSkills = [...new Set(teamSkills)];
-    const skillCoverage = requiredSkills.filter(skill => 
+    const uniqueSkills = Array.from(new Set(teamSkills));
+    const skillCoverage = requiredSkills.filter(skill =>
       teamSkills.some(teamSkill => teamSkill.toLowerCase().includes(skill.toLowerCase()))
     );
 
@@ -523,7 +523,7 @@ export class GamificationService {
 
     // Analyze experience diversity
     const experienceLevels = team.map(member => member.experience || 'beginner');
-    const uniqueExperience = [...new Set(experienceLevels)];
+    const uniqueExperience = Array.from(new Set(experienceLevels));
     if (uniqueExperience.length > 1) {
       synergy += 15;
       strengths.push('Diverse experience levels');
@@ -546,10 +546,10 @@ export class GamificationService {
     }
 
     // Generate recommendations
-    const missingSkills = requiredSkills.filter(skill => 
+    const missingSkills = requiredSkills.filter(skill =>
       !teamSkills.some(teamSkill => teamSkill.toLowerCase().includes(skill.toLowerCase()))
     );
-    
+
     if (missingSkills.length > 0) {
       recommendations.push(`Consider adding expertise in: ${missingSkills.join(', ')}`);
     }
@@ -585,8 +585,8 @@ export class GamificationService {
 
     const completedChallenges = userChallenges.filter(p => p.status === 'completed');
     const inProgressChallenges = userChallenges.filter(p => p.status === 'in_progress');
-    const avgScore = completedChallenges.length > 0 
-      ? completedChallenges.reduce((sum, p) => sum + p.score, 0) / completedChallenges.length 
+    const avgScore = completedChallenges.length > 0
+      ? completedChallenges.reduce((sum, p) => sum + (p.score || 0), 0) / completedChallenges.length
       : 0;
 
     const challenges = {
@@ -626,7 +626,7 @@ export class GamificationService {
 
   private groupAchievementsByCategory(userAchievements: UserAchievement[]): Record<string, number> {
     const categories: Record<string, number> = {};
-    
+
     userAchievements.forEach(ua => {
       const achievement = this.achievements.get(ua.achievementId);
       if (achievement) {
@@ -692,7 +692,7 @@ export class GamificationService {
   getChallengeLeaderboard(challengeId: string): ChallengeParticipant[] {
     return Array.from(this.challengeParticipants.values())
       .filter(participant => participant.challengeId === challengeId)
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
       .slice(0, 10);
   }
 }

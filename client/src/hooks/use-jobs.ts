@@ -95,7 +95,7 @@ export function useSessions() {
 
 export function useCreateJob() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (job: InsertJob) => {
       return await apiRequest("POST", "/api/jobs", job);
@@ -109,7 +109,7 @@ export function useCreateJob() {
 
 export function useUpdateJobStatus() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, status, error }: { id: string; status: JobStatus; error?: string }) => {
       return await apiRequest("PATCH", `/api/jobs/${id}/status`, { status, error });
@@ -123,7 +123,7 @@ export function useUpdateJobStatus() {
 
 export function useDeleteJob() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (id: string) => {
       return await apiRequest("DELETE", `/api/jobs/${id}`);
@@ -134,3 +134,47 @@ export function useDeleteJob() {
     },
   });
 }
+
+export function useLiveQuantumStatus() {
+  return useQuery({
+    queryKey: ["/api/ibm-quantum/live"],
+    queryFn: async () => {
+      const response = await fetch("/api/ibm-quantum/live");
+      if (!response.ok) {
+        // If 400/500 (not configured), we might want to handle gracefully, 
+        // but for now let's return null so components know to fallback
+        if (response.status === 400 || response.status === 500) return null;
+        throw new Error("Failed to fetch live quantum data");
+      }
+      return response.json() as Promise<{
+        timestamp: string;
+        jobs: Array<{
+          id: string;
+          name: string;
+          backend: string;
+          status: string;
+          created: string;
+          qubits: number;
+          shots: number;
+        }>;
+        backends: Array<{
+          name: string;
+          status: string;
+          qubits: number;
+          queue: number;
+        }>;
+        summary: {
+          totalJobs: number;
+          runningJobs: number;
+          queuedJobs: number;
+          availableBackends: number;
+        };
+        isSimulated?: boolean;
+      } | null>;
+    },
+    // Refetch every 10 seconds for live updates
+    refetchInterval: 10000,
+    retry: false
+  });
+}
+

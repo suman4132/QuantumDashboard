@@ -6,7 +6,7 @@ import { Plus, Edit, Eye, Globe } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminContent() {
-  const { data: sections, isLoading } = useQuery({
+  const { data: sections, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/content"],
   });
 

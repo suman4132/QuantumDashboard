@@ -1,14 +1,14 @@
-import { 
-  type Job, type InsertJob, type Session, type InsertSession, type Backend, type InsertBackend, 
+import {
+  type Job, type InsertJob, type Session, type InsertSession, type Backend, type InsertBackend,
   type Workspace, type InsertWorkspace, type WorkspaceMember, type InsertWorkspaceMember,
   type Project, type InsertProject, type ProjectCollaborator, type InsertProjectCollaborator,
   JobStatus, SessionStatus, BackendStatus, WorkspaceStatus, ProjectStatus
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { ibmQuantumService } from "./ibm-quantum";
-import { 
-  mockUsers, mockPricingPlans, mockContentSections, mockNews, 
-  mockLeaderboard, mockAuditLogs, mockAnalytics, mockUserStats 
+import {
+  mockUsers, mockPricingPlans, mockContentSections, mockNews,
+  mockLeaderboard, mockAuditLogs, mockAnalytics, mockUserStats
 } from "./mock-data";
 
 export interface IStorage {
@@ -136,6 +136,9 @@ export class MemStorage implements IStorage {
   private lastIBMSync = 0;
   private readonly IBM_SYNC_INTERVAL = 30000; // 30 seconds
 
+  private users: Map<string, any>;
+  private gameScores: Map<string, any>;
+
   constructor() {
     this.jobs = new Map();
     this.sessions = new Map();
@@ -144,6 +147,9 @@ export class MemStorage implements IStorage {
     this.workspaceMembers = new Map();
     this.projects = new Map();
     this.projectCollaborators = new Map();
+    this.users = new Map();
+    this.gameScores = new Map();
+
     this.initializeData();
     this.initializeSampleJobs();
 
@@ -159,6 +165,362 @@ export class MemStorage implements IStorage {
       }, this.IBM_SYNC_INTERVAL);
     }
   }
+  // ... (keep existing methods until initializeData)
+
+  private initializeData() {
+    // Initialize users from mock data
+    mockUsers.forEach(user => {
+      this.users.set(user.id, user);
+    });
+
+    // Initialize game scores from mock data
+    mockLeaderboard.forEach(score => {
+      // Ensure score has an ID, if not create one
+      const id = score.id || `score_${Math.random().toString(36).substr(2, 9)}`;
+      this.gameScores.set(id, { ...score, id });
+    });
+
+    // Initialize with some backends
+    const backendData: InsertBackend[] = [
+      {
+        name: "ibm_cairo",
+        status: "available",
+        qubits: 127,
+        queueLength: 2,
+        averageWaitTime: 45,
+        uptime: "99.8%",
+      },
+      {
+        name: "ibm_osaka",
+        status: "busy",
+        qubits: 127,
+        queueLength: 12,
+        averageWaitTime: 320,
+        uptime: "99.2%",
+      },
+      {
+        name: "ibm_kyoto",
+        status: "available",
+        qubits: 127,
+        queueLength: 1,
+        averageWaitTime: 25,
+        uptime: "98.9%",
+      },
+      {
+        name: "ibm_brisbane",
+        status: "available",
+        qubits: 127,
+        queueLength: 0,
+        averageWaitTime: 15,
+        uptime: "99.5%",
+      },
+      {
+        name: "ibm_sherbrooke",
+        status: "busy",
+        qubits: 133,
+        queueLength: 6,
+        averageWaitTime: 180,
+        uptime: "99.1%",
+      },
+      {
+        name: "ibm_nazca",
+        status: "maintenance",
+        qubits: 127,
+        queueLength: 0,
+        averageWaitTime: 0,
+        uptime: "0%",
+      },
+    ];
+
+    backendData.forEach(backend => {
+      const id = backend.name;
+      this.backends.set(id, {
+        id,
+        name: backend.name,
+        status: backend.status,
+        qubits: backend.qubits,
+        queueLength: backend.queueLength ?? 0,
+        averageWaitTime: backend.averageWaitTime ?? 0,
+        uptime: backend.uptime ?? "0%",
+        lastUpdate: new Date(),
+      });
+    });
+
+    // Initialize with some sessions
+    const sessionData: InsertSession[] = [
+      {
+        name: "Quantum Machine Learning Research",
+        status: "active",
+      },
+      {
+        name: "Optimization Algorithms",
+        status: "active",
+      },
+      {
+        name: "Error Correction Testing",
+        status: "active",
+      },
+      {
+        name: "QAOA Implementation",
+        status: "inactive",
+      },
+    ];
+
+    sessionData.forEach((session, index) => {
+      const id = `session_${index + 1}`;
+      this.sessions.set(id, {
+        ...session,
+        id,
+        createdAt: new Date(Date.now() - (index + 1) * 3600000),
+        lastActivity: new Date(Date.now() - (index + 1) * 600000),
+        jobCount: Math.floor(Math.random() * 12) + 3,
+      });
+    });
+
+    // Initialize with real mock workspaces
+    const workspaceData: InsertWorkspace[] = [
+      {
+        name: "Quantum ML Research",
+        description: "Exploring quantum machine learning algorithms with variational circuits",
+        status: "active",
+        privacy: "private",
+        ownerId: "user_1",
+        progress: 75,
+        settings: {
+          quantumFeatures: {
+            liveCircuits: 3,
+            activeCollaborators: 2,
+            quantumJobs: 18,
+            hardwareReserved: "ibm_cairo",
+            nextReservation: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+            experimentsSaved: 24,
+            hypothesesTesting: 2,
+          }
+        }
+      },
+      {
+        name: "Optimization Algorithms",
+        description: "Developing QAOA solutions for combinatorial optimization problems",
+        status: "active",
+        privacy: "public",
+        ownerId: "user_2",
+        progress: 60,
+        settings: {
+          quantumFeatures: {
+            liveCircuits: 1,
+            activeCollaborators: 3,
+            quantumJobs: 12,
+            hardwareReserved: "ibm_brisbane",
+            nextReservation: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+            experimentsSaved: 18,
+            hypothesesTesting: 1,
+          }
+        }
+      },
+      {
+        name: "Quantum Cryptography",
+        description: "Building quantum key distribution protocols and security analysis",
+        status: "paused",
+        privacy: "private",
+        ownerId: "user_3",
+        progress: 40,
+        settings: {
+          quantumFeatures: {
+            liveCircuits: 0,
+            activeCollaborators: 0,
+            quantumJobs: 6,
+            hardwareReserved: null,
+            nextReservation: null,
+            experimentsSaved: 12,
+            hypothesesTesting: 0,
+          }
+        }
+      }
+    ];
+
+    workspaceData.forEach((ws, index) => {
+      const id = `ws-${index + 1}`;
+      this.workspaces.set(id, {
+        ...ws,
+        id,
+        createdAt: new Date(Date.now() - (index + 1) * 86400000),
+        updatedAt: new Date(),
+        lastActivity: new Date(Date.now() - (index + 1) * 3600000),
+        progress: ws.progress || 0,
+        settings: ws.settings || null,
+        description: ws.description || null
+      });
+
+      // Add dummy members for each workspace
+      const members = [
+        { name: "Alice Chen", role: "owner" },
+        { name: "Bob Wilson", role: "admin" },
+        { name: "Dr. Sarah Kim", role: "member" }
+      ];
+
+      members.forEach((m, cIndex) => {
+        const mId = `wm_${id}_${cIndex}`;
+        this.workspaceMembers.set(mId, {
+          id: mId,
+          workspaceId: id,
+          userId: `user_${cIndex}`,
+          userName: m.name,
+          userEmail: `${m.name.toLowerCase().replace(' ', '.')}@example.com`,
+          role: m.role as "owner" | "admin" | "member" | "viewer",
+          joinedAt: new Date(),
+          permissions: null
+        });
+      });
+    });
+
+    // Seed Projects
+    const projectData: InsertProject[] = [
+      {
+        name: "VQE Ground State Calculation",
+        description: "Calculating ground state energy of H2 molecule using Variational Quantum Eigensolver",
+        workspaceId: "ws-1",
+        ownerId: "user_1",
+        status: "running",
+        isPublic: false,
+        tags: ["VQE", "Chemistry", "Variational"]
+      },
+      {
+        name: "QAOA Max-Cut Implementation",
+        description: "Solving Max-Cut problem on random graphs using QAOA algorithm",
+        workspaceId: "ws-2",
+        ownerId: "user_2",
+        status: "completed",
+        isPublic: true,
+        tags: ["QAOA", "Optimization", "MaxCut"]
+      },
+      {
+        name: "Quantum Teleportation Protocol",
+        description: "Implementation and verification of quantum state teleportation",
+        workspaceId: "ws-3",
+        ownerId: "user_3",
+        status: "draft",
+        isPublic: false,
+        tags: ["Teleportation", "Protocol", "Entanglement"]
+      }
+    ];
+
+    projectData.forEach((proj, index) => {
+      const id = `proj-${index + 1}`;
+      this.projects.set(id, {
+        ...proj,
+        description: proj.description ?? null,
+        tags: proj.tags ?? null,
+        id,
+        workspaceId: proj.workspaceId,
+        createdAt: new Date(Date.now() - (index + 1) * 3600000),
+        updatedAt: new Date(),
+        lastModified: new Date(Date.now() - (index + 1) * 1800000),
+        runtime: index === 0 ? 135 : (index === 1 ? 45 : null),
+        circuitCode: null,
+        configuration: null,
+        results: null,
+        backend: index === 0 ? "ibm_cairo" : (index === 1 ? "ibm_brisbane" : "simulator")
+      });
+
+      // Add collaborators
+      const collabs = [
+        { name: "Alice Chen", role: "owner" },
+        { name: "Bob Wilson", role: "editor" }
+      ];
+      collabs.forEach((c, cIndex) => {
+        const cId = `pc_${id}_${cIndex}`;
+        this.projectCollaborators.set(cId, {
+          id: cId,
+          projectId: id,
+          userId: `user_${cIndex}`,
+          userName: c.name,
+          role: c.role as "owner" | "editor" | "viewer",
+          addedAt: new Date(),
+          permissions: null
+        });
+      });
+    });
+
+    this.initializeSampleJobs();
+  }
+
+
+  // Admin Dashboard - User Management
+  async getUsers(filters?: any): Promise<any[]> {
+    let users = Array.from(this.users.values());
+    if (filters) {
+      // Simple filtering logic if needed
+      if (filters.search) {
+        const search = filters.search.toLowerCase();
+        users = users.filter(u =>
+          u.name.toLowerCase().includes(search) ||
+          u.email.toLowerCase().includes(search)
+        );
+      }
+    }
+    return users;
+  }
+
+  async getUserById(id: string): Promise<any | undefined> {
+    return this.users.get(id);
+  }
+
+  async createUser(user: any): Promise<any> {
+    const id = user.id || `user_${Date.now().toString(36)}`;
+    const newUser = { ...user, id, signupDate: new Date().toISOString() };
+    this.users.set(id, newUser);
+    return newUser;
+  }
+
+  async updateUser(id: string, updates: any): Promise<any | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    const updatedUser = { ...user, ...updates };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    return this.users.delete(id);
+  }
+
+  async getUserStats(): Promise<any> {
+    const users = Array.from(this.users.values());
+    return {
+      totalUsers: users.length,
+      activeUsers: users.filter(u => u.status === 'active').length,
+      premiumUsers: users.filter(u => u.plan === 'premium').length,
+      standardUsers: users.filter(u => u.plan === 'standard').length,
+      newUsersLast7Days: users.filter(u => {
+        const date = new Date(u.signupDate);
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        return date > sevenDaysAgo;
+      }).length
+    };
+  }
+
+  // Admin Dashboard - Game Scores
+  async getGameScores(userId?: string): Promise<any[]> {
+    const scores = Array.from(this.gameScores.values());
+    if (userId) {
+      return scores.filter(s => s.userId === userId);
+    }
+    return scores;
+  }
+
+  async getLeaderboard(gameType?: string, limit: number = 10): Promise<any[]> {
+    let scores = Array.from(this.gameScores.values());
+    if (gameType) {
+      scores = scores.filter(s => s.gameType === gameType);
+    }
+    return scores.sort((a, b) => b.score - a.score).slice(0, limit);
+  }
+
+  async deleteGameScore(id: string): Promise<boolean> {
+    return this.gameScores.delete(id);
+  }
+
 
   private async syncWithIBMQuantum() {
     try {
@@ -182,9 +544,9 @@ export class MemStorage implements IStorage {
           queuePosition: ibmJob.status === 'queued' ? Math.floor(Math.random() * 10) + 1 : null,
           submissionTime: new Date(ibmJob.created),
           startTime: ibmJob.status === 'running' || ibmJob.status === 'completed' ?
-                    new Date(ibmJob.created) : null,
+            new Date(ibmJob.created) : null,
           endTime: ibmJob.status === 'completed' || ibmJob.status === 'failed' ?
-                  new Date(ibmJob.updated || ibmJob.created) : null,
+            new Date(ibmJob.updated || ibmJob.created) : null,
           duration: ibmJob.runtime || null,
           qubits: ibmJob.qubits || 5,
           shots: ibmJob.shots || 1024,
@@ -193,6 +555,7 @@ export class MemStorage implements IStorage {
           error: ibmJob.error || null,
           tags: ['ibm', 'real'],
           sessionId: 'ibm_session_1',
+          userId: null,
         };
 
         this.jobs.set(job.id, job);
@@ -206,7 +569,7 @@ export class MemStorage implements IStorage {
           id: `ibm_${ibmBackend.name}`,
           name: ibmBackend.name,
           status: ibmBackend.status === 'online' ? 'available' :
-                 ibmBackend.status === 'maintenance' ? 'maintenance' : 'busy',
+            ibmBackend.status === 'maintenance' ? 'maintenance' : 'busy',
           qubits: ibmBackend.num_qubits,
           queueLength: ibmBackend.pending_jobs,
           averageWaitTime: ibmBackend.pending_jobs * 45, // Estimate
@@ -341,7 +704,170 @@ export class MemStorage implements IStorage {
       });
     });
 
-    // Initialize with realistic sample jobs
+    // Initialize with real mock workspaces (for seamless transition from UI mock)
+    const workspaceData: InsertWorkspace[] = [
+      {
+        name: "Quantum ML Research",
+        description: "Exploring quantum machine learning algorithms with variational circuits",
+        status: "active",
+        privacy: "private",
+        ownerId: "user_1",
+        progress: 75,
+        settings: {
+          quantumFeatures: {
+            liveCircuits: 3,
+            activeCollaborators: 2,
+            quantumJobs: 18,
+            hardwareReserved: "ibm_cairo",
+            nextReservation: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+            experimentsSaved: 24,
+            hypothesesTesting: 2,
+          }
+        }
+      },
+      {
+        name: "Optimization Algorithms",
+        description: "Developing QAOA solutions for combinatorial optimization problems",
+        status: "active",
+        privacy: "public",
+        ownerId: "user_2",
+        progress: 60,
+        settings: {
+          quantumFeatures: {
+            liveCircuits: 1,
+            activeCollaborators: 3,
+            quantumJobs: 12,
+            hardwareReserved: "ibm_brisbane",
+            nextReservation: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+            experimentsSaved: 18,
+            hypothesesTesting: 1,
+          }
+        }
+      },
+      {
+        name: "Quantum Cryptography",
+        description: "Building quantum key distribution protocols and security analysis",
+        status: "paused",
+        privacy: "private",
+        ownerId: "user_3",
+        progress: 40,
+        settings: {
+          quantumFeatures: {
+            liveCircuits: 0,
+            activeCollaborators: 0,
+            quantumJobs: 6,
+            hardwareReserved: null,
+            nextReservation: null,
+            experimentsSaved: 12,
+            hypothesesTesting: 0,
+          }
+        }
+      }
+    ];
+
+    workspaceData.forEach((ws, index) => {
+      const id = `ws-${index + 1}`;
+      this.workspaces.set(id, {
+        ...ws,
+        id,
+        createdAt: new Date(Date.now() - (index + 1) * 86400000),
+        updatedAt: new Date(),
+        lastActivity: new Date(Date.now() - (index + 1) * 3600000),
+        progress: ws.progress || 0,
+        settings: ws.settings || null,
+        description: ws.description || null
+      });
+
+      // Add dummy members for each workspace
+      const members = [
+        { name: "Alice Chen", role: "owner" },
+        { name: "Bob Wilson", role: "admin" },
+        { name: "Dr. Sarah Kim", role: "member" }
+      ];
+
+      members.forEach((m, cIndex) => {
+        const mId = `wm_${id}_${cIndex}`;
+        this.workspaceMembers.set(mId, {
+          id: mId,
+          workspaceId: id,
+          userId: `user_${cIndex}`,
+          userName: m.name,
+          userEmail: `${m.name.toLowerCase().replace(' ', '.')}@example.com`,
+          role: m.role as "owner" | "admin" | "member" | "viewer",
+          joinedAt: new Date(),
+          permissions: null
+        });
+      });
+    });
+
+    // Seed Projects
+    const projectData: InsertProject[] = [
+      {
+        name: "VQE Ground State Calculation",
+        description: "Calculating ground state energy of H2 molecule using Variational Quantum Eigensolver",
+        workspaceId: "ws-1",
+        ownerId: "user_1",
+        status: "running",
+        isPublic: false,
+        tags: ["VQE", "Chemistry", "Variational"]
+      },
+      {
+        name: "QAOA Max-Cut Implementation",
+        description: "Solving Max-Cut problem on random graphs using QAOA algorithm",
+        workspaceId: "ws-2",
+        ownerId: "user_2",
+        status: "completed",
+        isPublic: true,
+        tags: ["QAOA", "Optimization", "MaxCut"]
+      },
+      {
+        name: "Quantum Teleportation Protocol",
+        description: "Implementation and verification of quantum state teleportation",
+        workspaceId: "ws-3",
+        ownerId: "user_3",
+        status: "draft",
+        isPublic: false,
+        tags: ["Teleportation", "Protocol", "Entanglement"]
+      }
+    ];
+
+    projectData.forEach((proj, index) => {
+      const id = `proj-${index + 1}`;
+      this.projects.set(id, {
+        ...proj,
+        description: proj.description ?? null,
+        tags: proj.tags ?? null,
+        id,
+        workspaceId: proj.workspaceId, // Ensure matching workspace ID from above
+        createdAt: new Date(Date.now() - (index + 1) * 3600000),
+        updatedAt: new Date(),
+        lastModified: new Date(Date.now() - (index + 1) * 1800000),
+        runtime: index === 0 ? 135 : (index === 1 ? 45 : null),
+        circuitCode: null,
+        configuration: null,
+        results: null,
+        backend: index === 0 ? "ibm_cairo" : (index === 1 ? "ibm_brisbane" : "simulator")
+      });
+
+      // Add collaborators
+      const collabs = [
+        { name: "Alice Chen", role: "owner" },
+        { name: "Bob Wilson", role: "editor" }
+      ];
+      collabs.forEach((c, cIndex) => {
+        const cId = `pc_${id}_${cIndex}`;
+        this.projectCollaborators.set(cId, {
+          id: cId,
+          projectId: id,
+          userId: `user_${cIndex}`,
+          userName: c.name,
+          role: c.role as "owner" | "editor" | "viewer",
+          addedAt: new Date(),
+          permissions: null
+        });
+      });
+    });
+
     this.initializeSampleJobs();
   }
 
@@ -435,6 +961,7 @@ export class MemStorage implements IStorage {
           ["research", "optimization", "ml", "demo"][Math.floor(Math.random() * 4)]
         ] : null,
         sessionId: `session_${Math.floor(Math.random() * 3) + 1}`,
+        userId: null,
       };
 
       this.jobs.set(job.id, job);
@@ -513,6 +1040,7 @@ export class MemStorage implements IStorage {
       error: null,
       tags: [["live", "real-time", "active"][Math.floor(Math.random() * 3)]],
       sessionId: `session_${Math.floor(Math.random() * 3) + 1}`,
+      userId: null,
     };
 
     this.jobs.set(job.id, job);
@@ -558,6 +1086,7 @@ export class MemStorage implements IStorage {
       error: null,
       tags: insertJob.tags ?? null,
       sessionId: insertJob.sessionId ?? null,
+      userId: null,
     };
 
     this.jobs.set(id, job);
@@ -748,9 +1277,9 @@ export class MemStorage implements IStorage {
     const workspace = this.workspaces.get(id);
     if (!workspace) return undefined;
 
-    const updatedWorkspace = { 
-      ...workspace, 
-      ...updates, 
+    const updatedWorkspace = {
+      ...workspace,
+      ...updates,
       updatedAt: new Date(),
       lastActivity: new Date()
     };
@@ -762,9 +1291,9 @@ export class MemStorage implements IStorage {
     // Also delete related members and projects
     const members = Array.from(this.workspaceMembers.values()).filter(m => m.workspaceId === id);
     const projects = Array.from(this.projects.values()).filter(p => p.workspaceId === id);
-    
+
     members.forEach(member => this.workspaceMembers.delete(member.id));
-    
+
     for (const project of projects) {
       // Delete project collaborators
       const collaborators = Array.from(this.projectCollaborators.values()).filter(c => c.projectId === project.id);
@@ -866,9 +1395,9 @@ export class MemStorage implements IStorage {
     const project = this.projects.get(id);
     if (!project) return undefined;
 
-    const updatedProject = { 
-      ...project, 
-      ...updates, 
+    const updatedProject = {
+      ...project,
+      ...updates,
       updatedAt: new Date(),
       lastModified: new Date()
     };
@@ -880,7 +1409,7 @@ export class MemStorage implements IStorage {
     // Delete related collaborators
     const collaborators = Array.from(this.projectCollaborators.values()).filter(c => c.projectId === id);
     collaborators.forEach(collaborator => this.projectCollaborators.delete(collaborator.id));
-    
+
     return this.projects.delete(id);
   }
 
@@ -935,29 +1464,29 @@ export class MemStorage implements IStorage {
   async getPricingPlans(): Promise<any[]> {
     return mockPricingPlans;
   }
-  
+
   async getPricingPlanById(id: string): Promise<any | undefined> {
     return mockPricingPlans.find(p => p.id === id);
   }
-  
+
   async createPricingPlan(plan: any): Promise<any> {
     return plan;
   }
-  
+
   async updatePricingPlan(id: string, updates: any): Promise<any | undefined> {
     const plan = mockPricingPlans.find(p => p.id === id);
     return plan ? { ...plan, ...updates } : undefined;
   }
-  
+
   async deletePricingPlan(id: string): Promise<boolean> {
     return mockPricingPlans.some(p => p.id === id);
   }
-  
+
   async publishPricingPlan(id: string): Promise<any | undefined> {
     const plan = mockPricingPlans.find(p => p.id === id);
     return plan ? { ...plan, status: 'published' } : undefined;
   }
-  
+
   async getPricingPlanVersions(planId: string): Promise<any[]> {
     return [];
   }
@@ -966,29 +1495,29 @@ export class MemStorage implements IStorage {
   async getContentSections(): Promise<any[]> {
     return mockContentSections;
   }
-  
+
   async getContentSectionById(id: string): Promise<any | undefined> {
     return mockContentSections.find(s => s.id === id);
   }
-  
+
   async createContentSection(section: any): Promise<any> {
     return section;
   }
-  
+
   async updateContentSection(id: string, updates: any): Promise<any | undefined> {
     const section = mockContentSections.find(s => s.id === id);
     return section ? { ...section, ...updates } : undefined;
   }
-  
+
   async deleteContentSection(id: string): Promise<boolean> {
     return mockContentSections.some(s => s.id === id);
   }
-  
+
   async publishContentSection(id: string): Promise<any | undefined> {
     const section = mockContentSections.find(s => s.id === id);
     return section ? { ...section, status: 'published' } : undefined;
   }
-  
+
   async getContentVersions(sectionId: string): Promise<any[]> {
     return [];
   }
@@ -997,24 +1526,24 @@ export class MemStorage implements IStorage {
   async getAdminNews(): Promise<any[]> {
     return mockNews;
   }
-  
+
   async getAdminNewsById(id: string): Promise<any | undefined> {
     return mockNews.find(n => n.id === id);
   }
-  
+
   async createAdminNews(news: any): Promise<any> {
     return news;
   }
-  
+
   async updateAdminNews(id: string, updates: any): Promise<any | undefined> {
     const news = mockNews.find(n => n.id === id);
     return news ? { ...news, ...updates } : undefined;
   }
-  
+
   async deleteAdminNews(id: string): Promise<boolean> {
     return mockNews.some(n => n.id === id);
   }
-  
+
   async publishAdminNews(id: string): Promise<any | undefined> {
     const news = mockNews.find(n => n.id === id);
     return news ? { ...news, status: 'published' } : undefined;
@@ -1024,24 +1553,24 @@ export class MemStorage implements IStorage {
   async getUsers(filters?: any): Promise<any[]> {
     return mockUsers;
   }
-  
+
   async getUserById(id: string): Promise<any | undefined> {
     return mockUsers.find(u => u.id === id);
   }
-  
+
   async createUser(user: any): Promise<any> {
     return user;
   }
-  
+
   async updateUser(id: string, updates: any): Promise<any | undefined> {
     const user = mockUsers.find(u => u.id === id);
     return user ? { ...user, ...updates } : undefined;
   }
-  
+
   async deleteUser(id: string): Promise<boolean> {
     return mockUsers.some(u => u.id === id);
   }
-  
+
   async getUserStats(): Promise<any> {
     return mockUserStats;
   }
@@ -1053,7 +1582,7 @@ export class MemStorage implements IStorage {
     }
     return mockLeaderboard;
   }
-  
+
   async getLeaderboard(gameType?: string, limit: number = 10): Promise<any[]> {
     if (gameType) {
       return mockLeaderboard.filter(s => s.gameType === gameType).slice(0, limit);
@@ -1065,7 +1594,7 @@ export class MemStorage implements IStorage {
   async getAuditLogs(filters?: any): Promise<any[]> {
     return mockAuditLogs;
   }
-  
+
   async createAuditLog(log: any): Promise<any> {
     return log;
   }
@@ -1114,11 +1643,11 @@ export class MemStorage implements IStorage {
       }
     };
   }
-  
+
   async updateSettings(updates: any): Promise<any> {
     const currentSettings = await this.getSettings();
     const { section, data } = updates;
-    
+
     if (section && data) {
       return {
         ...currentSettings,
@@ -1128,7 +1657,7 @@ export class MemStorage implements IStorage {
         }
       };
     }
-    
+
     return { ...currentSettings, ...updates };
   }
 }

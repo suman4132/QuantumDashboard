@@ -146,6 +146,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+
 import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
@@ -162,381 +163,60 @@ import { Switch } from "@/components/ui/switch";
 import { Header } from "@/components/dashboard/header";
 import { formatDistanceToNow } from "date-fns";
 
-// Enhanced quantum collaboration workspace data
-const mockWorkspaces = [
-  {
-    id: "ws-1",
-    name: "Quantum ML Research",
-    description:
-      "Exploring quantum machine learning algorithms with variational circuits",
-    members: ["Alice Chen", "Bob Wilson", "Dr. Sarah Kim"],
-    status: "active",
-    privacy: "private",
-    lastActivity: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    progress: 75,
-    circuits: 12,
-    jobs: 45,
-    quantumFeatures: {
-      liveCircuits: 3,
-      activeCollaborators: 2,
-      quantumJobs: 18,
-      hardwareReserved: "ibm_cairo",
-      nextReservation: new Date(Date.now() + 4 * 60 * 60 * 1000),
-      experimentsSaved: 24,
-      hypothesesTesting: 2,
-    },
-    recentActivity: [
-      {
-        user: "Alice Chen",
-        action: "edited Variational Circuit #4",
-        time: "2 min ago",
-        type: "circuit",
-      },
-      {
-        user: "Bob Wilson",
-        action: "shared VQE experiment results",
-        time: "15 min ago",
-        type: "results",
-      },
-      {
-        user: "Dr. Sarah Kim",
-        action: "reserved ibm_cairo for 2pm-4pm",
-        time: "1 hour ago",
-        type: "hardware",
-      },
-    ],
-  },
-  {
-    id: "ws-2",
-    name: "Optimization Algorithms",
-    description:
-      "Developing QAOA solutions for combinatorial optimization problems",
-    members: ["John Doe", "Emma Davis", "Mike Thompson", "Lisa Zhang"],
-    status: "active",
-    privacy: "public",
-    lastActivity: new Date(Date.now() - 5 * 60 * 1000),
-    progress: 60,
-    circuits: 8,
-    jobs: 28,
-    quantumFeatures: {
-      liveCircuits: 1,
-      activeCollaborators: 3,
-      quantumJobs: 12,
-      hardwareReserved: "ibm_brisbane",
-      nextReservation: new Date(Date.now() + 6 * 60 * 60 * 1000),
-      experimentsSaved: 18,
-      hypothesesTesting: 1,
-    },
-    recentActivity: [
-      {
-        user: "John Doe",
-        action: "optimized QAOA parameters",
-        time: "5 min ago",
-        type: "algorithm",
-      },
-      {
-        user: "Emma Davis",
-        action: "commented on Max-Cut results",
-        time: "12 min ago",
-        type: "discussion",
-      },
-      {
-        user: "Mike Thompson",
-        action: "scheduled hardware test",
-        time: "30 min ago",
-        type: "hardware",
-      },
-    ],
-  },
-  {
-    id: "ws-3",
-    name: "Quantum Cryptography",
-    description:
-      "Building quantum key distribution protocols and security analysis",
-    members: ["Dr. Alex Moore", "Rachel Green"],
-    status: "paused",
-    privacy: "private",
-    lastActivity: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    progress: 40,
-    circuits: 6,
-    jobs: 15,
-    quantumFeatures: {
-      liveCircuits: 0,
-      activeCollaborators: 0,
-      quantumJobs: 6,
-      hardwareReserved: null,
-      nextReservation: null,
-      experimentsSaved: 12,
-      hypothesesTesting: 0,
-    },
-    recentActivity: [
-      {
-        user: "Dr. Alex Moore",
-        action: "paused BB84 protocol development",
-        time: "1 day ago",
-        type: "project",
-      },
-      {
-        user: "Rachel Green",
-        action: "documented key distribution analysis",
-        time: "1 day ago",
-        type: "documentation",
-      },
-    ],
-  },
-];
+import { useWorkspaces, useCreateWorkspace, useWorkspaceProjects, useBackends, useAddWorkspaceMember } from "@/hooks/use-teamwork";
+import { ResearchChat } from "@/components/teamwork/ResearchChat";
+import { ActiveChallenges } from "@/components/teamwork/ActiveChallenges";
+import { ActiveChallengesModal } from "@/components/teamwork/ActiveChallengesModal";
+import { useCollaboration } from "@/hooks/use-collaboration";
+const mockQuantumFeaturesDefault = {
+    liveCircuits: 0,
+    activeCollaborators: 0,
+    quantumJobs: 0,
+    hardwareReserved: null,
+    nextReservation: null,
+    experimentsSaved: 0,
+    hypothesesTesting: 0,
+};
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300";
+      case "completed":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300";
+      case "archived":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+    }
+  };
 
-// Enhanced quantum project data with advanced collaboration features
-const mockProjects = [
-  {
-    id: "proj-1",
-    name: "VQE Ground State Calculation",
-    workspace: "Quantum ML Research",
-    owner: "Alice Chen",
-    collaborators: 3,
-    status: "running",
-    lastModified: new Date(Date.now() - 30 * 60 * 1000),
-    runtime: "2h 15m",
-    backend: "ibm_cairo",
-    quantumDetails: {
-      circuitDepth: 12,
-      qubits: 8,
-      gates: 156,
-      fidelity: 0.92,
-      shots: 8192,
-      liveEditors: ["Alice Chen", "Bob Wilson"],
-      comments: 7,
-      versions: 15,
-      experiments: 3,
-      sharedResults: 2,
-    },
-  },
-  {
-    id: "proj-2",
-    name: "QAOA Max-Cut Implementation",
-    workspace: "Optimization Algorithms",
-    owner: "John Doe",
-    collaborators: 2,
-    status: "completed",
-    lastModified: new Date(Date.now() - 60 * 60 * 1000),
-    runtime: "45m",
-    backend: "ibm_brisbane",
-    quantumDetails: {
-      circuitDepth: 8,
-      qubits: 6,
-      gates: 89,
-      fidelity: 0.87,
-      shots: 4096,
-      liveEditors: [],
-      comments: 12,
-      versions: 8,
-      experiments: 5,
-      sharedResults: 5,
-    },
-  },
-  {
-    id: "proj-3",
-    name: "Quantum Teleportation Protocol",
-    workspace: "Quantum Cryptography",
-    owner: "Dr. Alex Moore",
-    collaborators: 1,
-    status: "draft",
-    lastModified: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    runtime: "-",
-    backend: "simulator",
-    quantumDetails: {
-      circuitDepth: 6,
-      qubits: 3,
-      gates: 24,
-      fidelity: null,
-      shots: 1024,
-      liveEditors: [],
-      comments: 3,
-      versions: 4,
-      experiments: 1,
-      sharedResults: 0,
-    },
-  },
-];
-
-// Mock quantum hardware scheduling data
-const mockHardwareSchedule = [
-  {
-    id: "hw-1",
-    backend: "ibm_cairo",
-    user: "Alice Chen",
-    workspace: "Quantum ML Research",
-    startTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
-    duration: 120, // minutes
-    purpose: "VQE Parameter Optimization",
-    status: "confirmed",
-  },
-  {
-    id: "hw-2",
-    backend: "ibm_brisbane",
-    user: "John Doe",
-    workspace: "Optimization Algorithms",
-    startTime: new Date(Date.now() + 6 * 60 * 60 * 1000),
-    duration: 90,
-    purpose: "QAOA Circuit Testing",
-    status: "pending",
-  },
-];
-
-// Mock backend data for hardware scheduling
-const mockBackends = [
-  {
-    id: "ibm_cairo",
-    name: "IBM Cairo",
-    qubits: 27,
-    status: "available",
-    queueLength: 12,
-    averageWaitTime: 45,
-    uptime: "99.2%",
-    currentJobs: 3,
-    maxJobs: 20,
-  },
-  {
-    id: "ibm_brisbane", 
-    name: "IBM Brisbane",
-    qubits: 127,
-    status: "busy",
-    queueLength: 45,
-    averageWaitTime: 120,
-    uptime: "98.7%",
-    currentJobs: 18,
-    maxJobs: 20,
-  },
-  {
-    id: "ibm_sherbrooke",
-    name: "IBM Sherbrooke", 
-    qubits: 127,
-    status: "maintenance",
-    queueLength: 0,
-    averageWaitTime: 0,
-    uptime: "97.5%",
-    currentJobs: 0,
-    maxJobs: 20,
-  },
-  {
-    id: "simulator",
-    name: "Quantum Simulator",
-    qubits: 32,
-    status: "available", 
-    queueLength: 0,
-    averageWaitTime: 0,
-    uptime: "100%",
-    currentJobs: 156,
-    maxJobs: 1000,
-  },
-];
-
-// Mock live circuits data
-const mockLiveCircuits = [
-  {
-    id: "circuit-1",
-    name: "Variational Quantum Eigensolver",
-    owner: "Alice Chen",
-    collaborators: [
-      { name: "Bob Wilson", status: "editing" },
-      { name: "Dr. Sarah Kim", status: "viewing" },
-    ],
-    qubits: 8,
-    gates: 156,
-    depth: 12,
-    status: "editing",
-    backend: "ibm_cairo",
-  },
-];
-
-// Mock experiments data
-const mockExperiments = [
-  {
-    id: "exp-1",
-    title: "VQE Ground State Convergence Analysis",
-    description: "Testing convergence rates with different ansatz depths",
-    owner: "Alice Chen",
-    workspace: "Quantum ML Research",
-    status: "running",
-    progress: 75,
-    jobsCompleted: 45,
-    totalJobs: 60,
-    currentBackend: "ibm_cairo",
-    tags: ["VQE", "optimization", "ground-state"],
-  },
-  {
-    id: "exp-2", 
-    title: "QAOA Performance Comparison",
-    description: "Comparing performance across different quantum backends",
-    owner: "John Doe",
-    workspace: "Optimization Algorithms", 
-    status: "paused",
-    progress: 40,
-    jobsCompleted: 24,
-    totalJobs: 60,
-    currentBackend: null,
-    tags: ["QAOA", "benchmarking", "hardware"],
-  },
-  {
-    id: "exp-3",
-    title: "Quantum Error Mitigation Study", 
-    description: "Testing different error mitigation techniques",
-    owner: "Dr. Sarah Kim",
-    workspace: "Quantum ML Research",
-    status: "completed",
-    progress: 100,
-    jobsCompleted: 120,
-    totalJobs: 120,
-    currentBackend: "ibm_brisbane",
-    tags: ["error-mitigation", "fidelity", "ZNE"],
-  },
-  {
-    id: "exp-4",
-    title: "Quantum Speedup Verification",
-    description: "Measuring quantum advantage in optimization problems", 
-    owner: "Emma Davis",
-    workspace: "Optimization Algorithms",
-    status: "planning",
-    progress: 5,
-    jobsCompleted: 0,
-    totalJobs: 200,
-    currentBackend: null,
-    tags: ["speedup", "complexity", "graphs"],
-  },
-];
-
-// Mock quantum collaboration chat data
-const mockQuantumChat = [
-  {
-    id: "msg-1",
-    user: "Alice Chen",
-    message:
-      "Just optimized the VQE circuit depth to 12 layers. The new ansatz shows 8% improvement in convergence!",
-    timestamp: new Date(Date.now() - 10 * 60 * 1000),
-    type: "algorithm",
-    attachments: [{ type: "circuit", name: "optimized_vqe_v2.qasm" }],
-  },
-  {
-    id: "msg-2",
-    user: "Bob Wilson",
-    message:
-      "Great work! I'm seeing similar improvements in my simulation. Should we test this on real hardware?",
-    timestamp: new Date(Date.now() - 8 * 60 * 1000),
-    type: "discussion",
-    replyTo: "msg-1",
-  },
-  {
-    id: "msg-3",
-    user: "Dr. Sarah Kim",
-    message:
-      "I've reserved ibm_cairo for 2-4pm today. Let's run the full parameter sweep.",
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    type: "hardware",
-    attachments: [{ type: "reservation", name: "Hardware Booking #HW-1247" }],
-  },
-];
-
+  const getPrivacyIcon = (privacy: string) => {
+    return privacy === "private" ? (
+      <Lock className="h-3 w-3 text-gray-500" />
+    ) : (
+      <Globe className="h-3 w-3 text-gray-500" />
+    );
+  };
 export default function Teamwork() {
+  // Data Fetching Hooks
+  const { data: rawWorkspaces, isLoading: isLoadingWorkspaces } = useWorkspaces();
+  const { mutateAsync: createWorkspaceAsync } = useCreateWorkspace();
+  const { mutateAsync: addMemberAsync } = useAddWorkspaceMember();
+  const { data: backends } = useBackends();
+
+  // Mock current user for collaboration
+  const [currentUser] = useState({
+    id: "user_" + Math.random().toString(36).substr(2, 9),
+    name: "Current User", // In real app, get from auth context
+  });
+
+  const { isConnected, participants, chatMessages: liveChatMessages, sendChatMessage } = useCollaboration({
+    userId: currentUser.id,
+    userName: currentUser.name,
+    sessionId: "demo-session-1", // In real app, this comes from selected workspace/project
+    projectId: "demo-project-1",
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [privacyFilter, setPrivacyFilter] = useState("all");
@@ -586,11 +266,127 @@ export default function Teamwork() {
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [currentChatMessage, setCurrentChatMessage] = useState("");
 
+  const [newWorkspaceName, setNewWorkspaceName] = useState("");
+  const [newWorkspaceDesc, setNewWorkspaceDesc] = useState("");
+  const [newWorkspacePrivate, setNewWorkspacePrivate] = useState(false);
+  const [inviteEmails, setInviteEmails] = useState("");
+  const [inviteMemberEmail, setInviteMemberEmail] = useState("");
+  const [isInviteMemberOpen, setIsInviteMemberOpen] = useState(false);
+  const [selectedWorkspaceForInvite, setSelectedWorkspaceForInvite] = useState<string | null>(null);
+
+  const handleCreateWorkspace = async () => {
+    if (!newWorkspaceName) return;
+    
+    try {
+        const newWorkspace = await createWorkspaceAsync({
+            name: newWorkspaceName,
+            description: newWorkspaceDesc,
+            privacy: newWorkspacePrivate ? "private" : "public",
+            status: "active",
+            progress: 0,
+            ownerId: "user_1" // Mock current user
+        });
+
+        // Process Invitations
+        if (inviteEmails) {
+            const emails = inviteEmails.split(',').map(e => e.trim()).filter(e => e);
+            for (const email of emails) {
+                 // In production, we would lookup real users via API.
+                 // Here we simulate finding/creating a user for the invite.
+                 await addMemberAsync({
+                     workspaceId: newWorkspace.id,
+                     data: {
+                         userId: `user_${Math.random().toString(36).substr(2, 6)}`,
+                         userName: email.split('@')[0], 
+                         userEmail: email,
+                         role: "member"
+                     }
+                 });
+            }
+        }
+
+        setIsCreateWorkspaceOpen(false);
+        setNewWorkspaceName("");
+        setNewWorkspaceDesc("");
+        setInviteEmails("");
+    } catch (error) {
+        console.error("Failed to create workspace:", error);
+    }
+  };
+
+  const handleInviteMember = async () => {
+    if (!selectedWorkspaceForInvite || !inviteMemberEmail) return;
+    
+    try {
+        await addMemberAsync({
+            workspaceId: selectedWorkspaceForInvite,
+            data: {
+                userId: `user_${Math.random().toString(36).substr(2, 6)}`,
+                userName: inviteMemberEmail.split('@')[0], 
+                userEmail: inviteMemberEmail,
+                role: "member"
+            }
+        });
+        
+        setIsInviteMemberOpen(false);
+        setInviteMemberEmail("");
+        setSelectedWorkspaceForInvite(null);
+    } catch (error) {
+        console.error("Failed to invite member:", error);
+    }
+  };
+
+  
+  // Data Adapters (Facade for UI compatibility)
+  const workspaces = rawWorkspaces?.map(ws => ({
+      ...ws,
+      members: (ws as any).members && (ws as any).members.length > 0 ? (ws as any).members : [], 
+      circuits: 12,
+      jobs: 45,
+      quantumFeatures: (ws.settings as any)?.quantumFeatures || mockQuantumFeaturesDefault,
+      recentActivity: [
+        {
+            user: "Alice Chen",
+            action: "edited Variational Circuit #4",
+            time: "2 min ago",
+            type: "circuit",
+        },
+        {
+            user: "Bob Wilson",
+            action: "shared VQE experiment results",
+            time: "15 min ago",
+            type: "results",
+        }
+      ]
+  })) || [];
+
+  const { data: rawProjects } = useWorkspaceProjects(selectedWorkspace);
+  
+  const workspaceProjects = rawProjects?.map(p => ({
+      ...p,
+      workspace: workspaces.find(w => w.id === p.workspaceId)?.name || 'Unknown',
+      collaborators: 3,
+      quantumDetails: {
+          circuitDepth: 8,
+          qubits: 6,
+          gates: 89,
+          fidelity: 0.87,
+          shots: 4096,
+          liveEditors: [],
+          comments: 12,
+          versions: 8,
+          experiments: 5,
+          sharedResults: 5,
+      }
+  })) || [];
+
+  const mockBackends = backends || [];
+
   // Filter workspaces based on search and filters
-  const filteredWorkspaces = mockWorkspaces.filter((workspace) => {
+  const filteredWorkspaces = workspaces.filter((workspace) => {
     const matchesSearch =
       workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      workspace.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (workspace.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || workspace.status === statusFilter;
     const matchesPrivacy =
@@ -599,14 +395,96 @@ export default function Teamwork() {
     return matchesSearch && matchesStatus && matchesPrivacy;
   });
 
-  // Filter projects for selected workspace
-  const workspaceProjects = selectedWorkspace
-    ? mockProjects.filter(
-        (p) =>
-          p.workspace ===
-          mockWorkspaces.find((w) => w.id === selectedWorkspace)?.name,
-      )
-    : mockProjects;
+  const mockHardwareSchedule = [
+    {
+        id: "hw-1",
+        backend: "ibm_cairo",
+        user: "Alice Chen",
+        workspace: "Quantum ML Research",
+        startTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
+        duration: 120, // minutes
+        purpose: "VQE Parameter Optimization",
+        status: "confirmed",
+    },
+    {
+        id: "hw-2",
+        backend: "ibm_brisbane",
+        user: "John Doe",
+        workspace: "Optimization Algorithms",
+        startTime: new Date(Date.now() + 6 * 60 * 60 * 1000),
+        duration: 90,
+        purpose: "QAOA Circuit Testing",
+        status: "pending",
+    },
+  ];
+
+  const mockQuantumChat = [
+    {
+        id: "msg-1",
+        user: "Alice Chen",
+        message:
+        "Just optimized the VQE circuit depth to 12 layers. The new ansatz shows 8% improvement in convergence!",
+        timestamp: new Date(Date.now() - 10 * 60 * 1000),
+        type: "algorithm",
+        attachments: [{ type: "circuit", name: "optimized_vqe_v2.qasm" }],
+    },
+    {
+        id: "msg-2",
+        user: "Bob Wilson",
+        message:
+        "Great work! I'm seeing similar improvements in my simulation. Should we test this on real hardware?",
+        timestamp: new Date(Date.now() - 8 * 60 * 1000),
+        type: "discussion",
+        replyTo: "msg-1",
+    },
+  ];
+
+  const mockExperiments = [
+    {
+        id: "exp-1",
+        title: "VQE Ground State Convergence Analysis",
+        description: "Testing convergence rates with different ansatz depths",
+        owner: "Alice Chen",
+        workspace: "Quantum ML Research",
+        status: "running",
+        progress: 75,
+        jobsCompleted: 45,
+        totalJobs: 60,
+        currentBackend: "ibm_cairo",
+        tags: ["VQE", "optimization", "ground-state"],
+    },
+    {
+        id: "exp-2", 
+        title: "QAOA Performance Comparison",
+        description: "Comparing performance across different quantum backends",
+        owner: "John Doe",
+        workspace: "Optimization Algorithms", 
+        status: "paused",
+        progress: 40,
+        jobsCompleted: 24,
+        totalJobs: 60,
+        currentBackend: null,
+        tags: ["QAOA", "benchmarking", "hardware"],
+    }
+  ];
+
+  const mockLiveCircuits = [
+  {
+    id: "circuit-1",
+    name: "Variational Quantum Eigensolver",
+    owner: "Alice Chen",
+    collaborators: [
+      { name: "Bob Wilson", status: "editing" },
+      { name: "Dr. Sarah Kim", status: "viewing" },
+    ],
+    qubits: 8,
+    gates: 156,
+    depth: 12,
+    status: "editing",
+    backend: "ibm_cairo",
+  },
+];
+
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -700,6 +578,8 @@ export default function Teamwork() {
                       id="workspace-name"
                       placeholder="Enter workspace name..."
                       data-testid="input-workspace-name"
+                      value={newWorkspaceName}
+                      onChange={(e) => setNewWorkspaceName(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -708,6 +588,8 @@ export default function Teamwork() {
                       id="workspace-desc"
                       placeholder="Describe your project goals and scope..."
                       data-testid="textarea-workspace-description"
+                      value={newWorkspaceDesc}
+                      onChange={(e) => setNewWorkspaceDesc(e.target.value)}
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -715,6 +597,17 @@ export default function Teamwork() {
                     <Switch
                       id="workspace-private"
                       data-testid="switch-workspace-private"
+                      checked={newWorkspacePrivate}
+                      onCheckedChange={setNewWorkspacePrivate}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="workspace-invites">Invite Team Members</Label>
+                    <Textarea
+                      id="workspace-invites"
+                      placeholder="Enter email addresses separated by commas (e.g. alice@example.com, bob@example.com)"
+                      value={inviteEmails}
+                      onChange={(e) => setInviteEmails(e.target.value)}
                     />
                   </div>
                 </div>
@@ -726,11 +619,38 @@ export default function Teamwork() {
                     Cancel
                   </Button>
                   <Button
-                    onClick={() => setIsCreateWorkspaceOpen(false)}
+                    onClick={handleCreateWorkspace}
                     data-testid="button-create-workspace-confirm"
                   >
                     Create Workspace
                   </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Invite Member Dialog */}
+            <Dialog open={isInviteMemberOpen} onOpenChange={setIsInviteMemberOpen}>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Invite to Workspace</DialogTitle>
+                  <DialogDescription>
+                    Add a new member to this workspace. They will receive an email notification.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="invite-email">Email address</Label>
+                    <Input
+                      id="invite-email"
+                      placeholder="colleague@example.com"
+                      value={inviteMemberEmail}
+                      onChange={(e) => setInviteMemberEmail(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsInviteMemberOpen(false)}>Cancel</Button>
+                  <Button onClick={handleInviteMember}>Send Invitation</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -804,7 +724,7 @@ export default function Teamwork() {
                   Live Collaboration
                 </span>
                 <Badge variant="secondary" className="ml-auto">
-                  {liveCollaborators} active
+                  {participants.length} active
                 </Badge>
               </div>
               <Button
@@ -1197,7 +1117,11 @@ export default function Teamwork() {
                               <Edit3 className="h-4 w-4 mr-2" />
                               Edit Workspace
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedWorkspaceForInvite(workspace.id);
+                                setIsInviteMemberOpen(true);
+                            }}>
                               <UserPlus className="h-4 w-4 mr-2" />
                               Invite Members
                             </DropdownMenuItem>
@@ -1307,15 +1231,15 @@ export default function Teamwork() {
                           <div className="flex -space-x-2">
                             {workspace.members
                               .slice(0, 3)
-                              .map((member, idx) => (
+                              .map((member: string, idx: number) => (
                                 <Avatar
                                   key={idx}
                                   className="h-6 w-6 border-2 border-white dark:border-gray-800"
                                 >
                                   <AvatarFallback className="text-xs">
-                                    {member
+                                    {(member || "U")
                                       .split(" ")
-                                      .map((n) => n[0])
+                                      .map((n: string) => n[0])
                                       .join("")}
                                   </AvatarFallback>
                                 </Avatar>
@@ -1332,6 +1256,11 @@ export default function Teamwork() {
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedWorkspaceForInvite(workspace.id);
+                                setIsInviteMemberOpen(true);
+                            }}
                           >
                             <UserPlus className="h-3 w-3" />
                           </Button>
@@ -1473,7 +1402,7 @@ export default function Teamwork() {
                                 </div>
                                 <div className="text-sm text-gray-500 dark:text-gray-400">
                                   Modified{" "}
-                                  {formatDistanceToNow(project.lastModified)}{" "}
+                                  {project.lastModified ? formatDistanceToNow(project.lastModified) : 'Unknown'}{" "}
                                   ago
                                 </div>
                               </div>
@@ -2210,122 +2139,7 @@ export default function Teamwork() {
                 </Card>
 
                 {/* Active Challenges */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="h-5 w-5 text-red-500" />
-                      Active Challenges
-                    </CardTitle>
-                    <CardDescription>
-                      Test your skills with quantum computing challenges
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {[
-                      {
-                        id: "quantum_hackathon",
-                        name: "Quantum Hackathon 2025",
-                        description:
-                          "Build innovative quantum applications in teams",
-                        difficulty: "intermediate",
-                        timeLeft: "5 days",
-                        participants: 127,
-                        maxParticipants: 200,
-                        rewards: ["1000 pts", "Certificate", "Recognition"],
-                        progress: 45,
-                      },
-                      {
-                        id: "vqe_challenge",
-                        name: "VQE Mastery Challenge",
-                        description:
-                          "Implement and optimize VQE for molecular systems",
-                        difficulty: "advanced",
-                        timeLeft: "12 days",
-                        participants: 67,
-                        maxParticipants: 100,
-                        rewards: ["500 pts", "VQE Expert Badge"],
-                        progress: 23,
-                      },
-                    ].map((challenge) => (
-                      <div
-                        key={challenge.id}
-                        className="p-4 border rounded-lg space-y-3"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="font-medium flex items-center gap-2">
-                              {challenge.name}
-                              <Badge
-                                variant={
-                                  challenge.difficulty === "expert"
-                                    ? "default"
-                                    : challenge.difficulty === "advanced"
-                                      ? "secondary"
-                                      : "outline"
-                                }
-                                className="text-xs"
-                              >
-                                {challenge.difficulty}
-                              </Badge>
-                            </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                              {challenge.description}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm font-medium text-orange-600">
-                              {challenge.timeLeft} left
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {challenge.participants}/
-                              {challenge.maxParticipants} joined
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-xs">
-                            <span>Your Progress</span>
-                            <span>{challenge.progress}%</span>
-                          </div>
-                          <Progress
-                            value={challenge.progress}
-                            className="h-2"
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-1">
-                            {challenge.rewards.map((reward, idx) => (
-                              <Badge
-                                key={idx}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                {reward}
-                              </Badge>
-                            ))}
-                          </div>
-                          <Button
-                            size="sm"
-                            data-testid={`button-join-challenge-${challenge.id}`}
-                          >
-                            Continue Challenge
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-
-                    <Button
-                      className="w-full"
-                      variant="outline"
-                      data-testid="button-browse-challenges"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Browse All Challenges
-                    </Button>
-                  </CardContent>
-                </Card>
+                <ActiveChallenges />
               </div>
 
               {/* Sidebar - Stats & Leaderboard */}
@@ -3126,13 +2940,13 @@ export default function Teamwork() {
         {/* 1. Enhanced Research Chat Modal */}
         <Dialog open={showResearchChat} onOpenChange={setShowResearchChat}>
           <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
-            <DialogHeader>
+            <DialogHeader className="mb-4">
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-blue-500" />
                   Research Chat - Quantum Collaboration Hub
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mr-8">
                   <Badge
                     variant="outline"
                     className="bg-green-50 text-green-700 border-green-200"
@@ -3155,7 +2969,7 @@ export default function Teamwork() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="flex h-[650px] gap-4">
+            <div className="flex h-[calc(100vh-200px)] gap-4">
               {/* Main Chat Area */}
               <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border">
                 {/* Chat Header with Search */}
@@ -3300,6 +3114,40 @@ export default function Teamwork() {
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Live Chat Messages */}
+                  {liveChatMessages.map((msg, idx) => (
+                    <div key={`live-${idx}`} className="group relative">
+                      <div className="flex gap-4">
+                        <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
+                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
+                            {msg.userName
+                              .split(" ")
+                              .map((n: string) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="font-semibold text-gray-900 dark:text-white">
+                              {msg.userName}
+                            </span>
+                            <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                              Team
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              Just now
+                            </span>
+                          </div>
+                          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                            <p className="text-gray-800 dark:text-gray-200 leading-relaxed">
+                              {msg.content}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                   {/* Typing Indicator */}
                   <div className="flex gap-4 opacity-70">
                     <Avatar className="h-8 w-8">
@@ -3351,6 +3199,15 @@ export default function Teamwork() {
                           onChange={(e) =>
                             setCurrentChatMessage(e.target.value)
                           }
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              if (currentChatMessage.trim()) {
+                                sendChatMessage(currentChatMessage);
+                                setCurrentChatMessage("");
+                              }
+                            }
+                          }}
                           className="min-h-[80px] resize-none pr-20"
                           data-testid="textarea-chat-message"
                         />
@@ -3376,6 +3233,12 @@ export default function Teamwork() {
                       <div className="flex flex-col gap-2">
                         <Button
                           size="icon"
+                          onClick={() => {
+                            if (currentChatMessage.trim()) {
+                              sendChatMessage(currentChatMessage);
+                              setCurrentChatMessage("");
+                            }
+                          }}
                           className="h-10 w-10"
                           data-testid="button-send-chat"
                         >
@@ -3401,7 +3264,7 @@ export default function Teamwork() {
               </div>
 
               {/* Enhanced Sidebar */}
-              <div className="w-80 space-y-4">
+              <div className="w-80 space-y-4 hidden xl:block">
                 {/* Active Members */}
                 <Card>
                   <CardHeader className="pb-3">
@@ -6036,172 +5899,8 @@ export default function Teamwork() {
         </Dialog>
 
         {/* 9. Active Challenges Modal */}
-        <Dialog
-          open={showActiveChallenges}
-          onOpenChange={setShowActiveChallenges}
-        >
-          <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-red-500" />
-                Active Quantum Challenges
-              </DialogTitle>
-              <DialogDescription>
-                Compete in quantum computing challenges and advance your skills
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 max-h-[700px] overflow-y-auto">
-              {/* Challenge Categories */}
-              <div className="grid grid-cols-3 gap-4">
-                <Card className="text-center">
-                  <CardContent className="p-4">
-                    <Puzzle className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                    <div className="font-semibold">Algorithm</div>
-                    <div className="text-sm text-gray-600">5 active</div>
-                  </CardContent>
-                </Card>
-                <Card className="text-center">
-                  <CardContent className="p-4">
-                    <Users className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <div className="font-semibold">Team</div>
-                    <div className="text-sm text-gray-600">2 active</div>
-                  </CardContent>
-                </Card>
-                <Card className="text-center">
-                  <CardContent className="p-4">
-                    <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                    <div className="font-semibold">Competition</div>
-                    <div className="text-sm text-gray-600">1 active</div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Active Challenges List */}
-              <div className="space-y-4">
-                {[
-                  {
-                    name: "VQE Optimization Challenge",
-                    description:
-                      "Optimize a VQE algorithm to achieve >95% accuracy with minimum circuit depth",
-                    difficulty: "Expert",
-                    participants: 156,
-                    timeLeft: "5 days",
-                    reward: 5000,
-                    progress: 65,
-                    status: "in_progress",
-                  },
-                  {
-                    name: "Quantum Error Correction",
-                    description:
-                      "Implement and test a surface code error correction scheme",
-                    difficulty: "Advanced",
-                    participants: 89,
-                    timeLeft: "12 days",
-                    reward: 3500,
-                    progress: 0,
-                    status: "available",
-                  },
-                  {
-                    name: "Team Circuit Design",
-                    description:
-                      "Collaborate with 2+ members to design an efficient QAOA circuit",
-                    difficulty: "Intermediate",
-                    participants: 234,
-                    timeLeft: "8 days",
-                    reward: 2000,
-                    progress: 30,
-                    status: "in_progress",
-                  },
-                ].map((challenge, idx) => (
-                  <Card key={idx}>
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-lg">
-                              {challenge.name}
-                            </h3>
-                            <Badge
-                              variant={
-                                challenge.difficulty === "Expert"
-                                  ? "destructive"
-                                  : challenge.difficulty === "Advanced"
-                                    ? "default"
-                                    : "secondary"
-                              }
-                            >
-                              {challenge.difficulty}
-                            </Badge>
-                            {challenge.status === "in_progress" && (
-                              <Badge
-                                variant="outline"
-                                className="text-blue-600 border-blue-600"
-                              >
-                                In Progress
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            {challenge.description}
-                          </p>
-
-                          {challenge.status === "in_progress" && (
-                            <div className="mb-4">
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Your Progress</span>
-                                <span>{challenge.progress}%</span>
-                              </div>
-                              <Progress
-                                value={challenge.progress}
-                                className="h-2"
-                              />
-                            </div>
-                          )}
-
-                          <div className="flex items-center gap-6 text-sm">
-                            <div className="flex items-center gap-1">
-                              <Users className="h-4 w-4" />
-                              <span>{challenge.participants} participants</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              <span>{challenge.timeLeft} left</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Flame className="h-4 w-4 text-orange-500" />
-                              <span className="font-semibold">
-                                {challenge.reward.toLocaleString()} pts
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="ml-4">
-                          <Button
-                            data-testid={`button-${challenge.status === "in_progress" ? "continue" : "join"}-challenge-${idx}`}
-                            className="mb-2"
-                          >
-                            {challenge.status === "in_progress"
-                              ? "Continue"
-                              : "Join Challenge"}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            data-testid={`button-view-details-${idx}`}
-                          >
-                            View Details
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* 9. Active Challenges Modal */}
+        <ActiveChallengesModal open={showActiveChallenges} onOpenChange={setShowActiveChallenges} />
 
         {/* 10. Team Leaderboard Modal */}
         <Dialog open={showLeaderboard} onOpenChange={setShowLeaderboard}>
@@ -6721,9 +6420,9 @@ export default function Teamwork() {
                           <div className="mt-3">
                             <div className="flex justify-between text-xs mb-1">
                               <span>Utilization</span>
-                              <span>{backend.currentJobs}/{backend.maxJobs}</span>
+                              <span>{backend.queueLength || 0}/50</span>
                             </div>
-                            <Progress value={(backend.currentJobs / backend.maxJobs) * 100} className="h-2" />
+                            <Progress value={((backend.queueLength || 0) / 50) * 100} className="h-2" />
                           </div>
                         </CardContent>
                       </Card>
@@ -7478,6 +7177,7 @@ export default function Teamwork() {
             </div>
           </DialogContent>
         </Dialog>
+
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useJobs, useBackends, useUpdateJobStatus } from "@/hooks/use-jobs";
+import { useJobs, useBackends, useUpdateJobStatus, useLiveQuantumStatus } from "@/hooks/use-jobs";
 import { useToast } from "@/hooks/use-toast";
 import { JobDetailsModal } from "./job-details-modal";
 import type { Job, JobStatus, BackendStatus } from "@shared/schema";
@@ -37,13 +37,55 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   
-  const { data: jobsData, isLoading: jobsLoading } = useJobs(currentPage, 20);
-  const { data: backends = [], isLoading: backendsLoading } = useBackends();
+  // Fetch both live and local data
+  const { data: liveData, isLoading: liveLoading } = useLiveQuantumStatus();
+  const { data: jobsData, isLoading: localJobsLoading } = useJobs(currentPage, 20);
+  const { data: localBackends = [], isLoading: localBackendsLoading } = useBackends();
+  
   const updateJobStatus = useUpdateJobStatus();
   const { toast } = useToast();
 
-  const jobs = jobsData?.jobs || [];
-  const pagination = jobsData?.pagination;
+  // Prefer live backends if available, otherwise fallback to local
+  const backends = liveData?.backends.map(b => ({
+    id: b.name, // live data uses 'name' as id effectively
+    name: b.name,
+    status: b.status as BackendStatus,
+    queueLength: b.queue,
+    qubits: b.qubits,
+    uptime: "99.9%", // Mock for live
+    averageWaitTime: b.queue * 20 // Estimate
+  })) || localBackends;
+
+  // Prefer live jobs if available
+  const rawJobs = liveData?.jobs || jobsData?.jobs || [];
+  
+  // Map live jobs to expected Job interface
+  const jobs: Job[] = liveData?.jobs 
+    ? liveData.jobs.map(j => ({
+        id: j.id,
+        name: j.name,
+        backend: j.backend,
+        status: j.status as JobStatus,
+        submissionTime: new Date(j.created),
+        startTime: new Date(j.created), // approximate
+        endTime: null,
+        duration: null,
+        queuePosition: j.status === 'queued' ? Math.floor(Math.random() * 10) + 1 : undefined,
+        shots: j.shots,
+        programCode: "qiskit",
+        results: null,
+        tags: [],
+        error: null
+      }))
+    : (jobsData?.jobs || []);
+
+  const isLoading = liveLoading || (localJobsLoading && localBackendsLoading);
+  const pagination = !liveData ? jobsData?.pagination : {
+    currentPage: 1,
+    totalPages: 1,
+    totalJobs: jobs.length,
+    limit: 50
+  };
 
   // Filter jobs by selected backend
   const filteredJobs = jobs.filter(job => 
@@ -52,6 +94,14 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
 
   const handleStatusUpdate = async (jobId: string, status: JobStatus) => {
     try {
+      if (liveData) {
+        toast({
+          title: "Read-only View",
+          description: "Cannot modify live IBM Quantum jobs directly from dashboard yet.",
+          variant: "default",
+        });
+        return;
+      }
       await updateJobStatus.mutateAsync({ id: jobId, status });
       toast({
         title: "Job updated",
@@ -73,7 +123,7 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  if (jobsLoading || backendsLoading) {
+  if (isLoading) {
     return (
       <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
         <CardContent className="p-6">
@@ -102,7 +152,19 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">All Backends</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                All Backends
+                {liveData && (
+                  <Badge 
+                    variant={liveData.isSimulated ? "secondary" : "default"}
+                    className={liveData.isSimulated 
+                      ? "bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200" 
+                      : "bg-green-100 text-green-800 hover:bg-green-200 border-green-200"}
+                  >
+                    {liveData.isSimulated ? "Simulated Data" : "Live Connection"}
+                  </Badge>
+                )}
+              </h2>
             </div>
             <Select value={selectedBackend} onValueChange={setSelectedBackend}>
               <SelectTrigger className="w-48">

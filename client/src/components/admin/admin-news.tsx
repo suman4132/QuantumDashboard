@@ -6,7 +6,7 @@ import { Plus, Edit, Pin, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminNews() {
-  const { data: news, isLoading } = useQuery({
+  const { data: news, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/news"],
   });
 

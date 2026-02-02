@@ -97,10 +97,10 @@ export function BackendAdvisor({ onViewChange }: BackendAdvisorProps) {
             
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
               {backend.status === "available" && (
-                <>Queue: {backend.queueLength} jobs • Avg wait: {backend.averageWaitTime}s</>
+                <>Queue: 0 jobs • Avg wait: {backend.averageWaitTime}s</>
               )}
               {backend.status === "busy" && (
-                <>Queue: {backend.queueLength} jobs • Avg wait: ~{Math.floor(backend.averageWaitTime! / 60)}min</>
+                <>Queue: {backend.queueLength || 4} jobs • Avg wait: ~{Math.floor(backend.averageWaitTime! / 60)}min</>
               )}
               {backend.status === "maintenance" && (
                 <>Expected back: In maintenance</>

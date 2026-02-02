@@ -63,8 +63,7 @@ const UserSchema = new Schema<IUser>(
   }
 );
 
-// Index for faster email lookups
-UserSchema.index({ email: 1 });
+
 
 // Method to convert user to JSON without password
 UserSchema.methods.toJSON = function () {

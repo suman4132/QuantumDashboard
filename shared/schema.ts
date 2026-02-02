@@ -20,6 +20,7 @@ export const jobs = pgTable("jobs", {
   error: text("error"),
   tags: jsonb("tags").$type<string[]>(),
   sessionId: varchar("session_id"),
+  userId: varchar("user_id"),
 });
 
 export const sessions = pgTable("sessions", {
@@ -357,10 +358,13 @@ export const notifications = pgTable("notifications", {
   category: text("category").notNull(),
   actionUrl: text("action_url"),
   actionLabel: text("action_label"),
+  channels: jsonb("channels").$type<string[]>().notNull().default(['web']),
+  scheduledFor: timestamp("scheduled_for"),
   data: jsonb("data"),
   isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
   readAt: timestamp("read_at"),
+  expiresAt: timestamp("expires_at"),
 });
 
 // Knowledge Sharing

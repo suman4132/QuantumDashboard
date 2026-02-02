@@ -14,6 +14,8 @@ import Docs from "@/pages/Docs";
 import QuizPage from "@/pages/QuizPage";
 import NotFound from "@/pages/not-found";
 import AdminDashboard from "@/pages/admin-dashboard";
+import AdminLogin from "@/pages/admin-login";
+import AdminRegister from "@/pages/admin-register";
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -70,6 +72,10 @@ function App() {
               />
               <Route path="/docs" element={<Docs />} />
               <Route path="/quiz" element={<QuizPage />} />
+              
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/register" element={<AdminRegister />} />
+              
               <Route 
                 path="/admin/*" 
                 element={
