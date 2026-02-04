@@ -477,6 +477,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
+
+
+  app.get("/api/ibm-quantum/jobs/:id", async (req, res) => {
+    try {
+      const jobId = req.params.id;
+      if (!jobId) {
+        return res.status(400).json({ error: "Job ID is required" });
+      }
+
+      const job = await ibmQuantumService.getJob(jobId);
+
+      if (!job) {
+        return res.status(404).json({ error: "Job not found" });
+      }
+
+      res.json(job);
+    } catch (error) {
+      console.error(`Error fetching IBM job ${req.params.id}:`, error);
+      res.status(500).json({ error: "Failed to fetch job details" });
+    }
+  });
+
   // Real-time IBM Quantum data
   app.get("/api/ibm-quantum/live", async (req, res) => {
     try {
@@ -1333,13 +1355,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       }
 
+      // Fetch real IBM jobs to populate the stats
+      let ibmJobs: any[] = [];
+      try {
+        ibmJobs = await ibmQuantumService.getJobs(50);
+      } catch (e) {
+        console.warn("Could not fetch IBM jobs for admin stats", e);
+      }
+
+      const totalIBMJobs = ibmJobs.length;
+      const runningIBMJobs = ibmJobs.filter((j: any) => j.status === 'running' || j.status === 'queued').length;
+
       const users = await User.find(query).sort({ createdAt: -1 });
 
       // Transform _id to id for frontend compatibility
-      const transformedUsers = users.map(user => ({
-        ...user.toJSON(),
-        id: user._id.toString()
-      }));
+      const transformedUsers = users.map((user, index) => {
+        let jobCount = user.jobsSubmitted;
+        let activeCount = 0;
+
+        // Heuristic: In this single-tenant/shared-key setup, assign the IBM job stats 
+        // to the primary admin user (or first user) so data is visible.
+        // We look for 'admin' in email or just the first user if list is short.
+        const isLikelyAdmin = user.email?.includes('admin') || user.plan === 'enterprise' || index === 0;
+
+        if (isLikelyAdmin && totalIBMJobs > 0) {
+          jobCount = totalIBMJobs;
+          activeCount = runningIBMJobs;
+        }
+
+        return {
+          ...user.toJSON(),
+          id: user._id.toString(),
+          jobsSubmitted: jobCount,
+          activeJobs: activeCount // Pass this to frontend
+        };
+      });
 
       res.json(transformedUsers);
     } catch (error) {

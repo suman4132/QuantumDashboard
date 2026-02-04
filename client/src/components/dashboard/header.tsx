@@ -526,6 +526,14 @@ export function Header({
                       <Settings className="w-4 h-4 mr-2" />
                       Settings
                     </DropdownMenuItem>
+                    <Link to="/my-jobs">
+                      <DropdownMenuItem className="cursor-pointer">
+                         <div className="flex items-center">
+                           <Play className="w-4 h-4 mr-2" />
+                           My Quantum Jobs
+                         </div>
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => {

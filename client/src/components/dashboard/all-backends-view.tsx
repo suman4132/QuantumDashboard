@@ -70,9 +70,12 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
         startTime: new Date(j.created), // approximate
         endTime: null,
         duration: null,
-        queuePosition: j.status === 'queued' ? Math.floor(Math.random() * 10) + 1 : undefined,
+        queuePosition: j.status === 'queued' ? Math.floor(Math.random() * 10) + 1 : null,
+        qubits: j.qubits ?? 5,
         shots: j.shots,
-        programCode: "qiskit",
+        program: "qiskit",
+        sessionId: null,
+        userId: null,
         results: null,
         tags: [],
         error: null

@@ -253,7 +253,19 @@ export default function AdminUsers() {
                         <TableCell>
                           <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>{user.status}</Badge>
                         </TableCell>
-                        <TableCell>{user.jobsSubmitted || 0}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-semibold">{user.jobsSubmitted || 0}</span>
+                            {(user.activeJobs > 0) ? (
+                              <span className="text-xs text-blue-500 font-medium flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"/>
+                                {user.activeJobs} Running
+                              </span>
+                            ) : (
+                               <span className="text-xs text-muted-foreground">Total</span>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell className="text-muted-foreground text-xs">
                           {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
                         </TableCell>

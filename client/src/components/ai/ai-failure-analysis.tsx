@@ -19,7 +19,7 @@ interface FailureAnalysis {
 interface AIFailureAnalysisProps {
   jobId: string;
   jobName?: string;
-  error?: string;
+  error?: any;
   onRetryWithSuggestion?: (suggestion: string) => void;
 }
 
@@ -99,7 +99,7 @@ export function AIFailureAnalysis({ jobId, jobName, error, onRetryWithSuggestion
           <Alert className="border-orange-200 bg-orange-50 dark:border-orange-700 dark:bg-orange-900/20">
             <AlertTriangle className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-sm text-orange-800 dark:text-orange-200">
-              <strong>Error:</strong> {error}
+              <strong>Error:</strong> {typeof error === 'object' ? (error?.cause || error?.message || JSON.stringify(error)) : error}
             </AlertDescription>
           </Alert>
         )}

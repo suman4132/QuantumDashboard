@@ -12,6 +12,8 @@ import Teamwork from "@/pages/teamwork";
 import QuantumQuest from "@/pages/quantum-quest";
 import Docs from "@/pages/Docs";
 import QuizPage from "@/pages/QuizPage";
+import MyJobsPage from "@/pages/my-jobs";
+import JobDetailsPage from "@/pages/job-details";
 import NotFound from "@/pages/not-found";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminLogin from "@/pages/admin-login";
@@ -72,6 +74,22 @@ function App() {
               />
               <Route path="/docs" element={<Docs />} />
               <Route path="/quiz" element={<QuizPage />} />
+              <Route 
+                path="/my-jobs" 
+                element={
+                  <ProtectedRoute>
+                    <MyJobsPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/my-jobs/:id" 
+                element={
+                  <ProtectedRoute>
+                    <JobDetailsPage />
+                  </ProtectedRoute>
+                } 
+              />
               
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/register" element={<AdminRegister />} />

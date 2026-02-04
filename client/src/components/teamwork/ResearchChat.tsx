@@ -138,7 +138,7 @@ export function ResearchChat({
                           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
                             {msg.user
                               .split(" ")
-                              .map((n) => n[0])
+                              .map((n: string) => n[0])
                               .join("")}
                           </AvatarFallback>
                         </Avatar>
@@ -195,7 +195,7 @@ export function ResearchChat({
                             </p>
                             {msg.attachments && (
                               <div className="mt-3 space-y-2">
-                                {msg.attachments.map((att, attIdx) => (
+                                {msg.attachments.map((att: any, attIdx: number) => (
                                   <div
                                     key={attIdx}
                                     className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800"

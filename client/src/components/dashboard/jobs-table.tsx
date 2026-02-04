@@ -60,7 +60,7 @@ export function JobsTable({ searchQuery }: JobsTableProps) {
           job.status.toLowerCase(),
           job.name?.toLowerCase() || "",
           ...(job.tags || []).map(tag => tag.toLowerCase()),
-          job.error?.toLowerCase() || ""
+          job.error && typeof job.error === 'string' ? job.error.toLowerCase() : (job.error ? JSON.stringify(job.error).toLowerCase() : ""),
         ];
 
         // Check for direct matches
@@ -78,7 +78,7 @@ export function JobsTable({ searchQuery }: JobsTableProps) {
           'success': job.status === 'done',
           'active': job.status === 'running',
           'pending': job.status === 'queued',
-          'timeout': job.error?.toLowerCase().includes('timeout') || false,
+          'timeout': (typeof job.error === 'string' ? job.error : JSON.stringify(job.error || ""))?.toLowerCase().includes('timeout') || false,
           'circuit': job.name?.toLowerCase().includes('circuit') || false,
           'simulation': job.backend.toLowerCase().includes('simulator'),
           'hardware': !job.backend.toLowerCase().includes('simulator'),
