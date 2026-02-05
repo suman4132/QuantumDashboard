@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, Clock, CheckCircle, XCircle, TrendingUp, Zap, BarChart3 } from "lucide-react";
-import { useJobStats, useLiveQuantumStatus } from "@/hooks/use-jobs";
+import { useJobStats } from "@/hooks/use-jobs";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -65,31 +65,9 @@ const iconVariants = {
 
 export function StatsCards() {
   const { data: stats, isLoading: statsLoading } = useJobStats();
-  const { data: liveData, isLoading: liveLoading } = useLiveQuantumStatus();
-
-  let finalStats = stats;
-
-  if (liveData) {
-    const jobs = liveData.jobs;
-    const total = jobs.length;
-    const running = jobs.filter(j => j.status === 'running').length;
-    const queued = jobs.filter(j => j.status === 'queued').length;
-    const completed = jobs.filter(j => j.status === 'completed').length;
-    const failed = jobs.filter(j => j.status === 'failed').length;
-    const successRate = total > 0 ? Math.round((completed / total) * 100) : 100;
-
-    finalStats = {
-       totalJobs: total,
-       runningJobs: running,
-       queuedJobs: queued,
-       completedJobs: completed,
-       failedJobs: failed,
-       successRate: successRate
-    };
-  }
 
   // Only show loading if we have NO data at all
-  if (statsLoading && !finalStats) {
+  if (statsLoading && !stats) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {Array.from({ length: 5 }).map((_, i) => (
@@ -108,9 +86,8 @@ export function StatsCards() {
     );
   }
 
-  // Use the calculated stats or fallback
-  const displayStats = finalStats;
-
+  // Use the calculated stats from local storage (Simulated Jobs)
+  const displayStats = stats;
 
   const statsConfig = [
     {

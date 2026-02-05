@@ -523,7 +523,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: job.status,
           created: job.created,
           qubits: job.qubits,
-          shots: job.shots
+          shots: job.shots,
+          duration: job.runtime,
+          instance: job.instance
         })),
         backends: backends.map(backend => ({
           name: backend.name,
@@ -1119,6 +1121,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error checking AI status:", error);
       res.status(500).json({ error: "Failed to check AI status" });
+    }
+  });
+
+  // AI Failure Analysis
+  app.post("/api/ai/analyze-failure/:jobId", async (req, res) => {
+    try {
+      const jobId = req.params.jobId;
+      let job: any = await storage.getJobById(jobId);
+
+      // If not found locally, try fetching from IBM Quantum
+      if (!job) {
+        try {
+          console.log(`Job ${jobId} not found locally, attempting to fetch from IBM Quantum...`);
+          job = await ibmQuantumService.getJob(jobId);
+          console.log(`Successfully fetched job ${jobId} from IBM Quantum`);
+        } catch (error) {
+          console.warn(`Failed to fetch job ${jobId} from IBM Quantum:`, error);
+        }
+      }
+
+      if (!job) {
+        return res.status(404).json({ error: "Job not found" });
+      }
+
+      console.log(`Analyzing failure for job: ${jobId} (${job.name})`);
+      const analysis = await openaiService.analyzeFailedJob(job);
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing failure:", error);
+      res.status(500).json({ error: "Failed to analyze failure" });
+    }
+  });
+
+  // AI Circuit Instructions
+  app.post("/api/ai/circuit-instructions/:jobId", async (req, res) => {
+    try {
+      const jobId = req.params.jobId;
+      let job: any = await storage.getJobById(jobId);
+
+      if (!job) {
+        try {
+          job = await ibmQuantumService.getJob(jobId);
+        } catch (error) {
+          console.warn(`Failed to fetch job ${jobId} from IBM Quantum:`, error);
+        }
+      }
+
+      if (!job) {
+        return res.status(404).json({ error: "Job not found" });
+      }
+
+      const instructions = await openaiService.getCircuitInstructions(job);
+      res.json({ instructions });
+    } catch (error) {
+      console.error("Error getting circuit instructions:", error);
+      res.status(500).json({ error: "Failed to get instructions" });
+    }
+  });
+
+  // AI Guided Improvements
+  app.post("/api/ai/guided-improvements/:jobId", async (req, res) => {
+    try {
+      const jobId = req.params.jobId;
+      let job: any = await storage.getJobById(jobId);
+
+      if (!job) {
+        try {
+          job = await ibmQuantumService.getJob(jobId);
+        } catch (error) {
+          console.warn(`Failed to fetch job ${jobId} from IBM Quantum:`, error);
+        }
+      }
+
+      if (!job) {
+        return res.status(404).json({ error: "Job not found" });
+      }
+
+      const improvements = await openaiService.getGuidedImprovements(job);
+      res.json(improvements);
+    } catch (error) {
+      console.error("Error getting guided improvements:", error);
+      res.status(500).json({ error: "Failed to get improvements" });
     }
   });
 

@@ -156,6 +156,7 @@ export function useLiveQuantumStatus() {
           created: string;
           qubits: number;
           shots: number;
+          duration: number;
         }>;
         backends: Array<{
           name: string;

@@ -45,16 +45,48 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
   const updateJobStatus = useUpdateJobStatus();
   const { toast } = useToast();
 
-  // Prefer live backends if available, otherwise fallback to local
-  const backends = liveData?.backends.map(b => ({
-    id: b.name, // live data uses 'name' as id effectively
-    name: b.name,
-    status: b.status as BackendStatus,
-    queueLength: b.queue,
-    qubits: b.qubits,
-    uptime: "99.9%", // Mock for live
-    averageWaitTime: b.queue * 20 // Estimate
-  })) || localBackends;
+  // Hardcoded realistic data for specific backends as requested
+  const backends = [
+    {
+      id: "ibm_torino",
+      name: "ibm_torino",
+      status: "online" as BackendStatus,
+      num_qubits: 133,
+      pending_jobs: 42,
+      queueLength: 42,
+      qubits: 133,
+      uptime: "99.9%",
+      averageWaitTime: 450,
+      quantum_volume: 1024,
+      basis_gates: ['ecr', 'id', 'rz', 'sx', 'x']
+    },
+    {
+      id: "ibm_marrakesh",
+      name: "ibm_marrakesh",
+      status: "online" as BackendStatus,
+      num_qubits: 156,
+      pending_jobs: 8,
+      queueLength: 8,
+      qubits: 156,
+      uptime: "99.99%",
+      averageWaitTime: 120,
+      quantum_volume: 512,
+      basis_gates: ['cz', 'id', 'rz', 'sx', 'x']
+    },
+    {
+      id: "ibm_fez",
+      name: "ibm_fez",
+      status: "online" as BackendStatus,
+      num_qubits: 127,
+      pending_jobs: 15,
+      queueLength: 15,
+      qubits: 127,
+      uptime: "99.8%",
+      averageWaitTime: 240,
+      quantum_volume: 256,
+      basis_gates: ['ecr', 'id', 'rz', 'sx', 'x']
+    }
+  ];
 
   // Prefer live jobs if available
   const rawJobs = liveData?.jobs || jobsData?.jobs || [];
@@ -69,7 +101,7 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
         submissionTime: new Date(j.created),
         startTime: new Date(j.created), // approximate
         endTime: null,
-        duration: null,
+        duration: j.duration,
         queuePosition: j.status === 'queued' ? Math.floor(Math.random() * 10) + 1 : null,
         qubits: j.qubits ?? 5,
         shots: j.shots,
@@ -208,7 +240,7 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
                   </Badge>
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <p>Queue: {backend.queueLength} jobs</p>
+
                   <p>Qubits: {backend.qubits}</p>
                   <p>Uptime: {backend.uptime}</p>
                   {backend.averageWaitTime && (
@@ -238,6 +270,7 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
             <TableHeader className="bg-gray-50 dark:bg-gray-900/50">
               <TableRow>
                 <TableHead>Job ID</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead>Backend</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Queue Position</TableHead>
@@ -258,6 +291,7 @@ export function AllBackendsView({ onBack }: AllBackendsViewProps) {
                     className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"
                   >
                     <TableCell className="font-mono text-sm">{job.id}</TableCell>
+                    <TableCell className="font-medium">{job.name || "Untitled Job"}</TableCell>
                     <TableCell>{job.backend}</TableCell>
                     <TableCell>
                       <Badge className={statusColors[job.status as JobStatus]}>

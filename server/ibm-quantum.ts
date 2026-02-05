@@ -13,6 +13,7 @@ interface IBMQuantumJob {
   program?: string;
   results?: any;
   error?: string;
+  instance?: string;
 }
 
 interface IBMQuantumBackend {
@@ -187,8 +188,8 @@ class IBMQuantumService {
       // Note: The new unified API usually works at quantum.cloud.ibm.com
       // but we try a few variations to be safe.
       const endpoints = [
-        `${this.baseUrl}/jobs?limit=${limit}&sort=desc`, // Standard new API
-        `https://api.quantum-computing.ibm.com/api/Jobs?limit=${limit}&order=DESC` // Old Legacy (might be dead, but kept as fallback)
+        `https://api.quantum-computing.ibm.com/api/Jobs?limit=${limit}&order=DESC`, // Legacy/Standard (Rich metadata)
+        `${this.baseUrl}/jobs?limit=${limit}&sort=desc` // Cloud/Unified (Minimal metadata)
       ];
 
       let data: any = null;
@@ -369,18 +370,51 @@ class IBMQuantumService {
     const status = this.mapStatus(job.status || job.state);
     const created = job.creationDate || job.created;
 
+    // DEBUG: Log first job structure to find hidden fields
+    // DEBUG: Log first job structure to find hidden fields
+    /*if (!(global as any)._ibmDebugLogged) {
+      console.log('🔍 DEBUG RAW JOB DATA:', JSON.stringify(job, null, 2));
+      (global as any)._ibmDebugLogged = true;
+    }*/
+
+    // Aggressive instance/provider extraction
+    let instance = job.instance || job.instance_id || undefined;
+
+    // Check for provider nested object (Common in Qiskit stored jobs)
+    if (!instance && job.provider) {
+      // provider might be a string or object { hub, group, project }
+      if (typeof job.provider === 'string') {
+        instance = job.provider;
+      } else if (job.provider.hub || job.provider.group || job.provider.project) {
+        instance = `${job.provider.hub || ''}/${job.provider.group || ''}/${job.provider.project || ''}`;
+      }
+    }
+
+    // Check for flat hub/group/project fields
+    if (!instance && (job.hub || job.group || job.project)) {
+      instance = `${job.hub || ''}/${job.group || ''}/${job.project || ''}`;
+    }
+
+    // Cleanup any leading/trailing slashes or empty segments
+    if (instance) {
+      instance = instance.replace(/\/+/g, '/').replace(/^\/+|\/+$/g, '');
+      if (instance === '/') instance = undefined;
+    }
+
     return {
       id,
       name: job.name || job.program?.id || 'Quantum Job',
       backend,
       status,
+      instance,
       created: created ? new Date(created).toISOString() : new Date().toISOString(),
       updated: job.endDate || job.updated ? new Date(job.endDate || job.updated).toISOString() : undefined,
-      runtime: job.runTime || job.running_time || job.duration,
+      // Enhanced mapping for runtime/duration from various IBM Quantum API response formats
+      runtime: job.runTime || job.running_time || job.duration || job.usage?.quantum_seconds || job.usage?.seconds || job.metrics?.exec_time || job.time_per_step || undefined,
       qubits: job.summaryData?.result?.n_qubits || 5, // Fallback as this is often deep in stats
       shots: job.shots || 1024,
-      program: job.program?.id || 'qiskit',
-      error: job.errorMsg || job.error_message || undefined
+      // Map error from various possible locations in the raw response
+      error: job.errorMsg || job.error_message || job.state?.reason || undefined
     };
   }
 
@@ -425,7 +459,9 @@ class IBMQuantumService {
       status: i < 2 ? 'running' : (i < 5 ? 'queued' : 'completed'),
       created: new Date().toISOString(),
       qubits: 127,
-      shots: 1024
+      shots: 1024,
+      runtime: Math.floor(Math.random() * 60) + 1, // 1-60 seconds
+      instance: 'ibm-q/open/main'
     }));
   }
 

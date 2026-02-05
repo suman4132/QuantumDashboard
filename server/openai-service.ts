@@ -25,7 +25,7 @@ class OpenAIQuantumService {
     console.log('[Gemini Service] Raw API key length:', rawApiKey?.length || 0);
     console.log('[Gemini Service] Raw API key preview:', rawApiKey ? rawApiKey.substring(0, 15) + '...' : 'N/A');
     console.log('[Gemini Service] All env keys:', Object.keys(process.env).filter(k => k.includes('GEMINI') || k.includes('OPENAI')).join(', '));
-    
+
     const apiKey = rawApiKey?.trim();
     if (apiKey) {
       // Validate API key format (should start with 'AIza')
@@ -36,7 +36,7 @@ class OpenAIQuantumService {
         this.isConfigured = false;
         return;
       }
-      
+
       try {
         this.genAI = new GoogleGenerativeAI(apiKey);
         // Use gemini-2.5-flash as requested by user
@@ -138,6 +138,56 @@ Format your response as JSON with keys: circuitSuggestions, optimizationTips, ba
     circuitImprovements: string[];
     preventionTips: string[];
   }> {
+    // 1. Heuristic Analysis: Check for known IBM Quantum error patterns first
+    // This ensures accurate advice even without an active AI key or during API outages.
+    const errorText = (job.error || '').toLowerCase();
+
+    // Case: Shot count exceeded (Error 1520)
+    if (errorText.includes('exceeds the system limit') || errorText.includes('shots') || errorText.includes('1520')) {
+      const maxShots = errorText.match(/limit\s+(\d+)/)?.[1] || '10,000 (or backend specific limit)';
+      return {
+        possibleCauses: [
+          "Shot count configured for this job exceeds the backend's hardware limit",
+          `System allows maximum ${maxShots} shots, but a higher value (e.g. 2 quadrillion) was requested`,
+          "Input validation failed before execution"
+        ],
+        suggestions: [
+          `Reduce the 'shots' parameter to be below ${maxShots} (e.g. 4096 or 10000)`,
+          "Split the workload into multiple smaller jobs if you strictly need more total samples",
+          "Use the 'Batch' execution mode to queue multiple circuits sequentially"
+        ],
+        circuitImprovements: [
+          "No circuit changes needed; this is a configuration issue",
+          "Ensure your job configuration validator matches the target backend's constraints"
+        ],
+        preventionTips: [
+          "Check 'backend.configuration().max_shots' before submitting",
+          "Use Qiskit's 'transpile' or backend validation methods locally"
+        ]
+      };
+    }
+
+    // Case: Queue/System Issues
+    if (errorText.includes('queue') || errorText.includes('maintenance') || errorText.includes('500') || errorText.includes('503')) {
+      return {
+        possibleCauses: [
+          "The backend is currently undergoing maintenance",
+          "The specific quantum system is offline or suspended",
+          "Global queue service is experiencing high traffic"
+        ],
+        suggestions: [
+          "Switch to a different backend (e.g. 'ibm_osaka' instead of 'ibm_brisbane')",
+          "Wait 15-30 minutes and retry the job (it likely didn't consume runtime)",
+          "Check the IBM Quantum Services status page"
+        ],
+        circuitImprovements: ["N/A"],
+        preventionTips: [
+          "Implement automatic backend selection based on 'status: active'",
+          "Add retry logic with exponential backoff in your submission script"
+        ]
+      };
+    }
+
     this.initializeIfNeeded();
     if (!this.isConfigured) {
       return this.getFallbackFailureAnalysis();
@@ -317,7 +367,7 @@ You are integrated into a quantum computing job management dashboard that tracks
       return content || "I'm sorry, I couldn't generate a response at the moment.";
     } catch (error: any) {
       console.error('Gemini API error in chat:', error);
-      
+
       // Provide more detailed error messages
       if (error?.status === 401 || error?.status === 403) {
         return "❌ Authentication failed. Please check if the Gemini API key is valid and has proper permissions.";
@@ -328,7 +378,7 @@ You are integrated into a quantum computing job management dashboard that tracks
       } else if (error?.message) {
         return `⚠️ Error: ${error.message}. Please check your Gemini API configuration.`;
       }
-      
+
       return "I'm experiencing some technical difficulties right now. Please try again in a moment.";
     }
   }

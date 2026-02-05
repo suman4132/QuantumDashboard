@@ -49,57 +49,33 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface ResearchChatProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  mockMessages: any[];
-  liveMessages: any[];
-  onSendMessage: (msg: string) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  mockMessages?: any[];
+  liveMessages?: any[];
+  onSendMessage?: (msg: string) => void;
+  variant?: 'dialog' | 'embedded';
+  projectId?: string;
+  workspaceId?: string;
+  currentUser?: any;
+  className?: string;
 }
 
 export function ResearchChat({
   open,
   onOpenChange,
-  mockMessages,
-  liveMessages,
-  onSendMessage,
+  mockMessages = [],
+  liveMessages = [],
+  onSendMessage = () => {},
+  variant = 'dialog',
+  className = ""
 }: ResearchChatProps) {
   const [currentChatMessage, setCurrentChatMessage] = useState("");
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
-            <DialogHeader className="mb-4">
-              <DialogTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5 text-blue-500" />
-                  Research Chat - Quantum Collaboration Hub
-                </div>
-                <div className="flex items-center gap-2 mr-8">
-                  <Badge
-                    variant="outline"
-                    className="bg-green-50 text-green-700 border-green-200"
-                  >
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
-                    5 active
-                  </Badge>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    data-testid="button-chat-settings"
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </div>
-              </DialogTitle>
-              <DialogDescription>
-                Advanced research collaboration with AI-powered insights, file
-                sharing, and real-time quantum analysis
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="flex h-[calc(100vh-200px)] gap-4">
-              {/* Main Chat Area */}
-              <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border">
+  const Content = (
+    <div className={`flex h-full gap-4 ${className}`}>
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col bg-white dark:bg-gray-950 rounded-lg border h-full">
                 {/* Chat Header with Search */}
                 <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
                   <div className="flex items-center gap-3">
@@ -588,7 +564,35 @@ export function ResearchChat({
                   </CardContent>
                 </Card>
               </div>
+      </div>
+  );
+
+  if (variant === 'embedded') {
+    return Content;
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-7xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-blue-500" />
+              Research Chat - Quantum Collaboration Hub
             </div>
-          </DialogContent>    </Dialog>
+            <div className="flex items-center gap-2 mr-8">
+               {/* Header Controls */}
+               <Button size="icon" variant="ghost"><Settings className="w-4 h-4"/></Button>
+            </div>
+          </DialogTitle>
+          <DialogDescription>
+            Advanced research collaboration with AI-powered insights, file sharing, and real-time quantum analysis
+          </DialogDescription>
+        </DialogHeader>
+        <div className="h-[calc(100vh-200px)]">
+            {Content}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

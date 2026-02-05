@@ -229,6 +229,7 @@ export function JobsTable({ searchQuery }: JobsTableProps) {
               >
                 Job ID <ArrowUpDown className="w-3 h-3 ml-1 inline" />
               </TableHead>
+              <TableHead data-testid="header-name">Name</TableHead>
               <TableHead 
                 className="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
                 onClick={() => {
@@ -277,6 +278,7 @@ export function JobsTable({ searchQuery }: JobsTableProps) {
                   data-testid={`job-row-${job.id}`}
                 >
                   <TableCell className="font-mono text-sm">{job.id}</TableCell>
+                  <TableCell className="font-medium">{job.name || "Untitled Job"}</TableCell>
                   <TableCell>{job.backend}</TableCell>
                   <TableCell>
                     <Badge className={`${statusColors[job.status as JobStatus]} animate-fade-in`}>

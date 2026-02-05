@@ -28,9 +28,11 @@ import {
   validateChallenges,
   getChallengeById,
 } from "@/components/quantum/level-challenges";
+import { GalaxyMap } from "@/components/quantum/galaxy-map";
+import { MissionControl } from "@/components/quantum/mission-control";
 
 // Types for the learning system
-interface Level {
+export interface Level {
   id: string;
   title: string;
   description: string;
@@ -359,152 +361,109 @@ const mockAchievements: Achievement[] = [
   },
 ];
 
-// Function to calculate user level based on total points earned
-const calculateUserLevel = (totalPoints: number): number => {
-  // Level progression based on point thresholds:
-  // Level 1: 0-299 points (Quantum Fundamentals: 100-200 points each)
-  // Level 2: 300-649 points (Basic Quantum Gates: 250-400 points each)
-  // Level 3: 650-999 points (Two-Qubit Operations: 450-600 points each)
-  // Level 4: 1000-1199 points (Quantum Algorithms: 700-1000 points each)
-  // Level 5: 1200+ points (Research Projects: 1200+ points each)
-
-  if (totalPoints >= 7250) return 5; // Research Projects level
-  if (totalPoints >= 7250) return 4; // Quantum Algorithms level
-  if (totalPoints >= 3850) return 3; // Two-Qubit Operations level
-  if (totalPoints >= 450) return 2; // Basic Quantum Gates level
-  return 1; // Quantum Fundamentals level (0-299 points)
-};
-
-// Calculate correct user level based on current progress
-const completedMockLevels = mockLevels.filter((l) => l.completed);
-const correctUserLevel = calculateUserLevel(250); // Current points from mockUserProgress
-
-const mockUserProgress: UserProgress = {
-  totalPoints: 250,
-  level: correctUserLevel, // Now correctly calculated as 1
-  streak: 1,
-  completedLevels: completedMockLevels.length,
-  rank: 42,
-  achievements: mockAchievements.filter((a) => a.unlocked),
-};
-
-// Base leaderboard with other players (excluding "You")
-const baseLeaderboard = [
-  { name: "QuantumExplorer", points: 2450, avatar: "👑" },
-  { name: "QubitMaster", points: 2340, avatar: "⚡" },
-  { name: "EntanglePro", points: 2180, avatar: "🔬" },
-  { name: "CircuitBuilder", points: 240, avatar: "⚙️" },
-  { name: "AlgoMaster", points: 235, avatar: "🧠" },
-  { name: "QuantumNewbie", points: 220, avatar: "🌟" },
-  { name: "ErrorFixer", points: 210, avatar: "🔧" },
-  { name: "MLQuantum", points: 205, avatar: "🤖" },
-];
-
-// Function to calculate dynamic leaderboard with current user points
-const calculateDynamicLeaderboard = (userPoints: number) => {
-  // Create array with all players including current user
-  const allPlayers = [
-    ...baseLeaderboard,
-    { name: "You", points: userPoints, avatar: "🎯" },
-  ];
-
-  // Sort by points descending
-  const sortedPlayers = allPlayers.sort((a, b) => b.points - a.points);
-
-  // Add ranks
-  return sortedPlayers.map((player, index) => ({
-    ...player,
-    rank: index + 1,
-  }));
-};
-
-// Function to calculate user rank based on current points
-const calculateUserRank = (userPoints: number): number => {
-  const playersWithHigherPoints = baseLeaderboard.filter(
-    (player) => player.points > userPoints
-  );
-  return playersWithHigherPoints.length + 1;
-};
-
-export default function QuantumQuest() {
-  const [selectedTab, setSelectedTab] = useState("learn");
-  const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
-  const [currentChallenge, setCurrentChallenge] = useState<string | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [userProgress, setUserProgress] = useState(mockUserProgress);
-  const [levels, setLevels] = useState(mockLevels);
-  const { toast } = useToast();
-
-  // Calculate dynamic leaderboard based on current user progress
-  const dynamicLeaderboard = calculateDynamicLeaderboard(
-    userProgress.totalPoints
-  );
-
-  // Initialize proper level locking on component mount and validate challenges
-  useEffect(() => {
-    const initialLevels = updateLevelLocking(mockLevels);
-    setLevels(initialLevels);
-
-    // Validate that all levels have corresponding challenges
-    const levelIds = mockLevels.map((level) => level.id);
-    const validation = validateChallenges(levelIds);
-
-    if (validation.missing.length > 0) {
-      console.warn("⚠️ Missing challenges for levels:", validation.missing);
-      toast({
-        title: "Development Notice",
-        description: `${validation.missing.length} levels are missing challenge implementations`,
-      });
-    } else {
-      console.log("✅ All levels have corresponding challenges!");
-    }
-  }, []);
-
-  // Level progression mapping for unlocking logic
-  const levelProgression: Record<string, string[]> = {
-    // Level 1: Quantum Fundamentals
-    "qb-103": ["qb-102"], // Quantum Measurement unlocks after Superposition States
-
-    // Level 2: Basic Quantum Gates
-    "qg-201": ["qb-101", "qb-102", "qb-103"], // Hadamard Gates unlocks after completing ALL of Level 1
-    "qg-202": ["qg-201"], // Pauli Gates unlocks after Hadamard
-    "qg-203": ["qg-202"], // Phase Gates unlocks after Pauli
-    "qg-204": ["qg-203"], // Gate Sequences unlocks after Phase
-
-    // Level 3: Two-Qubit Operations
-    "qe-301": ["qg-204"], // CNOT Gates unlocks after completing Level 2
-    "qe-302": ["qe-301"], // Entanglement Circuits unlocks after CNOT
-    "qe-303": ["qe-302"], // Bell States unlocks after Entanglement
-    "qe-304": ["qe-303"], // Controlled Operations unlocks after Bell States
-
-    // Level 4: Quantum Algorithms
-    "qa-401": ["qe-304"], // Deutsch Algorithm unlocks after completing Level 3
-    "qa-402": ["qa-401"], // QFT unlocks after Deutsch
-    "qa-403": ["qa-402"], // Grover's unlocks after QFT
-    "qa-404": ["qa-403"], // Bell State Analysis unlocks after Grover's
-
-    // Level 5: Advanced Research
-    "qr-501": ["qa-404"], // Quantum Teleportation unlocks after completing Level 4
-    "qr-502": ["qr-501"], // Shor's unlocks after Teleportation
-    "qr-503": ["qr-502"], // VQE unlocks after Shor's
-    "qr-504": ["qr-503"], // Error Correction unlocks after VQE
-    "qr-505": ["qr-504"], // Quantum ML unlocks after Error Correction
+  // --- GAMIFICATION CONSTANTS ---
+  const LEVEL_THRESHOLDS = {
+    1: 0,
+    2: 300,
+    3: 750,
+    4: 1500,
+    5: 3000,
+    6: 5000, // Master level
   };
 
-  // Function to check if a level should be unlocked
-  const shouldUnlockLevel = (
-    levelId: string,
-    completedLevels: Level[]
-  ): boolean => {
-    const prerequisites = levelProgression[levelId];
-    if (!prerequisites) return true; // No prerequisites means always unlocked
+  const calculateUserLevel = (totalPoints: number): number => {
+    if (totalPoints >= LEVEL_THRESHOLDS[6]) return 6;
+    if (totalPoints >= LEVEL_THRESHOLDS[5]) return 5;
+    if (totalPoints >= LEVEL_THRESHOLDS[4]) return 4;
+    if (totalPoints >= LEVEL_THRESHOLDS[3]) return 3;
+    if (totalPoints >= LEVEL_THRESHOLDS[2]) return 2;
+    return 1;
+  };
 
+  const getNextLevelXP = (currentPoints: number): number => {
+    const level = calculateUserLevel(currentPoints);
+    if (level >= 6) return 10000; // Cap
+    return LEVEL_THRESHOLDS[level + 1 as keyof typeof LEVEL_THRESHOLDS] || 10000;
+  };
+
+  // --- MOCK DATA & HELPERS ---
+  const completedMockLevels = mockLevels.filter((l) => l.completed);
+  const mockUserProgress: UserProgress = {
+    totalPoints: 250,
+    level: calculateUserLevel(250),
+    streak: 1,
+    completedLevels: completedMockLevels.length,
+    rank: 42,
+    achievements: mockAchievements.filter((a) => a.unlocked),
+  };
+
+  // Base leaderboard with other players (excluding "You")
+  const baseLeaderboard = [
+    { name: "QuantumExplorer", points: 2450, avatar: "👑" },
+    { name: "QubitMaster", points: 2340, avatar: "⚡" },
+    { name: "EntanglePro", points: 2180, avatar: "🔬" },
+    { name: "CircuitBuilder", points: 240, avatar: "⚙️" },
+    { name: "AlgoMaster", points: 235, avatar: "🧠" },
+    { name: "QuantumNewbie", points: 220, avatar: "🌟" },
+    { name: "ErrorFixer", points: 210, avatar: "🔧" },
+    { name: "MLQuantum", points: 205, avatar: "🤖" },
+  ];
+
+  // Function to calculate dynamic leaderboard with current user points
+  const calculateDynamicLeaderboard = (userPoints: number) => {
+    // Create array with all players including current user
+    const allPlayers = [
+      ...baseLeaderboard,
+      { name: "You", points: userPoints, avatar: "🎯" },
+    ];
+
+    // Sort by points descending
+    const sortedPlayers = allPlayers.sort((a, b) => b.points - a.points);
+
+    // Add ranks
+    return sortedPlayers.map((player, index) => ({
+      ...player,
+      rank: index + 1,
+    }));
+  };
+
+  // Function to calculate user rank based on current points
+  const calculateUserRank = (userPoints: number): number => {
+    const playersWithHigherPoints = baseLeaderboard.filter(
+      (player) => player.points > userPoints
+    );
+    return playersWithHigherPoints.length + 1;
+  };
+
+  const levelProgression: Record<string, string[]> = {
+    "qb-103": ["qb-102"],
+    "qg-201": ["qb-101", "qb-102", "qb-103"],
+    "qg-202": ["qg-201"],
+    "qg-203": ["qg-202"],
+    "qg-204": ["qg-203"],
+    "qe-301": ["qg-204"],
+    "qe-302": ["qe-301"],
+    "qe-303": ["qe-302"],
+    "qe-304": ["qe-303"],
+    "qa-401": ["qe-304"],
+    "qa-402": ["qa-401"],
+    "qa-403": ["qa-402"],
+    "qa-404": ["qa-403"],
+    "qr-501": ["qa-404"],
+    "qr-502": ["qr-501"],
+    "qr-503": ["qr-502"],
+    "qr-504": ["qr-503"],
+    "qr-505": ["qr-504"],
+  };
+
+  const shouldUnlockLevel = (levelId: string, completedLevels: Level[]): boolean => {
+    const prerequisites = levelProgression[levelId];
+    if (!prerequisites) return true;
     return prerequisites.every((prereqId) =>
       completedLevels.some((level) => level.id === prereqId && level.completed)
     );
   };
 
-  // Update levels locking status based on completed levels
   const updateLevelLocking = (updatedLevels: Level[]): Level[] => {
     return updatedLevels.map((level) => ({
       ...level,
@@ -512,13 +471,106 @@ export default function QuantumQuest() {
     }));
   };
 
+  export default function QuantumQuest() {
+
+  const [selectedTab, setSelectedTab] = useState("learn");
+  const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
+  const [currentChallenge, setCurrentChallenge] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  
+  // --- STATE PERSISTENCE ---
+  
+  // Initialize state from LocalStorage or Default
+  const [levels, setLevels] = useState<Level[]>(() => {
+    const saved = localStorage.getItem('quantum_levels');
+    return saved ? JSON.parse(saved) : updateLevelLocking(mockLevels); // Ensure locking is correct on fresh start
+  });
+
+  const [userProgress, setUserProgress] = useState<UserProgress>(() => {
+    const saved = localStorage.getItem('quantum_progress');
+    if (saved) return JSON.parse(saved);
+    return mockUserProgress;
+  });
+
+  const [achievements, setAchievements] = useState<Achievement[]>(() => {
+    const saved = localStorage.getItem('quantum_achievements');
+    return saved ? JSON.parse(saved) : mockAchievements;
+  });
+
+  // Persist state whenever it changes
+  useEffect(() => {
+    localStorage.setItem('quantum_levels', JSON.stringify(levels));
+  }, [levels]);
+
+  useEffect(() => {
+    localStorage.setItem('quantum_progress', JSON.stringify(userProgress));
+  }, [userProgress]);
+
+  useEffect(() => {
+    localStorage.setItem('quantum_achievements', JSON.stringify(achievements));
+  }, [achievements]);
+
+
+  const { toast } = useToast();
+
+  // Calculate dynamic leaderboard based on current user progress
+  const dynamicLeaderboard = calculateDynamicLeaderboard(
+    userProgress.totalPoints
+  );
+
+  // Validate challenges on mount
+  useEffect(() => {
+    // Only run validation once on mount
+    const levelIds = levels.map((level) => level.id);
+    const validation = validateChallenges(levelIds);
+    if (validation.missing.length > 0) {
+      console.warn("⚠️ Missing challenges for levels:", validation.missing);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  // --- GAME LOGIC ---
+
+  // Function to check and unlock achievements based on new state
+  const checkAchievements = (currentPoints: number, completedCount: number, currentAchievements: Achievement[]): Achievement[] => {
+      let updatedAchievements = [...currentAchievements];
+      let newlyUnlocked: Achievement[] = [];
+
+      const unlock = (id: string) => {
+          const index = updatedAchievements.findIndex(a => a.id === id);
+          if (index !== -1 && !updatedAchievements[index].unlocked) {
+              updatedAchievements[index] = { ...updatedAchievements[index], unlocked: true };
+              newlyUnlocked.push(updatedAchievements[index]);
+          }
+      };
+
+      // Achievement Logic
+      if (completedCount >= 1) unlock("first-steps");
+      if (currentPoints >= 500) unlock("superposition-master"); 
+      if (completedCount >= 5) unlock("entanglement-explorer");
+      if (completedCount >= 10) unlock("quantum-pioneer");
+      if (currentPoints >= 1000) unlock("algorithm-master");
+
+      // Notify for new unlocks
+      newlyUnlocked.forEach(achievement => {
+           toast({
+              title: "🏆 Achievement Unlocked!",
+              description: achievement.title,
+              variant: "default", // or a custom gold variant if available
+          });
+      });
+
+      return updatedAchievements;
+  };
+
+
   // Level completion handler
   const completeLevel = (level: Level) => {
     // Prevent duplicate completion
     if (level.completed) {
       toast({
-        title: "Already Completed!",
-        description: `You've already completed ${level.title}. No additional points awarded.`,
+        title: "Replay Complete",
+        description: `You replayed ${level.title}. Practice makes perfect!`,
       });
       return;
     }
@@ -528,35 +580,40 @@ export default function QuantumQuest() {
 
     toast({
       title: "🎉 Level Completed!",
-      description: `You earned ${level.points} points for completing ${level.title}`,
+      description: `You earned ${level.points} XP for mastering ${level.title}`,
     });
 
-    // Mark level as completed and unlock new levels
+    // 1. Update Levels
     const updatedLevels = levels.map((l) =>
       l.id === level.id ? { ...l, completed: true } : l
     );
-
-    // Update locking status for all levels
+    // Recalculate locks based on new completion status
     const finalLevels = updateLevelLocking(updatedLevels);
     setLevels(finalLevels);
 
-    // Calculate new user level based on total points
-    const completedLevels = finalLevels.filter((l) => l.completed);
+    // 2. Calculate New Stats
+    const completedLevelsCount = finalLevels.filter((l) => l.completed).length;
     const newTotalPoints = userProgress.totalPoints + level.points;
+    const oldUserLevel = calculateUserLevel(userProgress.totalPoints);
     const newUserLevel = calculateUserLevel(newTotalPoints);
     const newUserRank = calculateUserRank(newTotalPoints);
 
-    // Update progress with calculated level and dynamic rank
+    // 3. Check Achievements
+    const updatedAchievements = checkAchievements(newTotalPoints, completedLevelsCount, achievements);
+    setAchievements(updatedAchievements);
+
+    // 4. Update User Progress
     setUserProgress((prev) => ({
       ...prev,
       totalPoints: newTotalPoints,
-      completedLevels: completedLevels.length,
+      completedLevels: completedLevelsCount,
       level: newUserLevel,
-      streak: prev.streak + 1,
+      streak: prev.streak + 1, // Simple streak increment for now
       rank: newUserRank,
+      achievements: updatedAchievements.filter(a => a.unlocked)
     }));
 
-    // Check for newly unlocked levels and show notifications
+    // 5. Notifications for Unlocked Content
     const newlyUnlocked = finalLevels.filter(
       (l, index) => levels[index].locked && !l.locked
     );
@@ -565,19 +622,18 @@ export default function QuantumQuest() {
       setTimeout(() => {
         toast({
           title: "🔓 New Levels Unlocked!",
-          description: `${newlyUnlocked
-            .map((l) => l.title)
-            .join(", ")} available now!`,
+          description: `${newlyUnlocked.map((l) => l.title).join(", ")} available now!`,
         });
       }, 1500);
     }
 
-    // Check for level advancement
-    if (newUserLevel > userProgress.level) {
+    // 6. Level Up Notification
+    if (newUserLevel > oldUserLevel) {
       setTimeout(() => {
         toast({
-          title: "🎉 Level Up!",
-          description: `Congratulations! You've advanced to Level ${newUserLevel}!`,
+          title: "🚀 LEVEL UP!",
+          description: `You are now Level ${newUserLevel}!`,
+          className: "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none"
         });
       }, 2000);
     }
@@ -587,13 +643,21 @@ export default function QuantumQuest() {
   const handleChallengeComplete = (
     levelId: string,
     success: boolean,
-    timeElapsed: number
+    timeElapsed: number,
+    nextLevelId?: string | null
   ) => {
     const level = levels.find((l) => l.id === levelId);
     if (level && success) {
       completeLevel(level);
     }
-    setCurrentChallenge(null);
+    
+    // If next level is requested and valid, switch to it; otherwise go back to map
+    if (nextLevelId) {
+      // Small delay for effect
+      setTimeout(() => setCurrentChallenge(nextLevelId), 500);
+    } else {
+      setCurrentChallenge(null);
+    }
   };
 
   const handleStartChallenge = (level: Level) => {
@@ -638,8 +702,13 @@ export default function QuantumQuest() {
     }
   };
 
+  // Calculate XP targets for MissionControl
+  const currentLevel = calculateUserLevel(userProgress.totalPoints);
+  const currentLevelBaseXP = LEVEL_THRESHOLDS[currentLevel as keyof typeof LEVEL_THRESHOLDS] || 0;
+  const nextLevelXPTarget = LEVEL_THRESHOLDS[(currentLevel + 1) as keyof typeof LEVEL_THRESHOLDS] || 10000;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
+    <div className="min-h-screen bg-[#050B14] text-white">
       {/* Confetti Animation */}
       <AnimatePresence>
         {showConfetti && (
@@ -672,64 +741,26 @@ export default function QuantumQuest() {
         )}
       </AnimatePresence>
 
+      <MissionControl 
+        user={userProgress} 
+        xpTarget={nextLevelXPTarget} 
+        prevLevelTarget={currentLevelBaseXP} 
+      />
+
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {/* Header - Back Button Only (rest is in HUD) */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="mb-8"
         >
-          <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="flex items-center gap-4 mb-4">
             <Link to="/dashboard">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
             </Link>
-          </div>
-
-          <motion.h1
-            className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2"
-            animate={{ scale: [1, 1.02, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            🚀 Quantum Quest
-          </motion.h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-            Master quantum computing through interactive challenges and real IBM
-            Quantum experiments
-          </p>
-
-          {/* Progress Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">
-                  {userProgress.totalPoints}
-                </div>
-                <div className="text-sm opacity-90">Total Points</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">
-                  Level {userProgress.level}
-                </div>
-                <div className="text-sm opacity-90">Current Level</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">{userProgress.streak}</div>
-                <div className="text-sm opacity-90">Day Streak</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">#{userProgress.rank}</div>
-                <div className="text-sm opacity-90">Global Rank</div>
-              </CardContent>
-            </Card>
           </div>
         </motion.div>
 
@@ -739,95 +770,44 @@ export default function QuantumQuest() {
           onValueChange={setSelectedTab}
           className="max-w-7xl mx-auto"
         >
-          <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="learn" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-4 mb-8 bg-gray-900 border border-gray-800">
+            <TabsTrigger value="learn" className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               <Play className="h-4 w-4" />
-              Learn
+              Galaxy Map
             </TabsTrigger>
             <TabsTrigger
               value="achievements"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
             >
               <Award className="h-4 w-4" />
-              Achievements
+              Artifacts
             </TabsTrigger>
             <TabsTrigger
               value="leaderboard"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 data-[state=active]:bg-yellow-600 data-[state=active]:text-white"
             >
               <Trophy className="h-4 w-4" />
-              Leaderboard
+              Rankings
             </TabsTrigger>
-            <TabsTrigger value="progress" className="flex items-center gap-2">
+            <TabsTrigger value="progress" className="flex items-center gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
               <BarChart3 className="h-4 w-4" />
-              Progress
+              Stats
             </TabsTrigger>
           </TabsList>
 
-          {/* Learning Challenges */}
+          {/* Galaxy Map View */}
           <TabsContent value="learn" className="space-y-8">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {levels.map((level, index) => (
-                <motion.div
-                  key={level.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  className="relative"
-                >
-                  <Card
-                    className={`overflow-hidden ${
-                      level.locked ? "opacity-60" : "hover:shadow-xl"
-                    } transition-all duration-300`}
-                  >
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <Badge
-                          className={`${getDifficultyColor(
-                            level.difficulty
-                          )} text-white text-xs`}
-                        >
-                          {level.difficulty.toUpperCase()}
-                        </Badge>
-                        <div className="flex items-center gap-2">
-                          {level.completed && (
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                          )}
-                          {level.locked && (
-                            <Lock className="h-5 w-5 text-gray-400" />
-                          )}
-                        </div>
-                      </div>
-                      <CardTitle className="text-lg">{level.title}</CardTitle>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {level.description}
-                      </p>
-                    </CardHeader>
-                    <CardContent className="pt-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500" />
-                          <span className="font-semibold">
-                            {level.points} pts
-                          </span>
-                        </div>
-                        <Button
-                          size="sm"
-                          disabled={level.locked}
-                          onClick={() => handleStartChallenge(level)}
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                          data-testid={`button-level-${level.id}`}
-                        >
-                          {level.completed ? "Replay" : "Start"}
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <div className="flex items-center justify-between mb-4">
+                     <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Quantum Constellation</h2>
+                     <p className="text-sm text-gray-400">Navigate the stars to unlock quantum mastery</p>
+                </div>
+                <GalaxyMap levels={levels} onLevelClick={handleStartChallenge} />
+            </motion.div>
           </TabsContent>
 
           {/* Achievements */}
@@ -1050,6 +1030,7 @@ export default function QuantumQuest() {
               className="fixed inset-0 bg-white dark:bg-gray-900 z-50 overflow-y-auto"
             >
               <LevelChallenge
+                key={currentChallenge}
                 levelId={currentChallenge}
                 onComplete={handleChallengeComplete}
                 onBack={() => setCurrentChallenge(null)}

@@ -168,6 +168,7 @@ import { ResearchChat } from "@/components/teamwork/ResearchChat";
 import { ActiveChallenges } from "@/components/teamwork/ActiveChallenges";
 import { ActiveChallengesModal } from "@/components/teamwork/ActiveChallengesModal";
 import { useCollaboration } from "@/hooks/use-collaboration";
+import { ProjectCollaborationView } from "@/components/teamwork/ProjectCollaborationView";
 const mockQuantumFeaturesDefault = {
     liveCircuits: 0,
     activeCollaborators: 0,
@@ -273,6 +274,7 @@ export default function Teamwork() {
   const [inviteMemberEmail, setInviteMemberEmail] = useState("");
   const [isInviteMemberOpen, setIsInviteMemberOpen] = useState(false);
   const [selectedWorkspaceForInvite, setSelectedWorkspaceForInvite] = useState<string | null>(null);
+  const [selectedProjectForCollaboration, setSelectedProjectForCollaboration] = useState<{id: string, workspaceId: string, name: string} | null>(null);
 
   const handleCreateWorkspace = async () => {
     if (!newWorkspaceName) return;
@@ -1465,6 +1467,18 @@ export default function Teamwork() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="text-blue-600 hover:text-blue-900 border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10 mr-2"
+                                  onClick={() => setSelectedProjectForCollaboration({
+                                      id: project.id,
+                                      workspaceId: project.workspaceId,
+                                      name: project.name
+                                  })}
+                                >
+                                  Collaborate
+                                </Button>
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -7179,6 +7193,17 @@ export default function Teamwork() {
         </Dialog>
 
       </div>
+      
+      <AnimatePresence>
+        {selectedProjectForCollaboration && (
+            <ProjectCollaborationView 
+                projectId={selectedProjectForCollaboration.id}
+                workspaceId={selectedProjectForCollaboration.workspaceId}
+                currentUser={currentUser}
+                onClose={() => setSelectedProjectForCollaboration(null)}
+            />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

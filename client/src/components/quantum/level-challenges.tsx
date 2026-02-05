@@ -79,6 +79,7 @@ export interface LevelChallenge {
   timeLimit?: number;
   category: string;
   learningObjectives: string[];
+  educationalTips?: string[]; // Added precise learning tips
   challenge: {
     type: 'gate-builder' | 'circuit-analysis' | 'algorithm-implementation' | 'research-project';
     instructions: string;
@@ -105,6 +106,12 @@ const LEVEL_CHALLENGES: Record<string, LevelChallenge> = {
       "Differentiate between |0⟩ and |1⟩ states",
       "Visualize quantum state representation"
     ],
+    educationalTips: [
+      "Classical bits are either 0 or 1, like a light switch.",
+      "Qubits can be in a state of 'superposition', allowing them to be complex combinations of 0 and 1 simultaneously.",
+      "The notation |0⟩ is Dirac notation (bra-ket) for a quantum state vector.",
+      "In the Bloch sphere representation, |0⟩ is the North Pole and |1⟩ is the South Pole."
+    ],
     challenge: {
       type: 'gate-builder',
       instructions: "Click on the qubit to see it in the |0⟩ state. This is your first quantum bit!",
@@ -126,6 +133,11 @@ const LEVEL_CHALLENGES: Record<string, LevelChallenge> = {
       "Create superposition using Hadamard gates",
       "Understand equal probability states",
       "Measure superposition outcomes"
+    ],
+    educationalTips: [
+      "The Hadamard gate maps |0⟩ to |+⟩ = (|0⟩ + |1⟩)/√2.",
+      "In a uniform superposition, specific outcomes are random but probabilities are exact (50/50).",
+      "Superposition is not just 'not knowing' the state; it is a fundamental property of quantum systems."
     ],
     challenge: {
       type: 'gate-builder',
@@ -153,6 +165,11 @@ const LEVEL_CHALLENGES: Record<string, LevelChallenge> = {
       "Master Hadamard gate properties",
       "Create complex superposition states",
       "Understand gate sequences"
+    ],
+    educationalTips: [
+      "Applying Hadamard twice returns the qubit to its original state (H² = I).",
+      "Combining H and CNOT gates is the standard way to create Bell states.",
+      "This circuit pattern is the 'Hello World' of quantum computing."
     ],
     challenge: {
       type: 'gate-builder',
@@ -199,6 +216,11 @@ const LEVEL_CHALLENGES: Record<string, LevelChallenge> = {
       "Execute circuits on real quantum hardware",
       "Understand quantum measurement and state transfer"
     ],
+    educationalTips: [
+      "Teleportation moves a quantum state, not matter, from one location to another.",
+      "It requires three qubits and two classical bits of information.",
+      "The 'No-Cloning Theorem' means the original state must be destroyed to transport it."
+    ],
     challenge: {
       type: 'research-project',
       instructions: "Build and execute a quantum teleportation circuit. Create Bell pair entanglement, perform measurements, and apply conditional operations to teleport a qubit state. This will run on real IBM Quantum hardware!",
@@ -226,6 +248,11 @@ const LEVEL_CHALLENGES: Record<string, LevelChallenge> = {
       "Master all three Pauli gates",
       "Understand single-qubit rotations",
       "Learn the role of X, Y, Z gates"
+    ],
+    educationalTips: [
+      "Pauli matrices form a basis for separate linear operators on 2-dimensional Hilbert space.",
+      "They are their own inverses (X² = Y² = Z² = I).",
+      "These gates visualize as 180-degree rotations around the corresponding axes on the Bloch Sphere."
     ],
     challenge: {
       type: 'gate-builder',
@@ -740,14 +767,136 @@ export const getAllChallenges = (): Record<string, LevelChallenge> => {
 export const validateChallenges = (levelIds: string[]): { missing: string[], total: number } => {
   const missing = levelIds.filter(id => !LEVEL_CHALLENGES[id]);
   return {
+
     missing,
     total: levelIds.length
   };
 };
 
+// --- Helper to determine next level ---
+const getNextLevelId = (currentId: string): string | null => {
+  const ids = Object.keys(LEVEL_CHALLENGES);
+  const index = ids.indexOf(currentId);
+  return (index !== -1 && index < ids.length - 1) ? ids[index + 1] : null;
+};
+
+// --- Mission Briefing Component (Next Level Card) ---
+interface MissionBriefingProps {
+  level: LevelChallenge;
+  onDeploy: () => void;
+  nextLevel?: LevelChallenge;
+}
+
+function MissionBriefing({ level, onDeploy, nextLevel }: MissionBriefingProps) {
+  // If there's a next level, show that. Otherwise show replay/completion of current.
+  const displayLevel = nextLevel || level;
+  const isNext = !!nextLevel;
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    >
+      <Card className="w-full max-w-md bg-[#050B14] border-blue-900/50 shadow-[0_0_50px_rgba(37,99,235,0.2)] relative overflow-hidden text-white border-2">
+        {/* Background Accents */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -z-10" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -z-10" />
+
+        <CardHeader className="relative z-10 pb-2">
+          <div className="flex justify-between items-start">
+             <div>
+                <motion.h2 
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    className="text-3xl font-black italic tracking-tighter text-white mb-1 uppercase"
+                >
+                    {displayLevel.title}
+                </motion.h2>
+                <div className="flex items-center gap-2 text-xs font-mono text-blue-400">
+                    <span className="w-1 h-4 bg-blue-500 inline-block"/>
+                    {displayLevel.category.toUpperCase().replace('LEVEL ', 'LVL ')}
+                </div>
+             </div>
+             <div className="text-right">
+                 {isNext && <Badge className="bg-blue-600 animate-pulse">NEXT MISSION</Badge>}
+                 {!isNext && <Badge className="bg-green-600">MISSION ACCOMPLISHED</Badge>}
+             </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6 relative z-10 pt-4">
+            {/* Objective Box */}
+            <div className="bg-blue-950/20 border border-blue-900/30 rounded-xl p-4 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <Target className="w-12 h-12 text-blue-400" />
+                </div>
+                <h3 className="text-blue-300 font-bold text-xs uppercase tracking-wider mb-2">Mission Objective</h3>
+                <p className="text-gray-300 text-sm leading-relaxed relative z-10">
+                    {displayLevel.description || "Initialize quantum system and verify state coherence."}
+                </p>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="bg-black/40 border border-white/5 p-3 rounded-lg text-center">
+                    <div className="text-xs text-gray-500 font-mono uppercase mb-1">Threat Level</div>
+                    <div className={`font-bold text-lg ${
+                        displayLevel.difficulty === 'beginner' ? 'text-green-400' : 
+                        displayLevel.difficulty === 'intermediate' ? 'text-blue-400' :
+                        displayLevel.difficulty === 'advanced' ? 'text-purple-400' : 'text-red-500'
+                    }`}>
+                        {displayLevel.difficulty.charAt(0).toUpperCase() + displayLevel.difficulty.slice(1)}
+                    </div>
+                </div>
+                <div className="bg-black/40 border border-white/5 p-3 rounded-lg text-center">
+                    <div className="text-xs text-gray-500 font-mono uppercase mb-1">Bounty</div>
+                    <div className="font-bold text-lg text-yellow-400 flex items-center justify-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400" /> {displayLevel.points}
+                    </div>
+                </div>
+            </div>
+
+            {/* Outcomes/Evals */}
+            <div className="bg-black/20 rounded-lg p-4 border border-white/5">
+                <h3 className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase mb-3">
+                    <Zap className="w-3 h-3" /> Outcomes
+                </h3>
+                <ul className="space-y-2">
+                    {displayLevel.learningObjectives.slice(0, 3).map((obj, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5" />
+                            {obj}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* Action Button */}
+            <Button 
+                onClick={onDeploy}
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-6 text-lg tracking-widest uppercase shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transition-all border-t border-blue-400"
+            >
+                {isNext ? (
+                    <span className="flex items-center gap-2">Engage Systems <div className="w-4 h-4 text-xs">🚀</div></span>
+                ) : (
+                    "Re_Deploy"
+                )}
+            </Button>
+            
+            {/* Decoration corners */}
+            <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-blue-500/30 rounded-br-lg" />
+            <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-blue-500/30 rounded-tl-lg" />
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 interface LevelChallengeProps {
   levelId: string;
-  onComplete: (levelId: string, success: boolean, timeElapsed: number) => void;
+  onComplete: (levelId: string, success: boolean, timeElapsed: number, nextLevelId?: string | null) => void;
   onBack: () => void;
 }
 
@@ -758,10 +907,14 @@ export function LevelChallenge({ levelId, onComplete, onBack }: LevelChallengePr
   const [showTutorial, setShowTutorial] = useState(true);
   const [currentHint, setCurrentHint] = useState<string | null>(null);
   const [challengePhase, setChallengePhase] = useState<'tutorial' | 'challenge' | 'completed'>('tutorial');
+  const [showMissionBriefing, setShowMissionBriefing] = useState(false);
   const { toast } = useToast();
   
   const challenge = LEVEL_CHALLENGES[levelId];
   
+  const nextLevelId = getNextLevelId(levelId);
+  const nextLevel = nextLevelId ? LEVEL_CHALLENGES[nextLevelId] : undefined;
+
   if (!challenge) {
     return (
       <div className="text-center p-8">
@@ -784,13 +937,18 @@ export function LevelChallenge({ levelId, onComplete, onBack }: LevelChallengePr
         description: `Great job! You successfully completed ${challenge.title}`,
       });
       
-      // Small delay to let user see the success message
+      // Show Mission Briefing instead of auto-completing
       setTimeout(() => {
-        onComplete(levelId, success, timeElapsed);
-      }, 1000);
+        setShowMissionBriefing(true);
+      }, 1500);
     } else {
       onComplete(levelId, success, timeElapsed);
     }
+  };
+
+  const handleDeployNext = () => {
+    // Pass nextLevelId if available
+    onComplete(levelId, true, timeElapsed, nextLevelId);
   };
 
   // Tutorial completion handler
@@ -828,7 +986,17 @@ export function LevelChallenge({ levelId, onComplete, onBack }: LevelChallengePr
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 relative">
+      <AnimatePresence>
+         {showMissionBriefing && (
+             <MissionBriefing 
+                 level={challenge}
+                 nextLevel={nextLevel}
+                 onDeploy={handleDeployNext}
+             />
+         )}
+      </AnimatePresence>
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div
